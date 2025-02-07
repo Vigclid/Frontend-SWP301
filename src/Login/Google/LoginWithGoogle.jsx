@@ -42,7 +42,7 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
       }
       storeUserData(creatorWithoutTheImages);
         window.dispatchEvent(new Event('userLoggedIn'));
-        if (userrole.roleName === "AD") {
+        if (userrole.roleName === "Admin") {
           navigate('/admin');
         } else {
           navigate('/characters');

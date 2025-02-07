@@ -7,6 +7,8 @@ import CreateAccount from "./Components/Forms/CreateAccount.tsx";
 import Unauthorized from "./ProtectedRoutes/Unauthorized.jsx";
 import ProtectedRoute from "./ProtectedRoutes/ProtectedRoute.tsx";
 import RouterAdmin from "./Components/Admin/RouterAdmin.jsx";
+
+  
 function App() {
   const role = sessionStorage.getItem("userRole");
   return (
@@ -20,6 +22,7 @@ function App() {
         <Route path="/createaccount" element={<CreateAccount />} />
         <Route path="/characters/*" element={<Users />}></Route>
       </Routes>
+      
     </div>
   );
 }

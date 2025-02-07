@@ -36,13 +36,15 @@ export default function LoginForm({ disableOutsideClick, handleClick, backdrop, 
           setIsloading(true)
           await CheckLogin(values, storeUserData)
           const sessionRole = sessionStorage.getItem('userRole');
+
           setIsloading(false)
           // await to ensure the CheckLogin finish its task before running the navigate action
           if (sessionRole === "AD") {
             navigate('/admin');
-          }
-          else {
+          } else  if (sessionRole === "Users") {
             navigate('/characters');
+          } else {
+            navigate('/');
           }
           window.dispatchEvent(new Event('userLoggedIn'));
           if (disableOutsideClick) {

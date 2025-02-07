@@ -26,7 +26,7 @@ export async function PostCreator(values:Creator) {
         // Optionally, add additional headers such as Authorization if required
         // 'Authorization': 'Bearer your-token',
       };
-      const response = await axios.post(`${postcreatorurl}`, values, { headers });
+      const response = await axios.post(`${postcreatorurl}`, values, { headers }); //WORK in USERAPI
       console.log('UploadComplete:', response.data);
     } catch (err) {
       console.error(err);
