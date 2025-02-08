@@ -24,6 +24,13 @@ import { FormControlLabel } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import LoadingScreen from '../LoadingScreens/LoadingScreenSpokes.jsx';
 import CustomizedTextField from '../StyledMUI/CustomizedTextField.tsx';
+import CircularProgress from '@mui/material/CircularProgress';
+import CheckIcon from '@mui/icons-material/Check';
+
+let response;
+
+const getOTPURL = 'http://localhost:7233/api/Account/send-token'
+
 
 function LoginAsGuest() {
   const { theme } = useContext(ThemeContext)
@@ -92,12 +99,12 @@ export default function CreateAccount() {
         roleID: "2", //Default role as creator (AT)
         email: values.email,
         password: values.password,
-        banAccount: false
+        status: false
       }
       let creator: Creator = {
         creatorID: "0",
         accountID: "0",
-        paymentID: 1,
+        coins: 0,
         userName: values.userName,
         profilePicture: values.profilePicture,
         backgroundPicture: values.backgroundPicture,
@@ -106,11 +113,15 @@ export default function CreateAccount() {
         address: values.address,
         phone: values.phone,
         lastLogDate: undefined,
+        CreateAt:  undefined,
+        DateOfBirth: undefined,
         biography: values.biography,
         allowCommission: commission,
         followCount: 0,
+        followerCount: 0,
         email: values.email,
-        vip: false
+        RankID: 1,
+        RoleID: 2
       }
       console.log(account)
       console.log(creator)
@@ -138,6 +149,72 @@ export default function CreateAccount() {
       biography: Yup.string().required("Tell the community something about yourself")
     }),
   })
+
+
+
+  //XỬ LÝ OTP
+  const [otp, setOtp] = useState<string>('');
+  const [activeOTP,setActiveOTP] = useState<boolean>(false);
+  const [otpButton,setOtpButton] = useState<boolean>(true);
+
+  // Hàm xử lý khi nhập vào ô TextField
+  const handleOTPChange = (event) => {
+    const value = event.target.value;
+    // Chỉ cho phép nhập số và giới hạn tối đa 6 ký tự
+    if (/^\d{0,6}$/.test(value)) {
+      setOtp(value);
+    }
+  };
+
+  // Hàm xử lý khi nút SEND CODE được bấm
+  const [load,setLoad] = useState<boolean>(false);
+  
+  const handleSendCode = async() => {
+    const emailValue = formik.values.email;
+    if (emailValue) {
+      // Thực hiện xử lý với mã OTP 6 số đã nhập
+
+        const headers = {
+          'Content-Type': 'application/json',
+        };
+        
+        
+        if (otpButton) {
+          setLoad(true);
+          response = await axios.post(`${getOTPURL}`, {'email':emailValue}, { headers }); //GET OTP FROM SERVER
+          console.log(response.data)
+          setOtpButton(false);
+          setLoad(false);
+        } else {
+
+          if (String(response.data) === String(otp)) {
+            setActiveOTP(true);
+          } else {
+            formik.setErrors({ email: 'Wrong OTP!' });
+            // Xóa lỗi sau 5 giây
+            setTimeout(() => {
+              formik.setErrors({ email: '' });
+            }, 2000);
+          }
+        }
+        
+        
+
+      // Gọi các hàm khác hoặc thực hiện các thao tác cần thiết
+    } else {
+      formik.setErrors({ email: 'Email is required' });
+        // Xóa lỗi sau 5 giây
+        setTimeout(() => {
+          formik.setErrors({ email: '' });
+        }, 2000);
+
+    }
+  };
+
+
+
+
+
   return (
     <Background>
        {isLoading ? <LoadingScreen />  : ""}
@@ -170,9 +247,34 @@ export default function CreateAccount() {
                       fullWidth
                       value={formik.values.email} onChange={formik.handleChange}
                     />
-                    {formik.errors.email && (<Typography variant="body2" color="red">{formik.errors.email}
+                    {(formik.errors.email) && (<Typography variant="body2" color="red">{formik.errors.email}
                     </Typography>)}
                   </Grid>
+
+                  {/* OTP */}
+
+                  <Grid item xs={2} container alignItems="center">
+                    <TextField
+                      label="Email OTP"
+                      variant="outlined"
+                      value={otp}
+                      onChange={handleOTPChange}
+                      inputProps={{ maxLength: 6 }}
+                    />
+                  </Grid>
+                  <Grid item xs={2} container alignItems="center">
+                    <Button
+                      variant={activeOTP ?  "contained" : "outlined" }
+                      fullWidth
+                      onClick={handleSendCode}
+                    >
+                      {load ? <CircularProgress /> : activeOTP ? <CheckIcon /> : otpButton ? "SEND CODE" : "ACTIVE"}
+                    </Button>
+                    
+                  </Grid>
+
+
+                  {/* END OF OTP HANDLE */}
                   <Grid item xs={12}>
                     <CustomizedTextField
 
@@ -277,7 +379,13 @@ export default function CreateAccount() {
                     </Typography>)}
                   </Grid>
                   <Grid item xs={12}>
-                    <Button disabled={open} variant="contained" type='submit' style={{ marginBottom: '20px' }} fullWidth>
+                    <Button 
+                     disabled={open || !activeOTP}
+                     variant="contained" 
+                     type='submit' 
+                     style={{ marginBottom: '20px' }} 
+                     fullWidth
+                     >
                       REGISTER
                     </Button>
                   </Grid>

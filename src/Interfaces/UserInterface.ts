@@ -14,13 +14,13 @@ export interface Account {
   roleID:string,
   password:string,
   email:string,
-  banAccount:boolean
+  status:boolean
 }
 
 export interface Creator {
   creatorID: string | "0",
   accountID: string | "0",
-  paymentID: string | number,
+  coins: string | number,
   userName: string | "",
   profilePicture: string | "",
   backgroundPicture: string | "",
@@ -29,9 +29,13 @@ export interface Creator {
   address: string | "",
   phone: string | "0",
   lastLogDate: string | undefined,
+  CreateAt: string | undefined,
+  DateOfBirth :string | undefined,
   allowCommission: boolean | false,
   biography: string | "",
   followCount: number | 0,
+  followerCount: number | 0,
   email:string,
-  vip:boolean
+  RankID:number,
+  RoleID: number
 } // This is the Object Creator, having all the infomation.
