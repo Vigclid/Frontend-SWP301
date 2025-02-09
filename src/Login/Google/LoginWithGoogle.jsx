@@ -6,9 +6,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../Components/AuthenContext.tsx';
 export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
-  const accounturl = 'https://localhost:7233/api/Account'
-  const creatorurl = 'https://localhost:7233/api/Creator/'
-  const roleurl = 'https://localhost:7233/api/Role/'
+  const accounturl = 'http://localhost:7233/api/Account'
+  const creatorurl = 'http://localhost:7233/api/Creator/'
+  const roleurl = 'http://localhost:7233/api/Role/'
 
   const { storeUserData } = useAuth();
   //Call the custom hook to store user login information
@@ -31,9 +31,10 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
       const userroleResponse = await axios.get(roleurl+foundAccount.roleID);
       const userrole = userroleResponse.data;
       //Store the user role in sesison
-      sessionStorage.setItem('userRole', userrole.roleName);
+      (userrole.roleName === "Admin") ? sessionStorage.setItem('userRole', "AD") 
+                                      : sessionStorage.setItem('userRole', userrole.roleName);
        // Once the user is verified, get additional user data.
-      const creatorResponse = await axios.get(creatorurl + foundAccount.accountID);
+      const creatorResponse = await axios.get(creatorurl + foundAccount.accountId);
       const creatorData = creatorResponse.data;
       const creatorWithoutTheImages = {
         ...creatorData,
@@ -42,7 +43,7 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
       }
       storeUserData(creatorWithoutTheImages);
         window.dispatchEvent(new Event('userLoggedIn'));
-        if (userrole.roleName === "Admin") {
+        if (userrole.roleName === "AD") {
           navigate('/admin');
         } else {
           navigate('/characters');

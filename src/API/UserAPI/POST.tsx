@@ -2,8 +2,8 @@
 import axios from 'axios'
 import { Account, Creator } from '../../Interfaces/UserInterface';
 
-const postcreatorurl = 'https://localhost:7233/api/Creator/'
-const postaccounturl = 'https://localhost:7233/api/Account/CreateAccount'
+const postcreatorurl = 'http://localhost:7233/api/Creator/'
+const postaccounturl = 'http://localhost:7233/api/Account/CreateAccount'
 export async function PostUserAccount(values:Account) {
   try {
     const headers = {

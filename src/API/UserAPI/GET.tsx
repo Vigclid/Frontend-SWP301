@@ -3,12 +3,12 @@ import { Account, Creator } from '../../Interfaces/UserInterface.tsx'
 import axios from 'axios'
 
 
-const creatorurl = 'https://localhost:7233/api/Creator/'
-const creatonobackgroundimageurl = `https://localhost:7233/api/Creator/NotBackground`
-const accountemailurl = 'https://localhost:7233/api/Account/email/'
-const countcreatorurl = "https://localhost:7233/api/Creator/CountCreators"
-const creatorvipstatusurl = `https://localhost:7233/api/Creator/GetID/UserName/Vip`
-const gettotalartworklikesbycreatorurl = `https://localhost:7233/api/artworks/total-likes/`
+const creatorurl = 'http://localhost:7233/api/Creator/'
+const creatonobackgroundimageurl = `http://localhost:7233/api/Creator/NotBackground`
+const accountemailurl = 'http://localhost:7233/api/Account/email/'
+const countcreatorurl = "http://localhost:7233/api/Creator/CountCreators"
+const creatorvipstatusurl = `http://localhost:7233/api/Creator/GetID/UserName/Vip`
+const gettotalartworklikesbycreatorurl = `http://localhost:7233/api/artworks/total-likes/`
 
 export async function GetTotalLikeByCreatorID(id:string|number) {
   try{

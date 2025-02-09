@@ -2,8 +2,8 @@
 import axios from 'axios'
 
 
-const profilecreatorurl = 'https://localhost:7233/api/Creator/updateProfilePicture/'
-const backgroundcreatorurl = 'https://localhost:7233/api/Creator/updateBackground/'
+const profilecreatorurl = 'http://localhost:7233/api/Creator/updateProfilePicture/'
+const backgroundcreatorurl = 'http://localhost:7233/api/Creator/updateBackground/'
 export async function PutCreatorBackgroundPicture(CreatorID:string,imageFile:string) {
   try {
     const headers = {

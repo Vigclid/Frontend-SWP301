@@ -13,7 +13,7 @@ root.render(
     <Router>
       <ThemeProvider>
         <AuthProvider>
-        <GoogleOAuthProvider clientId="638003678670-m3pccq5p9jbok6nco3j7erdku1crfu2s.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId="942686730302-38cl9bd98ca7acnf70ds0t7deebfeuu5.apps.googleusercontent.com">
           <App />
         </GoogleOAuthProvider>
         </AuthProvider>
