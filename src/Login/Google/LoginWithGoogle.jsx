@@ -5,6 +5,9 @@ import Button from '@mui/material/Button';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../Components/AuthenContext.tsx';
+import { PostCreator, PostUserAccount } from '../../API/UserAPI/POST.tsx';
+
+
 export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
   const accounturl = 'http://localhost:7233/api/Account'
   const creatorurl = 'http://localhost:7233/api/Creator/'
@@ -26,7 +29,8 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
      const ggAccount = await axios.get(googleAPI, { headers: { Authorization: `Bearer ${token}` } }).then(response => response.data)
      const listOfAccounts = await axios.get(accounturl).then(response => response.data)
      const foundAccount = listOfAccounts.find((account) => account.email === ggAccount.email);
-      if (foundAccount) {
+     
+     if (foundAccount)  {
          //Get the user roles
       const userroleResponse = await axios.get(roleurl+foundAccount.roleID);
       const userrole = userroleResponse.data;
@@ -37,9 +41,7 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
       const creatorResponse = await axios.get(creatorurl + foundAccount.accountId);
       const creatorData = creatorResponse.data;
       const creatorWithoutTheImages = {
-        ...creatorData,
-        profilePicture:'',
-        backgroundPicture:''
+        ...creatorData
       }
       storeUserData(creatorWithoutTheImages);
         window.dispatchEvent(new Event('userLoggedIn'));
@@ -48,6 +50,56 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
         } else {
           navigate('/characters');
         }
+      } else {
+         let account= {
+                accountId: "0",
+                roleID: "2", 
+                email: ggAccount.email,
+                password: "",
+                status: false
+              }
+              let creator = {
+                CreatorId: "0",
+                accountId: "0",
+                coins: 0,
+                userName: "",
+                profilePicture: "",
+                backgroundPicture: "",
+                firstName: "",
+                lastName: undefined,
+                address: undefined,
+                phone: undefined,
+                lastLogDate: undefined,
+                CreateAt:  undefined,
+                DateOfBirth: undefined,
+                biography: undefined,
+                allowCommission: undefined,
+                followCount: 0,
+                followerCount: 0,
+                email: ggAccount.email,
+                RankID: 1,
+                RoleID: 2
+              }
+
+         let newAccount = await PostUserAccount(account)
+         let creatorWithAccountID = { ...creator, accountID: newAccount ? newAccount.accountId : "1" }
+         await PostCreator(creatorWithAccountID)
+         
+         const listOfAccounts = await axios.get(accounturl).then(response => response.data)
+         const foundAccount = listOfAccounts.find((account) => account.email === ggAccount.email);
+        
+          sessionStorage.setItem('userRole', "Users");
+          // Once the user is verified, get additional user data.
+          const creatorResponse = await axios.get(creatorurl + foundAccount.accountId);
+          const creatorData = creatorResponse.data;
+          const creatorWithoutTheImages = {
+            ...creatorData
+          }
+          storeUserData(creatorWithoutTheImages);
+            window.dispatchEvent(new Event('userLoggedIn'));
+            navigate('/characters');
+
+
       }
 
     },

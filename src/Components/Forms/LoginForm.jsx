@@ -74,7 +74,8 @@ export default function LoginForm({ disableOutsideClick, handleClick, backdrop, 
           <Divider sx={{ "&::before, &::after": { backgroundColor: "lightgray" } }} variant='middle'>
             <Typography variant='h6'>Alternative</Typography>
           </Divider>
-          <Link className='guestBtn' style={{ fontStyle: "italic", color: "grey" }} to={`/characters`}>Continue As Guest</Link>
+          <Link className='guestBtn' style={{ fontStyle: "italic", color: "grey" }} to={`/characters`}>Continue As Guest |</Link>
+          <Link className='guestBtn' style={{ fontStyle: "italic", color: "grey" }} to={`/forgotpassword`}> Forgot password?</Link>
         </Grid>
       </>
     )

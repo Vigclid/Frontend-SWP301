@@ -29,7 +29,7 @@ export default function CustomizedDropdown({ user, handleClickAsGuest,pack }: Cu
   const { theme, toggleTheme, dark } = useContext(ThemeContext)
   const { logout } = useAuth();
   // Custom style for the Menu component
-  const CustomizedMenu = styled(Menu)(() => ({
+  const CustomizedMenu = styled(Menu)(() => ({  
     '& .MuiPaper-root': {
       backgroundColor: theme.backgroundColor,
       boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.5)',
@@ -62,7 +62,7 @@ export default function CustomizedDropdown({ user, handleClickAsGuest,pack }: Cu
         <Divider sx={{ "&::before, &::after": { backgroundColor: theme.color } }} variant='middle'>
           <Typography variant='caption'>Account</Typography>
         </Divider>
-        <MenuItem ><Link to={`profile/${user.creatorID}`}>Profile</Link></MenuItem>
+        <MenuItem ><Link to={`profile/${user.accountId}`}>Profile</Link></MenuItem>
         <MenuItem ><Link to={`dashboarduser`}>My Dashboard</Link></MenuItem>
         {/* <MenuItem >My Account</MenuItem> */}
         <Divider sx={{ "&::before, &::after": { backgroundColor: theme.color } }} variant='middle'>
@@ -163,7 +163,7 @@ export default function CustomizedDropdown({ user, handleClickAsGuest,pack }: Cu
         aria-haspopup="true"
         aria-expanded={open ? 'true' : 'false'}
       >
-        <Avatar src={user ? `data:image/jpeg;base64,${user.profilePicture}` : ""} sx={{ width: 40, height: 40 }}>{user ? user.userName.charAt[0] : ""}</Avatar>
+        <Avatar src={user ? `${user.profilePicture}` : ""} sx={{ width: 40, height: 40 }}>{user ? user.userName : ""}</Avatar>
       </IconButton>
       {
         user === null ?

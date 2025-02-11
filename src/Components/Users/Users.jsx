@@ -24,6 +24,7 @@ import ProtectedRoute from '../../ProtectedRoutes/ProtectedRoute.tsx';
 import ArtShop from './ArtShop.jsx';
 import ArtShopDetail from './ArtShopDetail.jsx';
 import PackagePage from './PackagePage.tsx';
+
 export default function Users() {
   return (
     <div>

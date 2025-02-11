@@ -17,7 +17,7 @@ import axios from "axios"
 import Background from '../Themes/Background.jsx';
 import { ThemeContext, ThemeProvider } from '../Themes/ThemeProvider.tsx';
 import { Account, Creator } from '../../Interfaces/UserInterface.ts';
-import { PostCreator, PostUserAccount } from '../../API/UserAPI/POST.tsx';
+import { PostChangePassword, PostCreator, PostUserAccount } from '../../API/UserAPI/POST.tsx';
 import { GetAccountByEmail } from '../../API/UserAPI/GET.tsx';
 import CustomizedSwitch from '../StyledMUI/CustomizedSwitch.jsx'
 import { FormControlLabel } from '@mui/material';
@@ -50,7 +50,7 @@ const switchCustomText = (
     Happy Working <FavoriteIcon color='error' />
   </Typography>
 )
-export default function CreateAccount() {
+export default function ForgotPassword() {
   const [isLoading, setIsLoading] = useState(false)
   const [commission, setCommission] = useState(false)
   const handleChange = (event) => {
@@ -77,76 +77,42 @@ export default function CreateAccount() {
     validateOnChange: false,
     validateOnBlur: false,
     initialValues: {
-      profilePicture: "",
-      backgroundPicture: "",
-      paypalAccountID: 1,
-      allowCommission: false,
-      biography: "",
-      role: 2,
-      lastName: "",
-      firstName: "",
-      userName: "",
-      phone: "",
-      address: "",
       email: "",
-      password: "",
-
+      firstName: "",
+      password: ""
     },
 
     onSubmit: (values) => {
-      let account: Account = {
-        accountId: "0", // Auto increasement id
-        roleID: "2", //Default role as creator (AT)
-        email: values.email,
-        password: values.password,
-        status: false
-      }
-      let creator: Creator = {
-        CreatorId: "0",
-        accountId: "0",
-        coins: 0,
-        userName: values.userName,
-        profilePicture: values.profilePicture,
-        backgroundPicture: values.backgroundPicture,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        address: values.address,
-        phone: values.phone,
-        lastLogDate: undefined,
-        CreateAt:  undefined,
-        DateOfBirth: undefined,
-        biography: values.biography,
-        allowCommission: commission,
-        followCounts: 0,
-        followerCount: 0,
-        email: values.email,
-        RankID: 1,
-        RoleID: 2
-      }
-      console.log(account)
-      console.log(creator)
-      const PostAccount = async () => {
-        try {
-          setIsLoading(true)
-          let newAccount = await PostUserAccount(account)
-          console.log(`Post Account successfully: ${newAccount}`)
-          let creatorWithAccountID = { ...creator, accountID: newAccount ? newAccount.accountId : "1" }
-          await PostCreator(creatorWithAccountID)
-          console.log(`Post Creator successfully: `)
-          setIsLoading(false)
-          handleOpenSnackbar()
-        } catch (err) {
-          console.log(err)
+      if (values.firstName !== values.password) {
+        alert("New Password and Submit Password are not the same!")
+      } else {
+            let checkChangePassword 
+            const PostAccount = async () => {
+                try {
+                setIsLoading(true)
+                checkChangePassword = PostChangePassword({
+                    newPassword : values.password,
+                    email: values.email
+                    },)
+                
+                setIsLoading(false)
+                
+                handleOpenSnackbar()
+
+                } catch (err) {
+                    if (checkChangePassword === "2")
+                        alert("Your email might be not sign up before!")
+                console.log(err)
+                
+                }
         }
-      }
-      PostAccount()
+        PostAccount()
+        }
     },
 
     validationSchema: Yup.object({
-      userName: Yup.string().required("Must be 6 characters or more.").min(6, "Must be 6 characters or more"),
       email: Yup.string().required("We need something to authorize you").min(10, "Must be 10 characters or more"),
       password: Yup.string().required("Password! Or we gonna steal your account.").min(5, "Must be 5 characters or more"),
-      biography: Yup.string().required("Tell the community something about yourself")
     }),
   })
 
@@ -235,10 +201,10 @@ export default function CreateAccount() {
                   <Grid item xs={12}>
                     <div className='header'>
                       <Typography sx={{color:theme.color}} variant="h4" component="h1" gutterBottom>
-                        Register Account
+                        Forgot Password
                       </Typography></div>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item sm={12}>
                     <CustomizedTextField
                       id="email"
                       label="Email"
@@ -279,7 +245,7 @@ export default function CreateAccount() {
                     <CustomizedTextField
 
                       id="passwword"
-                      label="Password"
+                      label="New Password"
                       name="password"
                       autoComplete="password"
                       fullWidth
@@ -289,11 +255,11 @@ export default function CreateAccount() {
                     </Typography>)}
                   </Grid>
 
-                  <Grid item xs={6}>
+                  <Grid item xs={12}>
                     <CustomizedTextField
 
                       id="firstName"
-                      label="First Name (Optional)"
+                      label="Confirm Password"
                       name="firstName"
                       autoComplete="email"
                       fullWidth
@@ -302,82 +268,7 @@ export default function CreateAccount() {
                     {formik.errors.firstName && (<Typography variant="body2" color="red">{formik.errors.firstName}
                     </Typography>)}
                   </Grid>
-                  <Grid item xs={6}>
-                    <CustomizedTextField
-                      id="lastName"
-                      label="Last Name (Optional)"
-                      name="lastName"
-                      autoComplete="email"
-                      fullWidth
-                      value={formik.values.lastName} onChange={formik.handleChange}
-                    />
-                    {formik.errors.lastName && (<Typography variant="body2" color="red">{formik.errors.lastName}
-                    </Typography>)}
-                  </Grid>
-                  <Grid item xs={12}>
-                    <CustomizedTextField
-                      id="userName"
-                      label="User Name"
-                      name="userName"
-                      autoComplete="userName"
-                      fullWidth
-                      value={formik.values.userName} onChange={formik.handleChange}
-                    />
-                    {formik.errors.userName && (<Typography variant="body2" color="red">{formik.errors.userName}
-                    </Typography>)}
-                  </Grid>
-                  <Grid item xs={12}>
-                    <FormControlLabel
-                      control={
-                        <CustomizedSwitch
-                          checked={commission}
-                          onChange={handleChange}
-                          name="openToCommissions"
-                        />
-                      }
-                      label={commission ? switchCustomText : "Open to Commissions?"}
-                      style={{ color: theme.color }}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <CustomizedTextField
-                      id="phone"
-                      label="Your Phone (Optional)"
-                      name="phone"
-                      autoComplete="phone"
-                      fullWidth
-                      value={formik.values.phone} onChange={formik.handleChange}
-                    />
-                    {formik.errors.phone && (<Typography variant="body2" color="red">{formik.errors.phone}
-                    </Typography>)}
-                  </Grid>
-                  <Grid item xs={12}>
-                    <CustomizedTextField
-                      id="address"
-                      label="Address (Optional)"
-                      name="address"
-                      autoComplete="address"
-                      fullWidth
-                      value={formik.values.address} onChange={formik.handleChange}
-                    />
-                    {formik.errors.address && (<Typography variant="body2" color="red">{formik.errors.address}
-                    </Typography>)}
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <CustomizedTextField
-                      id="biography"
-                      label="Biography"
-                      name="biography"
-                      autoComplete="biography"
-                      fullWidth
-                      multiline
-                      rows={3}
-                      value={formik.values.biography} onChange={formik.handleChange}
-                    />
-                    {formik.errors.biography && (<Typography variant="body2" color="red">{formik.errors.biography}
-                    </Typography>)}
-                  </Grid>
+                  
                   <Grid item xs={12}>
                     <Button 
                      disabled={open || !activeOTP}
@@ -386,7 +277,7 @@ export default function CreateAccount() {
                      style={{ marginBottom: '20px' }} 
                      fullWidth
                      >
-                      REGISTER
+                      ready to exlore!
                     </Button>
                   </Grid>
                 </Grid>

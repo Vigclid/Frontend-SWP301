@@ -106,7 +106,7 @@ function UploadArtwork() {
 
         initialValues: {
             artworkID: 0,
-            creatorID: user.creatorID, //CHANGE THE CREATOR ID 
+            creatorID: user.CreatorId, //CHANGE THE CREATOR ID 
             artworkName: "",
             description: "",
             dateCreated: "",

@@ -10,7 +10,7 @@ export interface GoogleUser {
 } // This is the Object google return for us, having all user infomation in their Gmail account
 
 export interface Account {
-  accountID:string,
+  accountId:string,
   roleID:string,
   password:string,
   email:string,
@@ -18,8 +18,8 @@ export interface Account {
 }
 
 export interface Creator {
-  creatorID: string | "0",
-  accountID: string | "0",
+  accountId: string | "0",
+  CreatorId: string | "0",
   coins: string | number,
   userName: string | "",
   profilePicture: string | "",
@@ -33,7 +33,7 @@ export interface Creator {
   DateOfBirth :string | undefined,
   allowCommission: boolean | false,
   biography: string | "",
-  followCount: number | 0,
+  followCounts: number | 0,
   followerCount: number | 0,
   email:string,
   RankID:number,

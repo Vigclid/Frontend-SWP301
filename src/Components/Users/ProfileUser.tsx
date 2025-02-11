@@ -27,7 +27,7 @@ import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
 import CustomizedImageButton from '../StyledMUI/CustomizedImageButton.jsx'
 import { ThemeContext } from '../Themes/ThemeProvider.tsx';
-import { GetCreatorByID } from '../../API/UserAPI/GET.tsx';
+import { GetCreatorByID , GetCreatorByAccountID } from '../../API/UserAPI/GET.tsx';
 import { Creator } from '../../Interfaces/UserInterface.ts';
 import { PutCreatorBackgroundPicture, PutCreatorProfilePicture } from '../../API/UserAPI/PUT.tsx';
 import { GetArtsByCreatorId } from '../../API/ArtworkAPI/GET.tsx';
@@ -42,6 +42,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+
+
+
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -90,6 +93,7 @@ export default function ProfileUser() {
   let { id } = useParams()
   const { theme } = useContext(ThemeContext)
 
+
   // Attempt to retrieve the auth state from sessionStorage
   const savedAuth = sessionStorage.getItem('auth');
   // Check if there's any auth data saved and parse it
@@ -108,11 +112,11 @@ export default function ProfileUser() {
 
   useEffect(() => {
     const getUserProfile = async () => {
-      const userProfile = await GetCreatorByID(id ? id : "0")
+      const userProfile = await GetCreatorByAccountID(id ? id : "0")
       setUser(userProfile)
     }
     const getUserArtworks = async () => {
-      const userArtworks = await GetArtsByCreatorId(id ? id : "0")
+      const userArtworks = await GetArtsByCreatorId(id ? id : "0") //NOT DONE
       setArtworks(userArtworks ? userArtworks : [])
     }
     getUserProfile()
@@ -136,14 +140,14 @@ export default function ProfileUser() {
   }
 
 
-  async function postImageToDatabase(imageData: string, imageType: string) {
+  async function postImageToDatabase(base64Data: string, imageType: string) {
     if (imageType === "profilePicture") {
-      let plainBase64Data = imageData.split(',')[1];
-      PutCreatorProfilePicture(user ? user.creatorID : "1", plainBase64Data)
+      let plainBase64Data = base64Data;
+      PutCreatorProfilePicture(user ? user.accountId : "1", plainBase64Data)
     }
     else if (imageType === "backgroundPicture") {
-      let plainBase64Data = imageData.split(',')[1];
-      PutCreatorBackgroundPicture(user ? user.creatorID : "1", plainBase64Data)
+      let plainBase64Data = base64Data;
+      PutCreatorBackgroundPicture(user ? user.accountId : "1", plainBase64Data)
     } else {
       console.log("error: POSTING FAILED! Check below for further details:")
     }
@@ -274,7 +278,7 @@ export default function ProfileUser() {
         </div> */}
         <Card sx={{ width: '100%' }}>
 
-          <div className='backgrounduser' style={{ backgroundImage: `url('${user?.backgroundPicture ? "data:image/jpeg;base64," + user?.backgroundPicture : previewBackground}')` }}>
+          <div className='backgrounduser' style={{ backgroundImage: `url('${user?.backgroundPicture ? user?.backgroundPicture : previewProfile}')` }}>
             <div
               className='backgroundPicture'
               style={{
@@ -290,7 +294,7 @@ export default function ProfileUser() {
               }}
             >
               {/* Check to see if User in sesion is the same as the user in view, if yes, they can edit image */}
-              {userInSession.creatorID === user?.creatorID ?
+              {userInSession.accountId === user?.accountId ?
                 <>
                   <input
                     accept='.png,.jpeg,.jpg,.tif,.gif'
@@ -320,7 +324,7 @@ export default function ProfileUser() {
               <div className='avataruser'>
                 <img
                   style={{ outline: `4px solid ${theme.backgroundColor}` }}
-                  src={user?.profilePicture ? "data:image/jpeg;base64," + user?.profilePicture : previewProfile} />
+                  src={user?.profilePicture ? user?.profilePicture : previewProfile} />
                 <div className='buttonavatar'>
                   <div className='profilePicture'
                     style={{
@@ -333,7 +337,7 @@ export default function ProfileUser() {
                     }}
                   >
                     {/* Check to see if User in sesion is the same as the user in view, if yes, they can edit image */}
-                    {userInSession.creatorID === user?.creatorID ?
+                    {userInSession.accountId === user?.accountId ?
                       <>
                         <input
                           style={{ display: 'none' }}
@@ -366,10 +370,11 @@ export default function ProfileUser() {
                   {user?.userName}
                 </Typography>
                 <Typography variant="body2" style={{ fontWeight: 500, fontSize: '18px' }} >
-                  Followers: {user?.followCount}
+                  Followers: {user?.followCounts}
                 </Typography>
               </div> </div>
 
+           { userInSession.accountId !== user?.accountId ?
             <div className='buttonheaderuser'  >
               {isFollowing == true && (
                 <Button className='follow' style={{ width: '120px', height: '40px' }} variant="contained" href="#contained-buttons" onClick={() => handleClick()}>
@@ -379,8 +384,8 @@ export default function ProfileUser() {
                 <Button className='following' style={{ width: '120px', height: '40px' }} variant="contained" href="#contained-buttons" onClick={() => handleClick()}>
                   Following
                 </Button>)}
-
-            </div>
+            </div> : ""
+            }
           </CardContent>
         </Card>
 
@@ -404,7 +409,7 @@ export default function ProfileUser() {
                   :
                   <Button disabled={true} variant="contained"> <ShoppingBagIcon color='inherit' style={{ marginRight: '5px' }} />Commission Closed</Button>
                 }
-                {userInSession.creatorID !== user?.creatorID ?
+                {userInSession.accountId !== user?.accountId ?
                   <Button onClick={handleClickOpen} variant="contained" color='error' href="" style={{ marginLeft: '20px' }}>Report</Button>
                   :
                   ""

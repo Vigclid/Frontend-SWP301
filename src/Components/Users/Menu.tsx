@@ -31,15 +31,16 @@ export default function Menu() {
   const [isOpen, handleClick] = useHandleClick()
   const [avatar, setAvatar] = useState<Creator>()
   const [pack,setPack] = useState<CurrentPackage>()
+  
 
   useEffect(() => {
     const getAvatar = async () => {
-      const avatar = await GetCreatorByID(user ? user.creatorID : '0')
-      setAvatar(avatar)
+      // const avatar = await GetCreatorByID(user ? user.CreatorId : '0')
+      // setAvatar(avatar)
     }
     const getPackage = async () => {
-      const pack = await GetCurrentPackageByCreatorID(user ? user.creatorID : '0')
-      setPack(pack)
+      // const pack = await GetCurrentPackageByCreatorID(user ? user.CreatorId : '0')
+      // setPack(pack)
     }
     if (user !== null) {
       getAvatar();
@@ -91,7 +92,7 @@ export default function Menu() {
               </Button>
               <CustomizedDropdown
                 handleClickAsGuest={handleClick}
-                user={avatar ? avatar : user} 
+                user={ user} 
                 pack = {pack??null}
                 />
             </Box>

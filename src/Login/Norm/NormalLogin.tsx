@@ -45,6 +45,7 @@ export async function CheckLogin(checkAccount:initialUser, storeUserData:any) {
         // Xử lý các lỗi khác nếu cần
       }
     }
+
     if (foundAccount) {
       //Get the user roles
       const findRole = roleurl+foundAccount.roleID;
@@ -57,13 +58,11 @@ export async function CheckLogin(checkAccount:initialUser, storeUserData:any) {
       const creatorResponse = await axios.get(creatorurl + foundAccount.accountId);
       const creatorData:Creator = creatorResponse.data;
       const creatorWithoutTheImages = {
-        ...creatorData,
-        profilePicture:'',
-        backgroundPicture:''
+        ...creatorData
       }
       storeUserData(creatorWithoutTheImages);
     } else {
-      alert("No account found");
+      alert("No account found or Banned Account");
     }
   } catch (err) {
     console.log(err);

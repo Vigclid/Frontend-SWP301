@@ -60,7 +60,7 @@ export async function GetCreatorList() {
   }
 }
 
-export async function GetCreatorByAccountID(accountId:string) {
+export async function GetCreatorByAccountID(accountId:string) { //GET by Account ID
   try{
       let creator:Creator = await axios.get(creatorurl+accountId).then(response => response.data)
       return creator
@@ -70,9 +70,9 @@ export async function GetCreatorByAccountID(accountId:string) {
   }
 }
 
-export async function GetCreatorByID(creatorId:string) {
+export async function GetCreatorByID(creatorId:string) { //GET by Creator ID
   try{
-      let creator:Creator = await axios.get(creatorurl+`ById/${creatorId}`).then(response => response.data)
+      let creator:Creator = await axios.get(creatorurl+`userID/${creatorId}`).then(response => response.data) 
       return creator
       
   }catch(err){
