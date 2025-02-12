@@ -1,23 +1,24 @@
-/* Custom scrollbar for webkit-based browsers */
-custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  /* Adjust scrollbar width */
-}
+  /* Custom scrollbar for webkit-based browsers */
+  custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    /* Adjust scrollbar width */
+  }
 
-custom-scrollbar::-webkit-scrollbar-track {
-  background: var(--scrollbar-track-color);
-  /* Track background */
-}
 
-custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb-color);
-  /* Thumb color */
-}
+  custom-scrollbar::-webkit-scrollbar-track {
+    background: var(--scrollbar-track-color);
+    /* Track background */
+  }
 
-custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover-color);
-  /* Thumb color when hovered */
-}
+  custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-color);
+    /* Thumb color */
+  }
+
+  custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover-color);
+    /* Thumb color when hovered */
+  }
 
 /* End Customize Scrollbar */
 
@@ -47,17 +48,10 @@ custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center;
-  /* Ensure the image is centered on the screen */
-  width: 100vw;
-  /* 100% of the viewport width */
-  height: auto;
-  /* 100% of the viewport height */
+  width: 100%;
   min-height: 100vh;
-  top: 0;
-  left: 0;
-  display: fixed;
-
 }
+
 
 .page {
   display: flex;

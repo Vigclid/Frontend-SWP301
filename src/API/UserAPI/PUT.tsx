@@ -14,7 +14,7 @@ export async function PutCreatorBackgroundPicture(CreatorID:string,imageFile:str
     const body = {
       imageFile // Base64 string
     };
-    const response = await axios.post(`${backgroundcreatorurl}${CreatorID}/background`, imageFile, { headers });
+    const response = await axios.put(`${backgroundcreatorurl}${CreatorID}/background`, imageFile, { headers });
     console.log('UploadComplete:', response.data);
   } catch (err) {
     console.error(err);
@@ -31,7 +31,7 @@ export async function PutCreatorProfilePicture(CreatorID:string,imageFile:string
     const body = {
       imageFile // Base64 string
     };
-    const response = await axios.post(`${profilecreatorurl}${CreatorID}/avatar`, imageFile, { headers });
+    const response = await axios.put(`${profilecreatorurl}${CreatorID}/avatar`, imageFile, { headers });
     console.log('UploadComplete:', response.data);
   } catch (err) {
     console.error(err);
