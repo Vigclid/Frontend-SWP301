@@ -100,7 +100,6 @@ export default function ProfileUser() {
   const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
   // Now 'auth' contains your authentication state or null if there's nothing saved
 
-
   const handleClick = () => {
     setIsFollowing(!isFollowing)
   }
@@ -503,11 +502,11 @@ export default function ProfileUser() {
                       zIndex: 10 // you may want to add a zIndex to ensure it stacks on top of other contents
                     }} className='boxintroduct'
                   >
-                    <h2 className='headintroduct'>About {user?.userName}:</h2>
-                    <div className='contentintroduct'><CakeIcon className='iconintroduct' />Birday: TOBEADDED </div>
+                    <h2 className='headintroduct'>About {user?.firstName} {user?.lastName}:</h2>
+                    <div className='contentintroduct'><CakeIcon className='iconintroduct' />Birthday: {user?.dateOfBirth} </div>
                     <div className='contentintroduct'><RoomIcon className='iconintroduct' />Location: {user?.address}</div>
                     <div className='contentintroduct'><EmailIcon className='iconintroduct' />Email: {user?.email} </div>
-                    <div className='contentintroduct'><PhoneIcon className='iconintroduct' />Phone: {user?.phone}</div>
+                    <div className='contentintroduct'><PhoneIcon className='iconintroduct' />Phone: {user?.phoneNumber}</div>
                     <div className='contentintroduct'> <AutoAwesomeIcon className='iconintroduct' />My Bio: {user?.biography}  </div>
                   </Box></div>
                 <div className='workofuser'>

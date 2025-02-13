@@ -61,7 +61,7 @@ export async function CheckLogin(checkAccount:initialUser, storeUserData:any) {
         ...creatorData
       }
       storeUserData(creatorWithoutTheImages);
-    } else {
+    } else {  
       alert("No account found or Banned Account");
     }
   } catch (err) {
