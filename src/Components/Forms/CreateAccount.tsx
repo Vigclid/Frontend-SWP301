@@ -111,10 +111,10 @@ export default function CreateAccount() {
         firstName: values.firstName,
         lastName: values.lastName,
         address: values.address,
-        phone: values.phone,
+        phoneNumber: values.phone,
         lastLogDate: undefined,
         CreateAt:  undefined,
-        DateOfBirth: undefined,
+        dateOfBirth: undefined,
         biography: values.biography,
         allowCommission: commission,
         followCounts: 0,
@@ -122,7 +122,7 @@ export default function CreateAccount() {
         email: values.email,
         RankID: 1,
         RoleID: 2
-      }
+      } 
       console.log(account)
       console.log(creator)
       const PostAccount = async () => {
