@@ -45,7 +45,7 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
       }
       storeUserData(creatorWithoutTheImages);
         window.dispatchEvent(new Event('userLoggedIn'));
-        if (userrole.roleName === "AD") {
+        if (sessionStorage.getItem('userRole') === "AD") {
           navigate('/admin');
         } else {
           navigate('/characters');
@@ -86,8 +86,7 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
          await PostCreator(creatorWithAccountID)
          
          const listOfAccounts = await axios.get(accounturl).then(response => response.data)
-         const foundAccount = listOfAccounts.find((account) => account.email === ggAccount.email);
-        
+         const foundAccount = listOfAccounts.find((account) => account.email === ggAccount.email);   
           sessionStorage.setItem('userRole', "Users");
           // Once the user is verified, get additional user data.
           const creatorResponse = await axios.get(creatorurl + foundAccount.accountId);

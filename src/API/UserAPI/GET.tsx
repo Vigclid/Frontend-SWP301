@@ -22,7 +22,7 @@ export async function GetTotalLikeByCreatorID(id:string|number) {
 
 export async function GetCreatorListNoImage() {
   try{
-      let creatorList:Creator[] = await axios.get(creatorvipstatusurl).then(response => response.data)
+      let creatorList:Creator[] = await axios.get(creatorurl.replace(/\/$/, '')).then(response => response.data)
       return creatorList
       
   }catch(err){
