@@ -36,23 +36,21 @@ export default function Users() {
           <Route path={`creatorform`} element={<UserInfoForm />} />
           <Route path={`profile/:id`} element={<ProfileUser />} />
           <Route path={`artwork/:id`} element={<ArtPost />} />
+
           <Route element={<ProtectedRoute allowedRoles={["AT", "AD"]} />}>
             <Route path={`artwork/:id/payment`} element={<Payment />} />
-            <Route path={`yourcommision`} element={<YourCommission />} />
-            <Route path={`yourrequest`} element={<YourRequest />} />
-            <Route path={`transaction`} element={<TransactionHistory />} />
-            <Route path={`artworkform`} element={<UploadArtwork />} />
-            <Route
-              path={`profile/:id/commission`}
-              element={<CommissionForm />}
-            />
-            <Route path={`dashboarduser`} element={<DashboardUser />} />
-            <Route path={`profile/:id/artwork/:id`} element={<ArtPost />} />
-            <Route path={`artshop`} element={<ArtShop />} />
-            <Route path={`package`} element={<PackagePage />} />
           </Route>
+
+          <Route path={`yourcommision`} element={<YourCommission />} />
+          <Route path={`yourrequest`} element={<YourRequest />} />
           <Route path={`dashboarduser`} element={<DashboardUser />} />
+          <Route path={`artshop`} element={<ArtShop />} />
+          <Route path={`package`} element={<PackagePage />} />
+          <Route path={`profile/:id/artwork/:id`} element={<ArtPost />} />
+          <Route path={`transaction`} element={<TransactionHistory />} />
           <Route path={`artworkform`} element={<UploadArtwork />} />
+          <Route path={`profile/:id/commission`} element={<CommissionForm />} />
+
           <Route path={`artwordrecomment`} element={<SeeMoreOfArt1 />} />
           <Route path={`userrecomment`} element={<SeeMoreUser />} />
           <Route path={`randomword`} element={<SeeMoreForYou />} />

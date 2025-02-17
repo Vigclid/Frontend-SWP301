@@ -28,7 +28,7 @@ export interface Creator {
   lastName: string | "",
   address: string | "",
   phoneNumber: string | "0",
-  lastLogDate: string | undefined,
+  lastLogin: string | undefined,
   CreateAt: string | undefined,
   dateOfBirth :string | undefined,
   allowCommission: boolean | false,

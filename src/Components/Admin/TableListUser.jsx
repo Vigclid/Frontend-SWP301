@@ -76,7 +76,7 @@ export default function TableListUser() {
                 {user.creatorID}
               </TableCell>
               {/* user.User là user Name */}
-              <TableCell align="left">{user.userName}</TableCell>
+              <TableCell align="left">{user.firstName} {user.lastName}</TableCell>
               <TableCell align="left">{user.email}</TableCell>
               <TableCell align="left">{user.phone}</TableCell>
               <TableCell align="left">

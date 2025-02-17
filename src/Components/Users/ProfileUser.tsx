@@ -16,7 +16,7 @@ import Box from "@mui/material/Box";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import CakeIcon from "@mui/icons-material/Cake";
 import RoomIcon from "@mui/icons-material/Room";
-import EmailIcon from "@mui/icons-material/Email";
+import RssFeedIcon from "@mui/icons-material/RssFeed";
 import PhoneIcon from "@mui/icons-material/Phone";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
@@ -347,9 +347,7 @@ export default function ProfileUser() {
                       zIndex: 2,
                     }}
                   >
-                    {/* Check to see if User in sesion is the same as the user in view, if yes, they can 
-                    
-                     image */}
+                    {/* Check to see if User in sesion is the same as the user in view, if yes, they can edit image */}
                     {userInSession.accountId === user?.accountId ? (
                       <>
                         <input
@@ -604,8 +602,8 @@ export default function ProfileUser() {
                       Location: {user?.address}
                     </div>
                     <div className="contentintroduct">
-                      <EmailIcon className="iconintroduct" />
-                      Email: {user?.email}{" "}
+                      <RssFeedIcon className="iconintroduct" />
+                      Last Online: {user?.lastLogin}{" "}
                     </div>
                     <div className="contentintroduct">
                       <PhoneIcon className="iconintroduct" />
