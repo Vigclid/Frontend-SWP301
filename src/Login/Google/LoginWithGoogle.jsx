@@ -41,7 +41,8 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
       const creatorResponse = await axios.get(creatorurl + foundAccount.accountId);
       const creatorData = creatorResponse.data;
       const creatorWithoutTheImages = {
-        ...creatorData
+        ...creatorData,
+        'email' : foundAccount.email
       }
       storeUserData(creatorWithoutTheImages);
         window.dispatchEvent(new Event('userLoggedIn'));

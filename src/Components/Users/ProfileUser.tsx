@@ -17,7 +17,7 @@ import Box from '@mui/material/Box';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import CakeIcon from '@mui/icons-material/Cake';
 import RoomIcon from '@mui/icons-material/Room';
-import EmailIcon from '@mui/icons-material/Email';
+import RssFeedIcon from '@mui/icons-material/RssFeed';
 import PhoneIcon from '@mui/icons-material/Phone';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
@@ -505,7 +505,7 @@ export default function ProfileUser() {
                     <h2 className='headintroduct'>About {user?.firstName} {user?.lastName}:</h2>
                     <div className='contentintroduct'><CakeIcon className='iconintroduct' />Birthday: {user?.dateOfBirth} </div>
                     <div className='contentintroduct'><RoomIcon className='iconintroduct' />Location: {user?.address}</div>
-                    <div className='contentintroduct'><EmailIcon className='iconintroduct' />Email: {user?.email} </div>
+                    <div className='contentintroduct'><RssFeedIcon className='iconintroduct' />Last Online: {user?.lastLogin} </div>
                     <div className='contentintroduct'><PhoneIcon className='iconintroduct' />Phone: {user?.phoneNumber}</div>
                     <div className='contentintroduct'> <AutoAwesomeIcon className='iconintroduct' />My Bio: {user?.biography}  </div>
                   </Box></div>

@@ -58,7 +58,8 @@ export async function CheckLogin(checkAccount:initialUser, storeUserData:any) {
       const creatorResponse = await axios.get(creatorurl + foundAccount.accountId);
       const creatorData:Creator = creatorResponse.data;
       const creatorWithoutTheImages = {
-        ...creatorData
+        ...creatorData,
+        'email' : foundAccount.email
       }
       storeUserData(creatorWithoutTheImages);
     } else {  
