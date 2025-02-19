@@ -25,9 +25,8 @@ import { DeleteArtById } from "../../API/ArtworkAPI/DELETE.tsx";
 import ArtShopConfirm from "./ArtShopConfirm.jsx";
 import html2canvas from "html2canvas";
 import ArtShopDialog from "./ArtShopDialog.jsx";
-import { GetTagList } from "../../API/TagAPI/GET.tsx";
 
-export default function ArtPost() {
+export default function PostWork() {
   const colors = ["#82c87e", "#c07ec8", "#c89c7e", "#7E8DC8", "#C07EC8", "#C87E8A"];
   const { theme } = useContext(ThemeContext);
   const { id } = useParams();
@@ -41,7 +40,6 @@ export default function ArtPost() {
   const [open, setOpen] = useState(false);
   const [openDowload, setOpenDowload] = useState(false);
   const navigate = useNavigate();
-
   useEffect(() => {
     const getArtWork = async () => {
       setLoading(true);
@@ -58,7 +56,7 @@ export default function ArtPost() {
 
   useEffect(() => {
     const getTags = async () => {
-      let tags: Tag[] | undefined = await GetTagList();
+      let tags: Tag[] | undefined = await GetTagByArtId(id ? id : "0");
       setTags(tags ? tags : []);
     };
     getTags();
@@ -72,11 +70,11 @@ export default function ArtPost() {
     setOpen(!open);
   };
 
+  // Handle Download Arkwork
   const handleClose = () => {
     setOpen(false);
     setOpenDowload(false);
   };
-
   const downloadSectionAsImage = async (elementId) => {
     const element = document.getElementById(elementId);
 
@@ -115,12 +113,10 @@ export default function ArtPost() {
       console.log(err);
     }
   };
-
   function formatMoney(amount) {
     amount *= 1000;
     return amount.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
   }
-
   function TagList() {
     return (
       <>
@@ -139,7 +135,6 @@ export default function ArtPost() {
       </>
     );
   }
-
   return (
     <Box sx={{ paddingTop: "2%" }}>
       <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 100 }} open={loading}>

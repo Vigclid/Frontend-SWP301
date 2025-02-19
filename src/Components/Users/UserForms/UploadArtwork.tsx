@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { Select, Autocomplete, TextField } from "@mui/material";
+import { Select, Autocomplete, TextField, Chip } from "@mui/material";
 import CustomizedButton from "../../StyledMUI/CustomizedButton.tsx";
 import { ThemeContext } from "../../Themes/ThemeProvider.tsx";
 import CustomizedTextField from "../../StyledMUI/CustomizedTextField.tsx";
@@ -14,7 +14,7 @@ import * as Yup from "yup";
 import { useFormik, FieldArray, FormikProvider } from "formik"; // useFormik instead of a custom handleChange event
 import axios from "axios";
 import { Tag } from "../../../Interfaces/TagInterface.ts";
-import { FormControlLabel, Input, InputLabel, FormControl, Chip, MenuItem } from "@mui/material";
+import { FormControlLabel, Input, InputLabel, FormControl, MenuItem } from "@mui/material";
 import { GetTagList } from "../../../API/TagAPI/GET.tsx";
 import { Creator } from "../../../Interfaces/UserInterface.ts";
 import { useNavigate } from "react-router-dom";
@@ -105,13 +105,7 @@ function UploadArtwork() {
       purchasable: false,
       price: 0,
       imageFile: "",
-      artworkTag: [
-        {
-          artworkTagID: 0,
-          artworkID: 0,
-          tagID: 1,
-        },
-      ],
+      artworkTag: [],
     },
     onSubmit: (values) => {
       const time = new Date();
@@ -214,61 +208,78 @@ function UploadArtwork() {
             </div>
             <Box className="tagAndpreviewBox">
               {listOfTags?.length !== 0 ? (
-                <FormikProvider
-                  value={formik}
-                  //Formik Fields requires you to provide a context with FormikProvider with the difined 'formik' as value
-                >
+                <FormikProvider value={formik}>
                   <div
                     className="tagField"
                     style={{
                       backgroundColor: theme.backgroundColor,
                       border: `solid 1px ${theme.color}`,
                       padding: "2%",
+                      borderRadius: "5px",
                     }}>
                     <FieldArray
                       name="artworkTag"
                       render={(arrayHelpers) => (
                         <>
-                          {formik.values.artworkTag.map((tag, index) => (
-                            <div key={index}>
-                              <Autocomplete
-                                options={listOfTags || []}
-                                getOptionLabel={(option) => option.tagName}
-                                onChange={(event, value) => {
-                                  formik.setFieldValue(`artworkTag.${index}.tagID`, value?.tagID || 1);
+                          <Autocomplete
+                            options={listOfTags || []}
+                            getOptionLabel={(option) => option.tagName}
+                            isOptionEqualToValue={(option, value) =>
+                              option.tagId === value.tagId || option.tagID === value.tagID
+                            }
+                            onChange={(event, value) => {
+                              if (value) {
+                                const newTag = {
+                                  artworkTagID: 0,
+                                  artworkID: 0,
+                                  tagID: value.tagId || value.tagID,
+                                };
+                                arrayHelpers.push(newTag);
+                                console.log("Selected tag:", value);
+                                console.log("Current artworkTag array:", formik.values.artworkTag);
+                              }
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Select Tag"
+                                variant="outlined"
+                                style={{
+                                  color: theme.color,
+                                  marginBottom: "2%",
+                                  border: `1px solid ${theme.color}`,
+                                  borderRadius: "5px",
                                 }}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    label="Select Tag"
-                                    variant="outlined"
-                                    style={{
-                                      color: theme.color,
-                                      marginBottom: "2%",
-                                      border: `1px solid ${theme.color}`,
-                                    }}
-                                    InputLabelProps={{ style: { color: theme.color } }}
-                                  />
-                                )}
+                                InputLabelProps={{ style: { color: theme.color } }}
+                                InputProps={{
+                                  ...params.InputProps,
+                                  style: { color: theme.color3 },
+                                }}
                               />
-                              <CustomizedButton
-                                style={{ color: theme.color }}
-                                onClick={() => arrayHelpers.remove(index)}>
-                                Remove
-                              </CustomizedButton>
-                            </div>
-                          ))}
-                          <CustomizedButton
-                            style={{ color: theme.color }}
-                            onClick={() => {
-                              arrayHelpers.push({
-                                artworkTagID: 0,
-                                artworkID: 0,
-                                tagID: 1,
-                              });
-                            }}>
-                            Add a Tag
-                          </CustomizedButton>
+                            )}
+                          />
+                          <div className="tagChips">
+                            {formik.values.artworkTag.map((tag: { tagID }, index) => {
+                              const selectedTag = listOfTags?.find(
+                                (t) => t.tagId === tag.tagID || t.tagID === tag.tagID
+                              );
+                              console.log("Rendering chip for tag:", selectedTag);
+                              return (
+                                <Chip
+                                  key={index}
+                                  label={selectedTag?.tagName || "Unknown Tag"}
+                                  onDelete={() => arrayHelpers.remove(index)}
+                                  style={{
+                                    margin: "4px",
+                                    border: `1px solid ${theme.color}`,
+                                    backgroundColor: theme.backgroundColor,
+                                    color: theme.color,
+                                    boxShadow: `0 0 5px ${theme.color}`,
+                                  }}
+                                />
+                              );
+                            })}
+                          </div>
                         </>
                       )}
                     />
