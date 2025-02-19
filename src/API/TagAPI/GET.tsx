@@ -12,6 +12,15 @@ export async function GetTagList() {
     console.log(err);
   }
 }
+// export async function GetTagList() {
+//   try {
+//     let tagList: Tag[] = await axios.get(tagurl).then((response) => response.data);
+//     console.log("Fetched tag list:", tagList); // Add this line to log the fetched data
+//     return tagList;
+//   } catch (err) {
+//     console.log(err);
+//   }
+// }
 export async function GetTagById(id: string) {
   try {
     let tag: Tag = await axios.get(tagurl + id).then((response) => response.data);
