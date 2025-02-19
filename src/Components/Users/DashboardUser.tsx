@@ -130,11 +130,11 @@ export default function DashboardUser() {
       x: {
         grid: {
           color: '#ECECEC',
-          lineWidth: 1, 
+          lineWidth: 1,
         },
         ticks: {
-         
-          max: 10, 
+
+          max: 10,
         },
       },
       y: {
@@ -143,7 +143,7 @@ export default function DashboardUser() {
           lineWidth: 1, // Độ dày của đường lưới trục Y
         },
         ticks: {
-        
+
           max: 10, // Số lượng thanh trục Y
         },
       },
@@ -211,7 +211,7 @@ export default function DashboardUser() {
 
         }}>
         <h1>Your Dashboard :</h1>
-
+        <Divider variant='middle' sx={{ borderColor: theme.color }} />
 
 
         <div>
@@ -266,14 +266,14 @@ export default function DashboardUser() {
         <Divider variant='middle' sx={{ borderColor: theme.color }} />
         < div className='contentoverview'>
           <Typography align='center' variant='h3' sx={{ marginBottom: "2%" }}>Information overview</Typography>
-          <div className='overview' style={{display:"flex",justifyContent:'space-around'}}>
+          <div className='overview' style={{ display: "flex", justifyContent: 'space-around' }}>
             <div className='line'>
               <Typography variant='h6' className='line1'> Total commission received: {commissionRecieved.length}   </Typography>
               <Typography variant='h6' className='line1'>Total commission sent :  {commissionSent.length}    </Typography>
               <Typography variant='h6' className='line1'>Your post number: {artworkDatas?.length}  </Typography>
             </div>
             <div className='line'>
-              
+
               <Typography variant='h6' className='line1'>Total number of likes: {totalLikes ?? 0} </Typography>
               <Typography variant='h6' className='line1'>Number of works sold: TOBEADDED </Typography>
               <Typography variant='h6' className='line1'>Number of works bought: TOBEADDED </Typography>
