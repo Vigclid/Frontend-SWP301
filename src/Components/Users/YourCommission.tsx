@@ -130,7 +130,6 @@ export default function YourCommission() {
           minHeight: '800px'
         }}>
         <h1>Your Commissions:</h1>
-        <Divider variant='middle' sx={{ borderColor: theme.color }} />
         <div className='listcommission' style={{ width: '100%', display: 'flex', justifyContent: 'center', paddingBottom: '40px' }}>
 
 
