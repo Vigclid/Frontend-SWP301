@@ -36,7 +36,7 @@ export default function StandardImageList({ artworkList }) {
                 <CardMedia
                   component="img"
                   style={{ pointerEvents:'none', objectFit:'cover', width: '15vw', height: '15vw', borderRadius: '5px', minWidth: '182px', minHeight: '182px' }}
-                  image={work.imageFile && work.imageFile.length > 0 ? `data:image/jpeg;base64,${work.imageFile}` : "/images/loadingImages.gif"}
+                  image={work.imageFile && work.imageFile.length > 0 ? work.imageFile : "/images/loadingImages.gif"}
                   alt={work.artworkName}
                   loading="lazy"
                 />
