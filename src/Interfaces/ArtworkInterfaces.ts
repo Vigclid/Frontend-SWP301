@@ -14,7 +14,7 @@ export interface Artwork{
       "artworkTagID": number,
       "artworkID": number,
       "tagID": number
-    },
+    },   
   ]
 }
 
