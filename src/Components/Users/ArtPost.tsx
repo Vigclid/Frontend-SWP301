@@ -42,17 +42,18 @@ export default function PostWork() {
   const navigate = useNavigate();
   useEffect(() => {
     const getArtWork = async () => {
-      setLoading(true);
-      const artworkbyid: Artwork = await GetArtById(id ? id : "1");
-      setArtwork(artworkbyid);
-      const paystatus = await GetArtsPaymentStatus(savedUser?.creatorID, artworkbyid.artworkID);
-      setStatus(paystatus);
-      const creator = await GetCreatorByID(artworkbyid ? artworkbyid.creatorID : "1");
-      setCreator(creator);
-      setLoading(false);
-    };
-    getArtWork();
-  }, [id]);
+
+      setLoading(true)
+      const artworkbyid:Artwork = await GetArtById(id ? id : "1");
+      setArtwork(artworkbyid)
+      const paystatus = await GetArtsPaymentStatus(savedUser?.CreatorId,artworkbyid.artworkID)
+      setStatus(paystatus)
+      const creator = await GetCreatorByID(artworkbyid ? artworkbyid.creatorID : "1")
+      setCreator(creator)
+      setLoading(false)
+    }
+    getArtWork()
+  }, [id])
 
   useEffect(() => {
     const getTags = async () => {

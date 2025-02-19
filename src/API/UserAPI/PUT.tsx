@@ -4,6 +4,11 @@ import axios from 'axios'
 
 const profilecreatorurl = 'http://localhost:7233/api/Creator/'
 const backgroundcreatorurl = 'http://localhost:7233/api/Creator/'
+const changePasswordURL = 'http://localhost:7233/api/Account/changepassword'
+const creatorurl = 'http://localhost:7233/api/Creator/'
+
+
+
 export async function PutCreatorBackgroundPicture(CreatorID:string,imageFile:string) {
   try {
     const headers = {
@@ -36,4 +41,34 @@ export async function PutCreatorProfilePicture(CreatorID:string,imageFile:string
   } catch (err) {
     console.error(err);
   }
+  }
+
+  export async function PutChangePassword(values:any) {
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        // Optionally, add additional headers such as Authorization if required
+        // 'Authorization': 'Bearer your-token',
+      };
+      const response = await axios.put(changePasswordURL, values, { headers });
+      return response.data;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+
+
+  export async function PutProfile(values:any) {
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        // Optionally, add additional headers such as Authorization if required
+        // 'Authorization': 'Bearer your-token',
+      };
+      const response = await axios.put(creatorurl, values, { headers });
+      return response.data;
+    } catch (err) {
+      console.error(err);
+    }
   }
