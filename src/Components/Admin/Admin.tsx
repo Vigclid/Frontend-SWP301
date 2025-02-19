@@ -8,6 +8,7 @@ import Avatar from '@mui/material/Avatar';
 import { Doughnut } from 'react-chartjs-2';
 import PeopleIcon from '@mui/icons-material/People';
 import CircularProgress from '@mui/material/CircularProgress';
+import React from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
