@@ -27,23 +27,26 @@ import ArtShopConfirm from './ArtShopConfirm.jsx';
 import html2canvas from 'html2canvas';
 import ArtShopDialog from './ArtShopDialog.jsx';
 
+
 export default function PostWork() {
   const colors = ["#82c87e", "#c07ec8", "#c89c7e", "#7E8DC8", "#C07EC8", "#C87E8A"];
-  const { theme } = useContext(ThemeContext)
+  const { theme } = useContext(ThemeContext);
   const { id } = useParams();
-  const [artwork, setArtwork] = useState<DownloadArtwork>()
-  const [status, setStatus] = useState<ArtworkPaymentStatus>()
-  const [creator, setCreator] = useState<Creator>()
-  const [tags, setTags] = useState<Tag[]>([])
-  const savedAuth = sessionStorage.getItem('auth');
+  const [artwork, setArtwork] = useState<DownloadArtwork>();
+  const [status, setStatus] = useState<ArtworkPaymentStatus>();
+  const [creator, setCreator] = useState<Creator>();
+  const [tags, setTags] = useState<Tag[]>([]);
+  const savedAuth = sessionStorage.getItem("auth");
   const savedUser: Creator = savedAuth ? JSON.parse(savedAuth) : null;
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [openDowload, setOpenDowload] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     const getArtWork = async () => {
+
       setLoading(true)
+
       const artworkbyid= await GetArtById(id ? id : "1");
       console.log('artwork by id: '+artworkbyid?.userID);
       if (!artworkbyid) {
@@ -52,6 +55,7 @@ export default function PostWork() {
       }
       setArtwork({ ...artworkbyid, idDowLoad: '' })
       const paystatus = await GetArtsPaymentStatus(savedUser?.userID, artworkbyid.artworkID)
+
       setStatus(paystatus)
       const creator = await GetCreatorByID(artworkbyid ? artworkbyid.userID : "1")
       console.log('Creator ID:', artworkbyid.userID);
@@ -62,22 +66,21 @@ export default function PostWork() {
     getArtWork()
   }, [id])
 
-
   useEffect(() => {
     const getTags = async () => {
-      let tags: Tag[] | undefined = await GetTagByArtId(id ? id : "0")
-      setTags(tags ? tags : [])
-    }
-    getTags()
-  }, [id])
+      let tags: Tag[] | undefined = await GetTagByArtId(id ? id : "0");
+      setTags(tags ? tags : []);
+    };
+    getTags();
+  }, [id]);
 
   const handleClick = () => {
-    console.info('You clicked the Chip.');
+    console.info("You clicked the Chip.");
   };
 
   const handleOpen = () => {
     setOpen(!open);
-  }
+  };
 
   // Handle Download Arkwork
   const handleClose = () => {
@@ -98,6 +101,7 @@ export default function PostWork() {
     }
   };
 
+
   const handleYesClick = async () => {
     await downloadSectionAsImage(artwork?.idDowLoad);
   }
@@ -111,12 +115,14 @@ export default function PostWork() {
       artworkID: artwork.artworkID ?? "", // Nếu artworkID là undefined, gán một giá trị mặc định
     };
 
+
     setArtwork(downloadArtwork);
     setOpenDowload(true);
   };
 
   const handleDelete = async () => {
     try {
+
       setLoading(true)
       const response = await DeleteArtById(artwork?.artworkID ?? "")
       console.log(response.data)
@@ -124,48 +130,60 @@ export default function PostWork() {
       navigate(`/characters/profile/${savedUser?.userID}`)
     } catch (err) {
       console.log(err)
+
     }
-  }
+  };
   function formatMoney(amount) {
     amount *= 1000;
+
     return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+
   }
   function TagList() {
     return (
       <>
         {tags.map((tag, index) => (
-          <div key={tag.tagID} className='tag-item'>
+          <div key={tag.tagID} className="tag-item">
             <Stack direction="row" spacing={1}>
-              <Chip label={tag.tagName} variant="filled" onClick={handleClick} style={{ backgroundColor: colors[index % colors.length], marginBottom: '5px', color: 'white' }} />
+              <Chip
+                label={tag.tagName}
+                variant="filled"
+                onClick={handleClick}
+                style={{ backgroundColor: colors[index % colors.length], marginBottom: "5px", color: "white" }}
+              />
             </Stack>
           </div>
         ))}
       </>
-    )
+    );
   }
   return (
+
     <Box sx={{ paddingTop: '2%' }}>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 100 }}
         open={loading}
       >
+
         <CircularProgress color="inherit" />
       </Backdrop>
       {openDowload && <ArtShopDialog open={openDowload} handleClose={handleClose} handleYesClick={handleYesClick} />}
-      <div className='poswork'
-        style={{ backgroundColor: theme.backgroundColor, paddingBottom: '50px', color: theme.color }}
-      >
-        <div className='info-postwork'>
+      <div
+        className="poswork"
+        style={{ backgroundColor: theme.backgroundColor, paddingBottom: "50px", color: theme.color }}>
+        <div className="info-postwork">
           {artwork?.purchasable ? <Watermark /> : ""}
+
           <div className='imgpost' style={{ backgroundColor: theme.hoverBackgroundColor }}>
 
             <img id={`img-${artwork?.artworkID}`} style={{ pointerEvents: artwork?.purchasable ? "none" : "auto" }} alt={artwork?.artworkName} src={artwork?.imageFile} />
 
+
           </div>
-          <Divider orientation='vertical' />
-          <div className='contentpost'>
-            <div className='infor-user-post'>
-              <div className='avatar-user-post'>
+          <Divider orientation="vertical" />
+          <div className="contentpost">
+            <div className="infor-user-post">
+              <div className="avatar-user-post">
                 <Stack direction="row" spacing={2}>
                   <Avatar src={creator?.profilePicture}
                     sx={{ width: 50, height: 50 }} />
@@ -174,21 +192,22 @@ export default function PostWork() {
             </div>
             <div className='content-post-img'>
               <div>Name: {artwork?.artworkName}</div>
+
               <div>Description: {artwork?.description}</div>
-              <h4 style={{ marginBottom: '5px', marginTop: '10px' }}>Tag:</h4>
-              <div className='tag-container'>
-                {tags.length !== 0 ? <TagList /> : ""}
-              </div>
-            </div >
-          </div >
-        </div >
-        <Box className="comment-section" >
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '60%' }}>
+              <h4 style={{ marginBottom: "5px", marginTop: "10px" }}>Tag:</h4>
+              <div className="tag-container">{tags.length !== 0 ? <TagList /> : ""}</div>
+            </div>
+          </div>
+        </div>
+        <Box className="comment-section">
+          <div style={{ display: "flex", justifyContent: "space-between", width: "60%" }}>
             <TestIcon />
-            <div className='button-comment'>
+            <div className="button-comment">
               <a href="#comment" style={{ display: "flex" }}>
-                <CommentIcon sx={{ color: theme.color, fontSize: 35, marginRight: '5px' }} />
-                <h4 style={{ paddingTop: "5px" }} className='addfavourite'>Comment</h4>
+                <CommentIcon sx={{ color: theme.color, fontSize: 35, marginRight: "5px" }} />
+                <h4 style={{ paddingTop: "5px" }} className="addfavourite">
+                  Comment
+                </h4>
               </a>
             </div>
             {creator?.userID === savedUser?.userID ?
@@ -208,14 +227,16 @@ export default function PostWork() {
               </div>
             }
 
+
           </div>
           <div id='"#comment"'>
             <Comments />
           </div>
         </Box>
+
       </div >
       {open && (<ArtShopConfirm open={open} handleClose={handleOpen} item={artwork ?? null} />)}
     </Box >
   )
-}
 
+}
