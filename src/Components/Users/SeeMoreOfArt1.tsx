@@ -67,7 +67,7 @@ export default function SeeMoreOfArt1() {
                 <img
                   style={{ cursor: 'pointer' }}
                   // onClick={() => handleClick(work.artworkID)}
-                  src={work.imageFile}
+                  src={`data:image/jpeg;base64,${work.imageFile}`}
                   alt={work.artworkName}
                   loading="lazy"
                 />
