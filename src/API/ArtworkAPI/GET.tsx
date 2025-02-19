@@ -3,16 +3,16 @@ import { Artwork, ArtworkPaymentStatus } from '../../Interfaces/ArtworkInterface
 import axios from 'axios'
 
 
-const arturl = "https://localhost:7233/api/artworks/"
-const top10arturl = `https://localhost:7233/api/artworks/Top10Liked`
-const random10arturl = `https://localhost:7233/api/artworks/random10`
-const artworkbycreatorurl = `https://localhost:7233/api/artworks/ByCreatorID/`
-const numberartworkurl = `https://localhost:7233/api/artworks/recent-artwork-count`
-const nearest7artworkurl = `https://localhost:7233/api/artworks/recent7artworksNotImage`
-const artworkbycreatornoimageurl = `https://localhost:7233/api/artworks/ByCreatorIDNotImage/`
-const recentartworks = 'https://localhost:7233/api/artworks/recent-likes-summary'
-const artworkyidnoimageurl = 'https://localhost:7233/api/artworks/ArtworkNotImageFile/'
-const artworkPAymentStatus = 'https://localhost:7233/api/artworks/GetArtworksWithPaymentStatus'
+const arturl = "http://localhost:7233/api/artworks/"
+const top10arturl = `http://localhost:7233/api/artworks/`
+const random10arturl = `http://localhost:7233/api/artworks/`
+const artworkbycreatorurl = `http://localhost:7233/api/artworks/`
+const numberartworkurl = `http://localhost:7233/api/artworks/`
+const nearest7artworkurl = `http://localhost:7233/api/artworks/`
+const artworkbycreatornoimageurl = `http://localhost:7233/api/artworks/`
+const recentartworks = 'http://localhost:7233/api/artworks/'
+const artworkyidnoimageurl = 'http://localhost:7233/api/artworks/'
+const artworkPAymentStatus = 'http://localhost:7233/api/artworks/'
 
 export async function GetArtsPaymentStatus(creatorId:string,artworkId:string) {
   try{
@@ -63,14 +63,17 @@ export async function GetRecent7ArtList() {
 }
 
 export async function GetArtList() {
-        try{
-            let artList:Artwork[] = await axios.get(arturl).then(response => response.data)
-            return artList
-            
-        }catch(err){
-          console.log(err)
-        }
+  try {
+      let response = await axios.get(arturl);
+      console.log("✅ API Response:", response.data);
+      console.log(arturl);
+      return response.data;
+  } catch (err) {
+      console.error("❌ Lỗi khi lấy danh sách Artwork:", err);
+      console.log(arturl)
+  }
 }
+
 
 export async function GetTop10Arts() {
   try{
@@ -104,6 +107,7 @@ export async function GetArtsByCreatorId(id:string) {
 export async function GetArtById(id:string) {
   try{
       let artwork:Artwork = await axios.get(arturl+id).then(response => response.data)
+      console.log('artwork result: ',artwork)
       return artwork
   }catch(err){
     console.log(err)
