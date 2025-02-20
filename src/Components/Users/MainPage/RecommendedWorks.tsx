@@ -12,10 +12,10 @@ import { PlaceHoldersImageCard } from '../PlaceHolders.jsx';
 import axios from 'axios';
 
 export default function RecommendedWords({ artworkList, user }) {
-  const [hoveredID, setHoveredID] = useState(null); // State to track the hovered artwork ID
-  const [creators, setCreators] = useState([]); // State to store creator data as an array
+  const [hoveredID, setHoveredID] = useState(null);
+  const [creators, setCreators] = useState([]);
   
-  // Hàm gọi API lấy thông tin tác giả
+
   useEffect(() => {
     const fetchCreators = async () => {
       try {
@@ -27,13 +27,12 @@ export default function RecommendedWords({ artworkList, user }) {
     };
 
     fetchCreators();
-  }, []); // Gọi API khi component mount
+  }, []);
 
-  // Hàm lấy tên tác giả từ creators state
+
   const getCreatorName = (userID) => {
-    // Tìm tác giả tương ứng với userID từ creators
     const creator = creators.find(creator => creator.userId === userID);
-    console.log('Creator:', creator); // Kiểm tra thông tin creator
+    console.log('Creator:', creator);
     return creator ? `${creator.firstName} ${creator.lastName}` : "Unknown Author";
   };
 
@@ -44,8 +43,8 @@ export default function RecommendedWords({ artworkList, user }) {
           {artworkList.map((work) => (
             <Link key={work.artworkID} to={`artwork/${work.artworkID}`}>
               <CardActionArea
-                onMouseEnter={() => setHoveredID(work.artworkID)} // Set hovered ID to the current artwork ID
-                onMouseLeave={() => setHoveredID(null)} // Reset hovered ID when mouse leaves
+                onMouseEnter={() => setHoveredID(work.artworkID)}
+                onMouseLeave={() => setHoveredID(null)}
               >
                 <ImageListItem style={{ position: 'relative' }}>
                   {work.purchasable && (
@@ -94,12 +93,13 @@ export default function RecommendedWords({ artworkList, user }) {
                         color: 'white',
                         textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
                         zIndex: 1,
-                        opacity: 1, // Make text visible when hovered
-                        transition: 'opacity 0.3s ease-in-out', // Add smooth transition
+                        opacity: 1,
+                        transition: 'opacity 0.3s ease-in-out',
                       }}
                     >
                       {work.artworkName}
-                      <div>{getCreatorName(work.userID)}</div> {/* Hiển thị tên tác giả */}
+
+                      <div>{getCreatorName(work.creatorID)}</div>
                     </div>
                   )}
                 </ImageListItem>
