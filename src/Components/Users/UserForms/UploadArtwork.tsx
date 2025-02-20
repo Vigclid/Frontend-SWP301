@@ -26,7 +26,7 @@ function UploadArtwork() {
   const [blobImage, setBlobImage] = useState();
   const [priceSwitch, setPriceSwitch] = useState(false);
   const [listOfTags, setListOfTags] = useState<Tag[] | undefined>([]);
-  const url = "https://localhost:7233/api/Artworks/";
+  const url = "http://localhost:7233/api/artworks/";
   const redirectUrl = useNavigate();
 
   // Attempt to retrieve the auth state from sessionStorage
@@ -54,20 +54,78 @@ function UploadArtwork() {
     };
   }
 
-  const handleImageChange = (e) => {
-    const { name, files } = e.target;
-    if (name === "imageFile") {
-      // Files is a FileList object, you can grab the first file using indexing if you're accepting single files
-      const file = files[0];
-      // Now you can set the file to your state, make sure you have a state property to hold it
-      setBlobImage(file);
-      //console.log(artForm.imageFile)
-      blobToBase64(file, function (base64Image) {
-        setPreview(base64Image);
-        //console.log(base64Image)
+
+  // RESIZED IMAGE MORE THAN 4mb
+  function resizeImage(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const maxFileSize = 4 * 1024 * 1024; // 4MB
+      const reader = new FileReader();
+      reader.onload = (event: ProgressEvent<FileReader>) => {
+        if (!event.target || !event.target.result) {
+          reject(new Error("FileReader không trả về kết quả."));
+          return;
+        }
+        const result = event.target.result;
+        if (typeof result !== "string") {
+          reject(new Error("Kết quả của FileReader không phải là string."));
+          return;
+        }
+  
+        const img = new Image();
+        img.onload = () => {
+          const originalWidth = img.width;
+          const originalHeight = img.height;
+          // Tính toán scale dựa trên kích thước file (dùng căn bậc hai để giữ tỉ lệ)
+          const scale = Math.sqrt(maxFileSize / file.size);
+          // Nếu scale >= 1 => file đã nhỏ hơn hoặc bằng 4MB, không cần resize
+          if (scale >= 1) {
+            resolve(result);
+            return;
+          }
+          const newWidth = Math.floor(originalWidth * scale);
+          const newHeight = Math.floor(originalHeight * scale);
+          
+          // Tạo canvas và lấy context
+          const canvas = document.createElement("canvas");
+          canvas.width = newWidth;
+          canvas.height = newHeight;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            reject(new Error("Không thể lấy được canvas context."));
+            return;
+          }
+          ctx.drawImage(img, 0, 0, newWidth, newHeight);
+          // Chuyển canvas sang base64
+          const base64 = canvas.toDataURL(file.type);
+          resolve(base64);
+        };
+        img.onerror = (err) => reject(err);
+        img.src = result;
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  }
+// END HANDLE MAX SIZED
+
+
+const handleImageChange = (e) => {
+  const { name, files } = e.target;
+  if (name === "imageFile" && files.length > 0) {
+    const file = files[0];
+    
+    setBlobImage(file);
+
+    resizeImage(file)
+      .then((resizedBase64) => {
+        setPreview(resizedBase64);
+      })
+      .catch((error) => {
+        console.error("Lỗi resize ảnh:", error);
       });
-    }
-  };
+  }
+};
+
 
   const handleSwitchChange = (e) => {
     setPriceSwitch(e.target.checked);
@@ -97,7 +155,7 @@ function UploadArtwork() {
 
     initialValues: {
       artworkID: 0,
-      creatorID: user.CreatorId, //CHANGE THE CREATOR ID
+      creatorID: user?.userId, //CHANGE THE CREATOR ID
       artworkName: "",
       description: "",
       dateCreated: "",

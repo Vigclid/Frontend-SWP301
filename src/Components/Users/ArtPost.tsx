@@ -54,8 +54,9 @@ export default function PostWork() {
       const paystatus = await GetArtsPaymentStatus(savedUser?.userID, artworkbyid.artworkID)
       setStatus(paystatus)
       const creator = await GetCreatorByID(artworkbyid ? artworkbyid.creatorID : "1")
+
       // console.log('Creator ID:', artworkbyid.creatorID);
-      // console.log('test'+creator);
+      console.log('test'+creator);
       setCreator(creator)
       setLoading(false)
     }
@@ -191,7 +192,7 @@ export default function PostWork() {
                 <h4 style={{ paddingTop: "5px" }} className='addfavourite'>Comment</h4>
               </a>
             </div>
-            {creator?.userID === savedUser?.userID ?
+            {creator?.accountId === savedUser?.accountId ?
               <Button onClick={handleDelete} variant='contained' color='error' >Delete Artwork</Button>
               :
               <div style={{ margin: 'auto 5px', }}>

@@ -99,7 +99,7 @@ export default function RecommendedWords({ artworkList, user }) {
                       }}
                     >
                       {work.artworkName}
-                      <div>{getCreatorName(work.userID)}</div> {/* Hiển thị tên tác giả */}
+                      <div>{getCreatorName(work.creatorID)}</div> {/* Hiển thị tên tác giả */}
                     </div>
                   )}
                 </ImageListItem>
