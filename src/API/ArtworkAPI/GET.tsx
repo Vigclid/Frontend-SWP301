@@ -6,7 +6,7 @@ import axios from 'axios'
 const arturl = "http://localhost:7233/api/artworks/"
 const top10arturl = `http://localhost:7233/api/artworks/`
 const random10arturl = `http://localhost:7233/api/artworks/`
-const artworkbycreatorurl = `http://localhost:7233/api/artworks/`
+const artworkbycreatorurl = `http://localhost:7233/api/artworks/accountID/`
 const numberartworkurl = `http://localhost:7233/api/artworks/`
 const nearest7artworkurl = `http://localhost:7233/api/artworks/`
 const artworkbycreatornoimageurl = `http://localhost:7233/api/artworks/`
@@ -96,6 +96,15 @@ export async function GetRandom10Arts() {
 }
 
 export async function GetArtsByCreatorId(id:string) {
+  try{
+      let artwork:Artwork[] = await axios.get(artworkbycreatorurl+id).then(response => response.data)
+      return artwork
+  }catch(err){
+    console.log(err)
+  }
+}
+
+export async function GetArtsByAccountId(id:string) {
   try{
       let artwork:Artwork[] = await axios.get(artworkbycreatorurl+id).then(response => response.data)
       return artwork

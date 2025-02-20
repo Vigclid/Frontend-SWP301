@@ -31,7 +31,7 @@ import { ThemeContext } from '../Themes/ThemeProvider.tsx';
 import { GetCreatorByID , GetCreatorByAccountID } from '../../API/UserAPI/GET.tsx';
 import { Creator } from '../../Interfaces/UserInterface.ts';
 import { PutCreatorBackgroundPicture, PutCreatorProfilePicture, PutProfile } from '../../API/UserAPI/PUT.tsx';
-import { GetArtsByCreatorId } from '../../API/ArtworkAPI/GET.tsx';
+import { GetArtsByCreatorId , GetArtsByAccountId } from '../../API/ArtworkAPI/GET.tsx';
 import { Artwork } from '../../Interfaces/ArtworkInterfaces.ts';
 import { PlaceHoldersImageCard } from './PlaceHolders.jsx'
 import Button from '@mui/material/Button';
@@ -271,7 +271,7 @@ const F4k = useFormik({
       setUser(userProfile)
     }
     const getUserArtworks = async () => {
-      const userArtworks = await GetArtsByCreatorId(id ? id : "0") //NOT DONE
+      const userArtworks = await GetArtsByAccountId(id ? id : "0") //NOT DONE
       setArtworks(userArtworks ? userArtworks : [])
     }
     getUserProfile()
@@ -395,7 +395,7 @@ const F4k = useFormik({
           <Link key={work.artworkID} to={`artwork/${work.artworkID}`}>
             <ImageListItem key={work.artworkID}>
               <img
-                src={`data:image/jpeg;base64,${work.imageFile}`}
+                src={`${work.imageFile}`}
                 alt={work.artworkName}
                 loading="lazy"
               />
@@ -413,7 +413,7 @@ const F4k = useFormik({
           <ImageListItem key={work.artworkID}>
             <Link to={`../artwork/${work.artworkID}`}>
               <img
-                src={`data:image/jpeg;base64,${work.imageFile}`}
+                src={`${work.imageFile}`}
                 alt={work.artworkName}
                 loading="lazy"
                 style={{ height: '200px' }}
