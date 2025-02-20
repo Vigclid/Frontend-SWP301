@@ -14,6 +14,10 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Creator } from "../../Interfaces/UserInterface.ts";
 import PackagePaymentConfirm from "./PackagePaymentConfirm.tsx";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import DiscountIcon from "@mui/icons-material/Discount";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import { Stack } from "@mui/material";
 
 export default function PackagePage() {
   const { theme, dark } = useContext(ThemeContext);
@@ -34,7 +38,7 @@ export default function PackagePage() {
       console.log("Fetched package list:", packageList); // Debug log for package list
       SetPackgeService(packageList ?? []);
 
-      let servicePackage: CurrentPackage | undefined = await GetCurrentPackageByCreatorID(user.creatorID);
+      let servicePackage: CurrentPackage | undefined = await GetCurrentPackageByCreatorID(user.CreatorId);
       console.log("Current package:", servicePackage); // Debug log for current package
       setCurrentPackage(servicePackage);
       setLoading(false);
@@ -55,7 +59,7 @@ export default function PackagePage() {
   };
   const defaultCardStyle = (packageService: Package) => {
     return (
-      <Card className="cardDefault" sx={{ backgroundImage: 'url("/images/default.jpg")' }}>
+      <Card className="cardDefault" sx={{ backgroundImage: 'url("/images/RankCard.png")' }}>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             {packageService.typeRankName}
@@ -81,19 +85,30 @@ export default function PackagePage() {
   };
   const premiumCardStyle = (packageService: Package) => {
     return (
-      <Card className="cardPremium" sx={{ backgroundImage: 'url("/images/gold.jpg")' }}>
+      <Card className="cardPremium" sx={{ backgroundImage: 'url("/images/RankCard.png")' }}>
         <CardContent>
           <Typography gutterBottom variant="h5" color="gold" component="div">
             {packageService.typeRankName}
           </Typography>
-          <Divider sx={{ borderColor: "gold" }} />
+          <Typography variant="body2" color="error">
+            Price: {packageService.price === 0 ? "Free" : packageService.price + " VND"}
+          </Typography>
           <div>
-            <Typography variant="body2" color="gold">
-              {/* {packageService.packageDescription} */}
-            </Typography>
-            <Divider sx={{ borderColor: "gold" }} />
-            <Typography variant="body2" color="error">
-              Price: {packageService.price === 0 ? "Free" : packageService.price + " VND"}
+            <Typography variant="body2" color="white">
+              <Stack spacing={1}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <CloudUploadIcon sx={{ color: "gold" }} />
+                  <Typography> Upload 50 Art on Month</Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <DiscountIcon sx={{ color: "gold" }} />
+                  <Typography> Get 95% off on all Art</Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <AccountBalanceWalletIcon sx={{ color: "gold" }} />
+                  <Typography> Cash out coin with Withdrawal feature</Typography>
+                </Box>
+              </Stack>
             </Typography>
           </div>
         </CardContent>
@@ -101,18 +116,22 @@ export default function PackagePage() {
           <Button
             disabled={currentPackage?.packageID === 2}
             sx={{
-              backgroundColor: "goldenrod",
-              color: "black",
+              backgroundColor: "none",
+              color: "white",
               border: "solid 1px",
               borderLeft: "none",
               borderRight: "none",
-              borderRadius: "0px",
+              borderRadius: "10px",
+              width: "50%",
+              margin: "auto",
+              display: "center",
               ":hover": {
                 backgroundColor: "none",
                 color: "gold",
                 border: "solid 1px goldenrod",
                 borderLeft: "none",
                 borderRight: "none",
+                width: "50%",
               },
             }}
             className="buyBtn"
