@@ -1,0 +1,14 @@
+/* CSS */
+.name-link {
+    text-decoration: none;
+    color: #61DAFB;
+    /* Màu cơ bản của tên */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    /* Hiệu ứng chuyển màu mượt mà */
+}
+
+.name-link:hover {
+    color: #00f7ff;
+    /* Màu sáng hơn khi hover */
+    text-shadow: 0 0 10px rgba(0, 123, 255, 0.8), 0 0 20px rgba(0, 123, 255, 0.6);
+}

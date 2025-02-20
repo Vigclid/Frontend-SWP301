@@ -28,10 +28,10 @@ import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
 import CustomizedImageButton from '../StyledMUI/CustomizedImageButton.jsx'
 import { ThemeContext } from '../Themes/ThemeProvider.tsx';
-import { GetCreatorByID , GetCreatorByAccountID } from '../../API/UserAPI/GET.tsx';
+import { GetCreatorByID, GetCreatorByAccountID } from '../../API/UserAPI/GET.tsx';
 import { Creator } from '../../Interfaces/UserInterface.ts';
 import { PutCreatorBackgroundPicture, PutCreatorProfilePicture, PutProfile } from '../../API/UserAPI/PUT.tsx';
-import { GetArtsByCreatorId , GetArtsByAccountId } from '../../API/ArtworkAPI/GET.tsx';
+import { GetArtsByCreatorId, GetArtsByAccountId } from '../../API/ArtworkAPI/GET.tsx';
 import { Artwork } from '../../Interfaces/ArtworkInterfaces.ts';
 import { PlaceHoldersImageCard } from './PlaceHolders.jsx'
 import Button from '@mui/material/Button';
@@ -50,9 +50,9 @@ import * as Yup from "yup";
 import CustomizedTextField from '../StyledMUI/CustomizedTextField.tsx';
 import Snackbar from '@mui/material/Snackbar';
 import LoadingScreen from '../LoadingScreens/LoadingScreenSpokes.jsx';
-import {  PostCreator, PostUserAccount } from '../../API/UserAPI/POST.tsx';
+import { PostCreator, PostUserAccount } from '../../API/UserAPI/POST.tsx';
 import { PutChangePassword } from '../../API/UserAPI/PUT.tsx';
-import {  useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from "axios"
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
@@ -97,139 +97,139 @@ export default function ProfileUser() {
 
 
 
-// HANDLE CHANGE PASSWORD 
+  // HANDLE CHANGE PASSWORD 
 
-const [snackbarChangePassword, setSnackbarChangePassword] = useState(false)
-const [snackbarChangePasswordError, setSnackbarChangePasswordError] = useState(false)
+  const [snackbarChangePassword, setSnackbarChangePassword] = useState(false)
+  const [snackbarChangePasswordError, setSnackbarChangePasswordError] = useState(false)
 
-const snackbarChangePasswordAutoClose = (
-  event?: React.SyntheticEvent | Event,
-  reason?: SnackbarCloseReason,
-) => {
-  if (reason === 'clickaway') {
-    return;
-  }
+  const snackbarChangePasswordAutoClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason,
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
 
-  setSnackbarChangePassword(false);
-  setSnackbarChangePasswordError(false);
-};
+    setSnackbarChangePassword(false);
+    setSnackbarChangePasswordError(false);
+  };
 
 
-// Account Change Password Started Here!
-const formik = useFormik({
-  validateOnChange: false,
-  validateOnBlur: false,
-  initialValues: {
-    OldPassword: "",
-    NewPassword: "",
-    ConfirmPassword: "",
-  },
+  // Account Change Password Started Here!
+  const formik = useFormik({
+    validateOnChange: false,
+    validateOnBlur: false,
+    initialValues: {
+      OldPassword: "",
+      NewPassword: "",
+      ConfirmPassword: "",
+    },
 
-  
 
-  validationSchema: Yup.object({
-    OldPassword: Yup.string().required("What? Don't remember password?").min(5, "Must be 5 characters or more"),
-    NewPassword: Yup.string().required("Password! Or we gonna steal your account.").min(5, "Must be 5 characters or more"),
-    ConfirmPassword: Yup.string().required("Goldfish? Type new password again.").min(5, "Must be 5 characters or more"),
-    
-  }),
 
-  onSubmit: (values) => {
-    if (values.ConfirmPassword !== values.NewPassword) {
-      alert("New Password and Submit Password are not the same!")
-    } else {
-          let checkChangePassword 
-          const ChangePass = async () => {
-              try {
-              checkChangePassword = await PutChangePassword({
-                  email: userInSession?.email,
-                  oldPassword : values.OldPassword,
-                  newPassword : values.NewPassword
-                  },)
-              
-                  
-              if (String(checkChangePassword) === "1") {
-                setSnackbarChangePassword(true);
-              } else {
-                setSnackbarChangePasswordError(true);
-              }
+    validationSchema: Yup.object({
+      OldPassword: Yup.string().required("What? Don't remember password?").min(5, "Must be 5 characters or more"),
+      NewPassword: Yup.string().required("Password! Or we gonna steal your account.").min(5, "Must be 5 characters or more"),
+      ConfirmPassword: Yup.string().required("Goldfish? Type new password again.").min(5, "Must be 5 characters or more"),
 
-              } catch (err) {
-                  if (checkChangePassword === "2")
-                    setSnackbarChangePasswordError(true);
-              console.log(err)
-              
-              }
+    }),
+
+    onSubmit: (values) => {
+      if (values.ConfirmPassword !== values.NewPassword) {
+        alert("New Password and Submit Password are not the same!")
+      } else {
+        let checkChangePassword
+        const ChangePass = async () => {
+          try {
+            checkChangePassword = await PutChangePassword({
+              email: userInSession?.email,
+              oldPassword: values.OldPassword,
+              newPassword: values.NewPassword
+            },)
+
+
+            if (String(checkChangePassword) === "1") {
+              setSnackbarChangePassword(true);
+            } else {
+              setSnackbarChangePasswordError(true);
+            }
+
+          } catch (err) {
+            if (checkChangePassword === "2")
+              setSnackbarChangePasswordError(true);
+            console.log(err)
+
+          }
+        }
+        ChangePass()
       }
-      ChangePass()
-      }
-  },
+    },
 
-})
+  })
 
-// |||||||||----END-CHANGE-PASSWORD----||||||||
+  // |||||||||----END-CHANGE-PASSWORD----||||||||
 
 
 
 
-// EDIT PROFILE
+  // EDIT PROFILE
 
-const F4k = useFormik({
-  validateOnChange: false,
-  validateOnBlur: false,
-  initialValues: {
-    firstName: "",
-    biography: "",
-    address: "",
-    lastName: "",
-    dateOfBirth: "",
-    
-  },
+  const F4k = useFormik({
+    validateOnChange: false,
+    validateOnBlur: false,
+    initialValues: {
+      firstName: "",
+      biography: "",
+      address: "",
+      lastName: "",
+      dateOfBirth: "",
 
-  
+    },
 
-  validationSchema: Yup.object({
-    firstName: Yup.string().required("We need your first name"),
-    lastName: Yup.string().required("Yo!!! we need to know you"),
-    dateOfBirth: Yup.string().required("What!?"),
-    address: Yup.string().required("Where are you from?"),
-    biography: Yup.string().required("Tell the community something about yourself")
-    
-  }),
 
-  onSubmit: (values) => {
 
-          let checkChangeProfile
-          const EditProfile = async () => {
-              try {
-                checkChangeProfile = await PutProfile({
-                  email: userInSession?.email,
-                  firstName : values.firstName,
-                  lastName : values.lastName,
-                  address : values.address,
-                  biography : values.biography,
-                  },)
-              
-                  
-              if (String(checkChangeProfile) === "1") {
-                setSnackbarChangePassword(true);
-              } else {
-                setSnackbarChangePasswordError(true);
-              }
+    validationSchema: Yup.object({
+      firstName: Yup.string().required("We need your first name"),
+      lastName: Yup.string().required("Yo!!! we need to know you"),
+      dateOfBirth: Yup.string().required("What!?"),
+      address: Yup.string().required("Where are you from?"),
+      biography: Yup.string().required("Tell the community something about yourself")
 
-              } catch (err) {
-                  if (checkChangeProfile === "2")
-                    setSnackbarChangePasswordError(true);
-              console.log(err)
-              
-              }
+    }),
+
+    onSubmit: (values) => {
+
+      let checkChangeProfile
+      const EditProfile = async () => {
+        try {
+          checkChangeProfile = await PutProfile({
+            email: userInSession?.email,
+            firstName: values.firstName,
+            lastName: values.lastName,
+            address: values.address,
+            biography: values.biography,
+          },)
+
+
+          if (String(checkChangeProfile) === "1") {
+            setSnackbarChangePassword(true);
+          } else {
+            setSnackbarChangePasswordError(true);
+          }
+
+        } catch (err) {
+          if (checkChangeProfile === "2")
+            setSnackbarChangePasswordError(true);
+          console.log(err)
+
+        }
       }
       EditProfile()
-      
-  },
 
-})
-// |||||||||----END-EDIT-PROFILE----|||||||||
+    },
+
+  })
+  // |||||||||----END-EDIT-PROFILE----|||||||||
 
 
 
@@ -239,13 +239,13 @@ const F4k = useFormik({
   const [artworks, setArtworks] = useState<Artwork[]>([])
   const [previewProfile, setPreviewProfile] = useState<string>();
   const [previewBackground, setPreviewBackground] = useState<string>();
-    //Popup Report
-    const [reportReason, setReportReason] = useState(""); // Lý do báo cáo
-    const [open, setOpen] = useState(false);
-    const [open1, setOpen1] = useState(false);
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
+  //Popup Report
+  const [reportReason, setReportReason] = useState(""); // Lý do báo cáo
+  const [open, setOpen] = useState(false);
+  const [open1, setOpen1] = useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
   let { id } = useParams()
   const { theme } = useContext(ThemeContext)
 
@@ -323,7 +323,7 @@ const F4k = useFormik({
           reject(new Error("Kết quả của FileReader không phải là string."));
           return;
         }
-  
+
         const img = new Image();
         img.onload = () => {
           const originalWidth = img.width;
@@ -337,7 +337,7 @@ const F4k = useFormik({
           }
           const newWidth = Math.floor(originalWidth * scale);
           const newHeight = Math.floor(originalHeight * scale);
-          
+
           // Tạo canvas và lấy context
           const canvas = document.createElement("canvas");
           canvas.width = newWidth;
@@ -359,7 +359,7 @@ const F4k = useFormik({
       reader.readAsDataURL(file);
     });
   }
-// END HANDLE MAX SIZED
+  // END HANDLE MAX SIZED
 
   const handleImageChange = async (e) => {
     const { name, files } = e.target;
@@ -369,9 +369,9 @@ const F4k = useFormik({
         try {
           let base64Image;
           if (file.size > 4 * 1024 * 1024) {
-             base64Image = await resizeImage(file);
+            base64Image = await resizeImage(file);
           } else {
-             base64Image = await blobToBase64(file);
+            base64Image = await blobToBase64(file);
           }
           // Match the arguments to the function definition
           await postImageToDatabase(base64Image, name); // Here `name` should be of type 'profilePicture' | 'backgroundPicture'
@@ -441,15 +441,15 @@ const F4k = useFormik({
       <ImageList variant="masonry" cols={4} gap={8}>
         {artworks.map((work) => (
           <Link to={`../artwork/${work.artworkID}`}>
-          <ImageListItem key={work.artworkID}>
-            
+            <ImageListItem key={work.artworkID}>
+
               <img
                 src={`data:image/jpeg;base64,${work.imageFile}`}
                 alt={work.artworkName}
                 loading="lazy"
               />
-            
-          </ImageListItem ></Link >
+
+            </ImageListItem ></Link >
         ))
         }
       </ImageList >
@@ -579,24 +579,24 @@ const F4k = useFormik({
               </div>
               <div className='headerusername'>
                 <Typography gutterBottom variant="h3" component="div" style={{ fontWeight: 700, marginBottom: '5px' }} >
-                {user?.firstName} {user?.lastName}
+                  {user?.firstName} {user?.lastName}
                 </Typography>
                 <Typography variant="body2" style={{ fontWeight: 500, fontSize: '18px' }} >
                   Followers: {user?.followCounts}
                 </Typography>
               </div> </div>
 
-           { userInSession.accountId !== user?.accountId ?
-            <div className='buttonheaderuser'  >
-              {isFollowing == true && (
-                <Button className='follow' style={{ width: '120px', height: '40px' }} variant="contained" href="#contained-buttons" onClick={() => handleClick()}>
-                  + Follow
-                </Button>)}
-              {isFollowing == false && (
-                <Button className='following' style={{ width: '120px', height: '40px' }} variant="contained" href="#contained-buttons" onClick={() => handleClick()}>
-                  Following
-                </Button>)}
-            </div> : ""
+            {userInSession.accountId !== user?.accountId ?
+              <div className='buttonheaderuser'  >
+                {isFollowing == true && (
+                  <Button className='follow' style={{ width: '120px', height: '40px' }} variant="contained" href="#contained-buttons" onClick={() => handleClick()}>
+                    + Follow
+                  </Button>)}
+                {isFollowing == false && (
+                  <Button className='following' style={{ width: '120px', height: '40px' }} variant="contained" href="#contained-buttons" onClick={() => handleClick()}>
+                    Following
+                  </Button>)}
+              </div> : ""
             }
           </CardContent>
         </Card>
@@ -612,8 +612,8 @@ const F4k = useFormik({
                   <Tab label="Home" {...a11yProps(0)} style={{ color: theme.color2, }} />
                   <Tab label="Shop" {...a11yProps(1)} style={{ color: theme.color2, }} />
                   <Tab label="Favourites" {...a11yProps(2)} style={{ color: theme.color2, }} />
-                  { userInSession.accountId === user?.accountId ?  <Tab label="Change Password" {...a11yProps(3)} style={{ color: theme.color2, }} /> : "" }
-                  { userInSession.accountId === user?.accountId ?  <Tab label="Edit Profile" {...a11yProps(4)} style={{ color: theme.color2, }} /> : "" }
+                  {userInSession.accountId === user?.accountId ? <Tab label="Change Password" {...a11yProps(3)} style={{ color: theme.color2, }} /> : ""}
+                  {userInSession.accountId === user?.accountId ? <Tab label="Edit Profile" {...a11yProps(4)} style={{ color: theme.color2, }} /> : ""}
 
                 </Tabs>
               </div>
@@ -736,7 +736,7 @@ const F4k = useFormik({
                 </div>
               </div>
             </CustomTabPanel>
-            
+
             <CustomTabPanel value={value} index={1} >
               <div style={{ marginLeft: '120px' }}>
                 {artworks.length !== 0 ? <CostImage /> : <PlaceHoldersImageCard />}</div>
@@ -748,116 +748,116 @@ const F4k = useFormik({
 
 
 
-{/* THIS IS TABPANEL TO EDIT PROFILE */} 
+            {/* THIS IS TABPANEL TO EDIT PROFILE */}
             <CustomTabPanel value={value} index={3} >
-               <>
+              <>
 
-                  <div className='createaccount'>
-                    <div className='signupForm' style={{ marginTop: '2%' }}>
-                        <Box
-                          height={'auto'}
-                          width={'80%'}
-                          my={4}
-                          display="flex"
-                          alignItems="center"
-                          gap={4}
-                          p={2}
-                          sx={{ backgroundColor: theme.backgroundColor, margin: 'auto' }}
-                        >
-                          <form onSubmit={formik.handleSubmit}>
-                            <Grid className='formregister' container spacing={2}>
-                              <Grid item xs={12}>
-                                <div className='header'>
-                                  <Typography sx={{color:theme.color}} variant="h4" component="h1" gutterBottom>
-                                    Change Password
-                                  </Typography></div>
-                              </Grid>
-                             
+                <div className='createaccount'>
+                  <div className='signupForm' style={{ marginTop: '2%' }}>
+                    <Box
+                      height={'auto'}
+                      width={'80%'}
+                      my={4}
+                      display="flex"
+                      alignItems="center"
+                      gap={4}
+                      p={2}
+                      sx={{ backgroundColor: theme.backgroundColor, margin: 'auto' }}
+                    >
+                      <form onSubmit={formik.handleSubmit}>
+                        <Grid className='formregister' container spacing={2}>
+                          <Grid item xs={12}>
+                            <div className='header'>
+                              <Typography sx={{ color: theme.color }} variant="h4" component="h1" gutterBottom>
+                                Change Password
+                              </Typography></div>
+                          </Grid>
 
-                              {/* END OF OTP HANDLE */}
-                              <Grid item xs={12}>
-                                <CustomizedTextField
 
-                                  id="passwword"
-                                  label="Old Password"
-                                  name="OldPassword"
-                                  autoComplete="OldPassword"
-                                  fullWidth
-                                  value={formik.values.OldPassword} onChange={formik.handleChange}
-                                />
-                                {formik.errors.OldPassword && (<Typography variant="body2" color="red">{formik.errors.OldPassword}
-                                </Typography>)}
-                              </Grid>
+                          {/* END OF OTP HANDLE */}
+                          <Grid item xs={12}>
+                            <CustomizedTextField
 
-                              <Grid item xs={12}>
-                                <CustomizedTextField
+                              id="passwword"
+                              label="Old Password"
+                              name="OldPassword"
+                              autoComplete="OldPassword"
+                              fullWidth
+                              value={formik.values.OldPassword} onChange={formik.handleChange}
+                            />
+                            {formik.errors.OldPassword && (<Typography variant="body2" color="red">{formik.errors.OldPassword}
+                            </Typography>)}
+                          </Grid>
 
-                                  id="passwword"
-                                  label="New Passwword"
-                                  name="NewPassword"
-                                  autoComplete="password"
-                                  fullWidth
-                                  value={formik.values.NewPassword} onChange={formik.handleChange}
-                                />
-                                {formik.errors.NewPassword && (<Typography variant="body2" color="red">{formik.errors.NewPassword}
-                                </Typography>)}
-                              </Grid>
+                          <Grid item xs={12}>
+                            <CustomizedTextField
 
-                              <Grid item xs={12}>
-                                <CustomizedTextField
+                              id="passwword"
+                              label="New Passwword"
+                              name="NewPassword"
+                              autoComplete="password"
+                              fullWidth
+                              value={formik.values.NewPassword} onChange={formik.handleChange}
+                            />
+                            {formik.errors.NewPassword && (<Typography variant="body2" color="red">{formik.errors.NewPassword}
+                            </Typography>)}
+                          </Grid>
 
-                                  id="firstName"
-                                  label="Confirm Password"
-                                  name="ConfirmPassword"
-                                  autoComplete="ConfirmPassword"
-                                  fullWidth
-                                  value={formik.values.ConfirmPassword} onChange={formik.handleChange}
-                                />
-                                {formik.errors.ConfirmPassword && (<Typography variant="body2" color="red">{formik.errors.ConfirmPassword}
-                                </Typography>)}
-                              </Grid>
-                              
-                              <Grid item xs={12}>
-                                <Button 
-                                disabled={open}
-                                variant="contained" 
-                                type='submit'
-                                style={{ marginBottom: '20px' }} 
-                                fullWidth
-                                >
-                                  Update Password!
-                                </Button>
-                              </Grid>
-                                
+                          <Grid item xs={12}>
+                            <CustomizedTextField
 
-                                <Grid item xs={6}>
-                                  <Link style={{ fontStyle: "italic", color: "grey"}} to={`/forgotpassword`}> Create account from Email? Click here to set password!</Link>
-                                </Grid>
-                              
-                            </Grid>
-                          </form>
-                        </Box>
-                    
-                    </div>
+                              id="firstName"
+                              label="Confirm Password"
+                              name="ConfirmPassword"
+                              autoComplete="ConfirmPassword"
+                              fullWidth
+                              value={formik.values.ConfirmPassword} onChange={formik.handleChange}
+                            />
+                            {formik.errors.ConfirmPassword && (<Typography variant="body2" color="red">{formik.errors.ConfirmPassword}
+                            </Typography>)}
+                          </Grid>
+
+                          <Grid item xs={12}>
+                            <Button
+                              disabled={open}
+                              variant="contained"
+                              type='submit'
+                              style={{ marginBottom: '20px' }}
+                              fullWidth
+                            >
+                              Update Password!
+                            </Button>
+                          </Grid>
+
+
+                          <Grid item xs={6}>
+                            <Link style={{ fontStyle: "italic", color: "grey" }} to={`/forgotpassword`}> Create account from Email? Click here to set password!</Link>
+                          </Grid>
+
+                        </Grid>
+                      </form>
+                    </Box>
+
                   </div>
+                </div>
 
 
-                </>
+              </>
             </CustomTabPanel>
 
 
             {/* THIS IS TABPANEL TO EDIT PROFILE */}
             <CustomTabPanel value={value} index={4}>
-            <form onSubmit={F4k.handleSubmit}>
-              <Grid className='formregister' container spacing={2}> 
+              <form onSubmit={F4k.handleSubmit}>
+                <Grid className='formregister' container spacing={2}>
 
-            <Grid item xs={12}>
+                  <Grid item xs={12}>
                     <div className='header'>
-                      <Typography sx={{color:theme.color}} variant="h4" component="h1" gutterBottom>
+                      <Typography sx={{ color: theme.color }} variant="h4" component="h1" gutterBottom>
                         Edit Profile
                       </Typography></div>
-                  </Grid>  
-            <Grid item xs={6}>
+                  </Grid>
+                  <Grid item xs={6}>
                     <CustomizedTextField
 
                       id="firstName"
@@ -882,9 +882,9 @@ const F4k = useFormik({
                     {F4k.errors.lastName && (<Typography variant="body2" color="red">{F4k.errors.lastName}
                     </Typography>)}
                   </Grid>
-                  
- 
-                  
+
+
+
                   <Grid item xs={12}>
                     <CustomizedTextField
                       id="address"
@@ -914,23 +914,23 @@ const F4k = useFormik({
                   </Grid>
 
                   <Grid item xs={12}>
-                                <Button 
-                                disabled={open}
-                                variant="contained" 
-                                type='submit'
-                                style={{ marginBottom: '20px' }} 
-                                fullWidth
-                                >
-                                  Update Profile!
-                                </Button>
-                    </Grid>
+                    <Button
+                      disabled={open}
+                      variant="contained"
+                      type='submit'
+                      style={{ marginBottom: '20px' }}
+                      fullWidth
+                    >
+                      Update Profile!
+                    </Button>
+                  </Grid>
 
-            </Grid>
-            </form>
+                </Grid>
+              </form>
 
             </CustomTabPanel>
 
-          </Box>  
+          </Box>
         </div>
       </div>
 

@@ -155,7 +155,7 @@ const handleImageChange = (e) => {
 
     initialValues: {
       artworkID: 0,
-      creatorID: user?.userId, //CHANGE THE CREATOR ID
+      creatorID: user.userId, //CHANGE THE CREATOR ID
       artworkName: "",
       description: "",
       dateCreated: "",
