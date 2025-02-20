@@ -1,90 +1,98 @@
-.packagePage{
-    padding-top: 2%;
-    padding-bottom: 5%;
+.packagePage {
+  padding-top: 2%;
+  padding-bottom: 5%;
 }
 
-.packageContainer{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    padding: 5% 5% 5% 5%;
+.packageContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  padding: 5% 5% 5% 5%;
 }
 
 /* Default card */
-.cardDefault{
+.cardDefault {
   position: relative;
-    min-width: 350px;
-    min-height: 500px;
-    max-width: 350px;
-    max-height: 500px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    transition: 0.5s ease-in-out;
-    box-sizing: border-box;
+  min-width: 350px;
+  min-height: 500px;
+  max-width: 350px;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: 0.5s ease-in-out;
+  box-sizing: border-box;
 }
 
-
-.cardDefault:hover{
-    scale: 120%;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+.cardDefault:hover {
+  scale: 120%;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
 }
 /* End card */
 
 /* Premium card */
-.cardPremium{
-    min-width: 350px;
-    min-height: 500px;
-    max-width: 350px;
-    max-height: 500px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    transition: 0.5s ease-in-out;
+.cardPremium {
+  min-width: 350px;
+  min-height: 500px;
+  max-width: 350px;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: 0.5s ease-in-out;
 }
 
-.cardPremium:hover{
-    scale: 120%;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+.cardPremium:hover {
+  scale: 120%;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
 }
 /* End card */
 
-.buyBtn{
+.buyBtn {
   width: 100%;
   margin: auto;
 }
 
-
 /* Premium Text */
 .premium-typography {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.crown-icon {
+  margin-right: 0.1em;
+  font-size: 20px;
+  margin-top: -2%;
+  color: #ffd700; /* Gold color for the crown */
+}
+@keyframes moveGradient {
+  0% {
+    background-position: 0% 50%;
   }
-  .crown-icon {
-    margin-right: 0.1em;
-    font-size: 20px;
-    margin-top: -2%;
-    color: #ffd700; /* Gold color for the crown */
+  25% {
+    background-position: 100% 50%;
   }
-  @keyframes moveGradient {
-    0% { background-position: 0% 50%; }
-    25% { background-position: 100% 50%; }
-    50% { background-position: 50% 0%; }
-    75% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+  50% {
+    background-position: 50% 0%;
   }
-  .gradient-text {
-    background: linear-gradient(to right, #ffe600, #ff9500);
-    background-size: 200% 200%; /* Set the initial background size */
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-    -webkit-animation: moveGradient 6s linear infinite;
-    -moz-animation: moveGradient 6s linear infinite;
-    -o-animation: moveGradient 6s linear infinite;
-    animation: moveGradient 6s linear infinite;
+  75% {
+    background-position: 100% 50%;
   }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+.gradient-text {
+  background: linear-gradient(to right, #ffe600, #ff9500);
+  background-size: 200% 200%; /* Set the initial background size */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-animation: moveGradient 6s linear infinite;
+  -moz-animation: moveGradient 6s linear infinite;
+  -o-animation: moveGradient 6s linear infinite;
+  animation: moveGradient 6s linear infinite;
+}
 
-  /* End Text */
+/* End Text */
