@@ -4,7 +4,7 @@ import axios from 'axios'
 
 
 const arturl = "http://localhost:7233/api/artworks/"
-const top10arturl = `http://localhost:7233/api/artworks/`
+const top10arturl = `http://localhost:7233/api/artworks/Top10Liked`
 const random10arturl = `http://localhost:7233/api/artworks/`
 const artworkbycreatorurl = `http://localhost:7233/api/artworks/accountID/`
 const numberartworkurl = `http://localhost:7233/api/artworks/`

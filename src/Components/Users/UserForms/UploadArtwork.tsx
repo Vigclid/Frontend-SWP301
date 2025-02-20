@@ -26,7 +26,7 @@ function UploadArtwork() {
   const [blobImage, setBlobImage] = useState();
   const [priceSwitch, setPriceSwitch] = useState(false);
   const [listOfTags, setListOfTags] = useState<Tag[] | undefined>([]);
-  const url = "https://localhost:7233/api/Artworks/";
+  const url = "http://localhost:7233/api/artworks/";
   const redirectUrl = useNavigate();
 
   // Attempt to retrieve the auth state from sessionStorage
@@ -97,7 +97,7 @@ function UploadArtwork() {
 
     initialValues: {
       artworkID: 0,
-      creatorID: user.CreatorId, //CHANGE THE CREATOR ID
+      creatorID: user.userId, //CHANGE THE CREATOR ID
       artworkName: "",
       description: "",
       dateCreated: "",

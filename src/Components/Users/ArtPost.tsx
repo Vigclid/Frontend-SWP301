@@ -26,6 +26,8 @@ import { DeleteArtById } from '../../API/ArtworkAPI/DELETE.tsx';
 import ArtShopConfirm from './ArtShopConfirm.jsx';
 import html2canvas from 'html2canvas';
 import ArtShopDialog from './ArtShopDialog.jsx';
+import '../../css/ArtPost.css';
+
 
 export default function PostWork() {
   const colors = ["#82c87e", "#c07ec8", "#c89c7e", "#7E8DC8", "#C07EC8", "#C87E8A"];
@@ -44,7 +46,7 @@ export default function PostWork() {
   useEffect(() => {
     const getArtWork = async () => {
       setLoading(true)
-      const artworkbyid= await GetArtById(id ? id : "1");
+      const artworkbyid = await GetArtById(id ? id : "1");
       // console.log('artwork by id: '+artworkbyid?.creatorID);
       if (!artworkbyid) {
         setLoading(false);
@@ -170,7 +172,12 @@ export default function PostWork() {
                   <Avatar src={creator?.profilePicture}
                     sx={{ width: 50, height: 50 }} />
                 </Stack></div>
-                <div className='name-user-post'> {creator?.firstName +' '+ creator?.lastName}</div>
+              {/* <div className='name-user-post'> {creator?.firstName +' '+ creator?.lastName}</div> */}
+              <div className='name-user-post'>
+                <Link to={`/characters/profile/${creator?.accountId}`} className="name-link">
+                  {creator?.firstName + ' ' + creator?.lastName}
+                </Link>
+              </div>
             </div>
             <div className='content-post-img'>
               <div>Name: {artwork?.artworkName}</div>
