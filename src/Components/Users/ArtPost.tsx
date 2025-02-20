@@ -53,7 +53,7 @@ export default function PostWork() {
         return;
       }
       setArtwork({ ...artworkbyid, idDowLoad: '' })
-      const paystatus = await GetArtsPaymentStatus(savedUser?.userID, artworkbyid.artworkID)
+      const paystatus = await GetArtsPaymentStatus(savedUser?.CreatorId, artworkbyid.artworkID)
       setStatus(paystatus)
       const creator = await GetCreatorByID(artworkbyid ? artworkbyid.creatorID : "1")
 
