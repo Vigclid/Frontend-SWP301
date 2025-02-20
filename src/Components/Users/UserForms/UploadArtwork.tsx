@@ -146,6 +146,7 @@ function UploadArtwork() {
                   backgroundColor: theme.backgroundColor,
                   padding: "2%",
                   border: `solid 1px ${theme.color}`,
+                  borderRadius: "5px",
                 }}>
                 <div className="artTextField" style={{ marginBottom: "2%" }}>
                   <CustomizedTextField
@@ -222,7 +223,10 @@ function UploadArtwork() {
                       render={(arrayHelpers) => (
                         <>
                           <Autocomplete
-                            options={listOfTags || []}
+                            options={(listOfTags || []).filter(
+                              (option) =>
+                                !formik.values.artworkTag.some((tag) => tag.tagID === (option.tagId || option.tagID))
+                            )}
                             getOptionLabel={(option) => option.tagName}
                             isOptionEqualToValue={(option, value) =>
                               option.tagId === value.tagId || option.tagID === value.tagID
