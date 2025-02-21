@@ -5,6 +5,7 @@ import CustomizedButton from './StyledMUI/CustomizedButton.tsx';
 import CustomizedTextField from './StyledMUI/CustomizedTextField.tsx';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 
 export default function Comments() {
   const [comments, setComments] = useState([]);
@@ -80,11 +81,12 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID }) 
 
   const onReplyComment = () => {
     const authData = sessionStorage.getItem('auth');
+    console.log('Auth data:', authData);
     const user = authData ? JSON.parse(authData) : null;
-  
+    console.log('User:', user);
     let newReplyData = {};
-    console.log('User post api reply:', user);
-  
+    // console.log('User post api reply:', user);
+    console.log('user: ', user)
     if (user) {
       newReplyData = {
         body: newReply,  // Nội dung của bình luận trả lời
@@ -93,7 +95,7 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID }) 
         commentDetail: newReply,  // Lấy nội dung của reply comment từ input của người dùng
         dateOfInteract: new Date().toISOString(),  // Thời gian hiện tại khi trả lời (ISO string format)
       };
-  
+
       fetch('http://localhost:7233/api/replycomment/add', {
         method: 'POST',
         headers: {
@@ -105,15 +107,30 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID }) 
         .then((data) => {
           setReplyComments((prevReplies) => [data, ...prevReplies]); // Cập nhật UI với reply mới
           setNewReply(''); // Reset lại nội dung input
+          const _updateInteractData = async () => {
+            try {
+              const response = await axios.put('http://localhost:7233/api/interact/update');
+              console.log('Interact data updated successfully:', response.data);
+            } catch (error) {
+              console.error('Error updating interact data:', error);
+            }
+          };
+
+          // Gọi API cập nhật tương tác
+          _updateInteractData();
         })
         .catch((error) => {
           console.error('Error posting reply comment:', error);
         });
+      const _Func = async () => {
+        return await axios.put('http://localhost:7233/api/artworks/update-comments-count');
+      }
+      _Func();
     }
-    console.log('newReplyData:', newReplyData);  // Kiểm tra dữ liệu trước khi gửi
+    // console.log('newReplyData:', newReplyData);  // Kiểm tra dữ liệu trước khi gửi
   };
-  
-  
+
+
 
 
   return (
@@ -142,14 +159,14 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID }) 
               onChange={(e) => setNewReply(e.target.value)}
               placeholder="Reply to this comment..."
             />
-            {console.log('newReplyyyyyyyyyyyy:', newReply)}
+            {/*{console.log('newReplyyyyyyyyyyyy:', newReply)}*/}
             <Button onClick={onReplyComment}>Submit</Button>
           </div>
         )}
         {replyComments.map((reply, index) => (
           <div key={index} className="reply-comment" style={{ marginLeft: '20px' }}>
             <span>{getUserNameById(reply.replierID)}: {reply.commentDetail}</span>
-            {console.log('replyyyyyyyyyy:', reply)}
+            {/*{console.log('replyyyyyyyyyy:', reply)}*/}
           </div>
         ))}
       </div>
@@ -168,10 +185,10 @@ function CommentInput({ artworkID }) {
     validationSchema: Yup.object({
       commentDetail: Yup.string()
         .required('Comment cannot be empty')
-        .min(5, 'Comment must be at least 5 characters'),
     }),
     onSubmit: (values) => {
       const authData = sessionStorage.getItem("auth");  // Lấy thông tin người dùng từ sessionStorage
+
       const user = authData ? JSON.parse(authData) : null;
 
       if (user) {
@@ -182,7 +199,6 @@ function CommentInput({ artworkID }) {
           createdDate: new Date()
         };
 
-        // Gửi dữ liệu lên API
         fetch('http://localhost:7233/api/comments/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -191,11 +207,28 @@ function CommentInput({ artworkID }) {
           .then(response => response.json())
           .then(data => {
             console.log('Comment saved successfully:', data);
-            formik.resetForm();  // Reset form after submission
+            console.log('hello')
+            const _updateInteractData = async () => {
+              try {
+                const response = await axios.put('http://localhost:7233/api/interact/update');
+                console.log('Interact data updated successfully:', response.data);
+              } catch (error) {
+                console.error('Error updating interact data:', error);
+              }
+            };
+
+            // Gọi API cập nhật tương tác
+            _updateInteractData();
+            formik.resetForm();
           })
           .catch(error => {
             console.error('Error posting comment:', error);
           });
+
+        const _Func = async () => {
+          return await axios.put('http://localhost:7233/api/artworks/update-comments-count');
+        }
+        _Func();
       } else {
         console.log('User not logged in');
       }

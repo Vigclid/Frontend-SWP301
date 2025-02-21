@@ -651,7 +651,7 @@ export default function ProfileUser() {
                   <DialogContent>
                     <DialogContentText>
                       If this user violates community standards, please report the reason to us,
-                      Artix's moderators will review and handle this as soon as possible.
+                      ArtHub's moderators will review and handle this as soon as possible.
                     </DialogContentText>
                     <TextField
                       autoFocus
