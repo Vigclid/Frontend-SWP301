@@ -9,7 +9,7 @@ import { Button, CardActionArea, CardActions } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import HomePage from "./MainPage/HomePage";
 import { CurrentPackage, Package } from "../../Interfaces/Package.ts";
-import { GetCurrentPackageByCreatorID, GetPackage } from "../../API/PackageAPI/GET.tsx";
+import { GetCurrentPackageByAccountID, GetPackage } from "../../API/PackageAPI/GET.tsx";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Creator } from "../../Interfaces/UserInterface.ts";
@@ -22,7 +22,7 @@ import { Stack } from "@mui/material";
 export default function PackagePage() {
   const { theme, dark } = useContext(ThemeContext);
   const [packageService, SetPackgeService] = useState<Package[]>();
-  const [currentPackage, setCurrentPackage] = useState<CurrentPackage>();
+  const [currentPackage, setCurrentPackage] = useState<CurrentPackage | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const savedAuth = sessionStorage.getItem("auth");
@@ -38,9 +38,17 @@ export default function PackagePage() {
       console.log("Fetched package list:", packageList); // Debug log for package list
       SetPackgeService(packageList ?? []);
 
-      let servicePackage: CurrentPackage | undefined = await GetCurrentPackageByCreatorID(user.CreatorId);
+      let servicePackage: CurrentPackage | null | undefined = await GetCurrentPackageByAccountID(
+        Number(user.accountId)
+      );
+
+      if (!user?.accountId) {
+        console.error("⚠️ Error: No AccountID found in user data");
+        return;
+      }
+
       console.log("Current package:", servicePackage); // Debug log for current package
-      setCurrentPackage(servicePackage);
+      setCurrentPackage(servicePackage ?? null);
       setLoading(false);
     };
     getPackage();
@@ -52,7 +60,7 @@ export default function PackagePage() {
 
   const currentPack = () => {
     return (
-      <Typography sx={{ textAlign: "center" }} variant="h5" color="Highlight">
+      <Typography sx={{ textAlign: "center", fontFamily: "UniSpace" }} variant="h5" color={theme.color3}>
         Your Current Package
       </Typography>
     );
@@ -109,11 +117,11 @@ export default function PackagePage() {
         </CardContent>
 
         <Button
-          disabled={currentPackage?.packageID === 2}
+          disabled={currentPackage?.typeID === 2}
           sx={{
             backgroundColor: "none",
             color: "white",
-            border: "solid 1px",
+            border: "solid 1.5px",
             borderLeft: "none",
             borderRight: "none",
             borderRadius: "10px",
@@ -122,8 +130,8 @@ export default function PackagePage() {
             display: "center",
             ":hover": {
               backgroundColor: "none",
-              color: "gold",
-              border: "solid 1px goldenrod",
+              color: "#FFCF50",
+              border: "solid 1px #FFCF50",
               borderLeft: "none",
               borderRight: "none",
               width: "50%",
@@ -132,9 +140,9 @@ export default function PackagePage() {
           className="buyBtn"
           onClick={() => handleOpen(packageService)}
           size="small">
-          {currentPackage?.packageID === 2 ? "You're Using This Package" : "Purchase"}
+          {currentPackage?.typeID === 2 ? "You're Using This Package" : "Purchase"}
         </Button>
-        {currentPackage?.packageID === 2 && currentPack()}
+        {currentPackage?.typeID === 2 && currentPack()}
       </Card>
     );
   };
@@ -190,11 +198,11 @@ export default function PackagePage() {
         </CardContent>
 
         <Button
-          disabled={currentPackage?.packageID === 3}
+          disabled={currentPackage?.typeID === 3}
           sx={{
             backgroundColor: "none",
             color: "white",
-            border: "solid 1px",
+            border: "solid 1.5px",
             borderLeft: "none",
             borderRight: "none",
             borderRadius: "10px",
@@ -203,8 +211,8 @@ export default function PackagePage() {
             display: "center",
             ":hover": {
               backgroundColor: "none",
-              color: "gold",
-              border: "solid 1px goldenrod",
+              color: "#FFCF50",
+              border: "solid 1px #FFCF50",
               borderLeft: "none",
               borderRight: "none",
               width: "50%",
@@ -213,9 +221,9 @@ export default function PackagePage() {
           className="buyBtn"
           onClick={() => handleOpen(packageService)}
           size="small">
-          {currentPackage?.packageID === 3 ? "You're Using This Package" : "Purchase"}
+          {currentPackage?.typeID === 3 ? "You're Using This Package" : "Purchase"}
         </Button>
-        {currentPackage?.packageID === 3 && currentPack()}
+        {currentPackage?.typeID === 3 && currentPack()}
       </Card>
     );
   };
@@ -271,11 +279,11 @@ export default function PackagePage() {
         </CardContent>
 
         <Button
-          disabled={currentPackage?.packageID === 4}
+          disabled={currentPackage?.typeID === 4}
           sx={{
             backgroundColor: "none",
             color: "white",
-            border: "solid 1px",
+            border: "solid 1.5px",
             borderLeft: "none",
             borderRight: "none",
             borderRadius: "10px",
@@ -284,8 +292,8 @@ export default function PackagePage() {
             display: "center",
             ":hover": {
               backgroundColor: "none",
-              color: "gold",
-              border: "solid 1px goldenrod",
+              color: "#FFCF50",
+              border: "solid 1px #FFCF50",
               borderLeft: "none",
               borderRight: "none",
               width: "50%",
@@ -294,9 +302,9 @@ export default function PackagePage() {
           className="buyBtn"
           onClick={() => handleOpen(packageService)}
           size="small">
-          {currentPackage?.packageID === 4 ? "You're Using This Package" : "Purchase"}
+          {currentPackage?.typeID === 4 ? "You're Using This Package" : "Purchase"}
         </Button>
-        {currentPackage?.packageID === 4 && currentPack()}
+        {currentPackage?.typeID === 4 && currentPack()}
       </Card>
     );
   };
@@ -359,17 +367,17 @@ export default function PackagePage() {
             variant="outlined"
             sx={{
               color: "white",
-              border: "solid 1px white",
-              borderRadius: "10px",
+              border: "solid 1.5px white",
+              borderRadius: "5px",
               alignSelf: "flex-start",
               transition: "all 0.3s ease",
               ":hover": {
-                border: "solid 1px goldenrod",
-                color: "gold",
+                border: "solid 1px #FFCF50",
+                color: "#FFCF50",
               },
             }}
             onClick={() => handleOpen(packageService)}>
-            Learn More
+            Send Us
           </Button>
         </Box>
       </Card>
