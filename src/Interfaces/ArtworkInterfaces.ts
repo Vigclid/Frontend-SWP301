@@ -6,9 +6,11 @@ export interface Artwork{
   description: string,
   dateCreated: Date,
   likes: number,
+  favourites: number,
   purchasable: boolean,
   price: number,
   imageFile: string,
+  isFavourite?: boolean,
   artworkTag: [
     {
       "artworkTagID": number,
@@ -16,6 +18,7 @@ export interface Artwork{
       "tagID": number
     },   
   ]
+  
 }
 
 export interface ArtworkPaymentStatus{

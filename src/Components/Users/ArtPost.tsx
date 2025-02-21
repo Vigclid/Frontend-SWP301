@@ -28,6 +28,7 @@ import html2canvas from 'html2canvas';
 import ArtShopDialog from './ArtShopDialog.jsx';
 import '../../css/ArtPost.css';
 
+import TestFavouriteButton from "../TestFavouriteButton.tsx";
 
 export default function PostWork() {
   const colors = ["#82c87e", "#c07ec8", "#c89c7e", "#7E8DC8", "#C07EC8", "#C87E8A"];
@@ -43,6 +44,26 @@ export default function PostWork() {
   const [open, setOpen] = useState(false);
   const [openDowload, setOpenDowload] = useState(false);
   const navigate = useNavigate()
+
+  // Lấy userID từ sessionStorage
+  const authData = sessionStorage.getItem("auth");
+  console.log('auth data: ', authData)
+  const user = authData ? JSON.parse(authData) : null;   
+  console.log('check user: ', user)
+
+  // Lấy artworkID từ URL và chuyển thành number
+  const [artworkID, setArtworkID] = useState<number | null>(null);
+
+  useEffect(() => {
+    const pathParts = window.location.pathname.split("/");
+    const id11 = parseInt(pathParts[pathParts.length - 1], 10);
+    if (!isNaN(id11)) {
+      setArtworkID(id11); // Cập nhật state nếu id hợp lệ
+    }
+    console.log('check id: ', id11)
+  }, []); 
+
+
   useEffect(() => {
     const getArtWork = async () => {
       setLoading(true)
@@ -58,7 +79,7 @@ export default function PostWork() {
       const creator = await GetCreatorByID(artworkbyid ? artworkbyid.creatorID : "1")
 
       // console.log('Creator ID:', artworkbyid.creatorID);
-      console.log('test'+creator);
+      console.log('test' + creator);
       setCreator(creator)
       setLoading(false)
     }
@@ -192,11 +213,15 @@ export default function PostWork() {
         </div >
         <Box className="comment-section" >
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '60%' }}>
-            <TestIcon />
+              <TestFavouriteButton userID={user.userId} artworkID={artworkID}/>
+
+            {/* {console.log('artworkID: ', { authData })} */}
             <div className='button-comment'>
               <a href="#comment" style={{ display: "flex" }}>
                 <CommentIcon sx={{ color: theme.color, fontSize: 35, marginRight: '5px' }} />
                 <h4 style={{ paddingTop: "5px" }} className='addfavourite'>Comment</h4>
+
+
               </a>
             </div>
             {creator?.accountId === savedUser?.accountId ?
