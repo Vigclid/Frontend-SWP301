@@ -22,7 +22,9 @@ import { Artwork } from "../../../Interfaces/ArtworkInterfaces.ts";
 
 function UploadArtwork() {
   const { theme } = useContext(ThemeContext);
-  const [preview, setPreview] = useState<string>('https://scontent.fdad3-6.fna.fbcdn.net/v/t39.30808-1/412275689_1752721802217153_2393610321619100452_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=109&ccb=1-7&_nc_sid=e99d92&_nc_ohc=xk0cNLfp64MQ7kNvgERpEBP&_nc_oc=AdgqMG_zsOI-uSConoJjAHY_iE5IyJefYa8lm8IbStuuQuvtSEPVh6lw7pna9uk95DONTt3t55fXwDFgr9sSuEMk&_nc_zt=24&_nc_ht=scontent.fdad3-6.fna&_nc_gid=Ait6pYWsX0SurZJiXWjxDDi&oh=00_AYDDXDsNgryx-m8TRMK-zaQGeA2K1saXboiE9gqe3Y4wZA&oe=67BD1B40');
+  const [preview, setPreview] = useState<string>(
+    "https://scontent.fdad3-6.fna.fbcdn.net/v/t39.30808-1/412275689_1752721802217153_2393610321619100452_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=109&ccb=1-7&_nc_sid=e99d92&_nc_ohc=xk0cNLfp64MQ7kNvgERpEBP&_nc_oc=AdgqMG_zsOI-uSConoJjAHY_iE5IyJefYa8lm8IbStuuQuvtSEPVh6lw7pna9uk95DONTt3t55fXwDFgr9sSuEMk&_nc_zt=24&_nc_ht=scontent.fdad3-6.fna&_nc_gid=Ait6pYWsX0SurZJiXWjxDDi&oh=00_AYDDXDsNgryx-m8TRMK-zaQGeA2K1saXboiE9gqe3Y4wZA&oe=67BD1B40"
+  );
   const [blobImage, setBlobImage] = useState();
   const [priceSwitch, setPriceSwitch] = useState(false);
   const [listOfTags, setListOfTags] = useState<Tag[] | undefined>([]);
@@ -54,7 +56,6 @@ function UploadArtwork() {
     };
   }
 
-
   // RESIZED IMAGE MORE THAN 4mb
   function resizeImage(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -70,7 +71,7 @@ function UploadArtwork() {
           reject(new Error("Kết quả của FileReader không phải là string."));
           return;
         }
-  
+
         const img = new Image();
         img.onload = () => {
           const originalWidth = img.width;
@@ -84,7 +85,7 @@ function UploadArtwork() {
           }
           const newWidth = Math.floor(originalWidth * scale);
           const newHeight = Math.floor(originalHeight * scale);
-          
+
           // Tạo canvas và lấy context
           const canvas = document.createElement("canvas");
           canvas.width = newWidth;
@@ -106,26 +107,24 @@ function UploadArtwork() {
       reader.readAsDataURL(file);
     });
   }
-// END HANDLE MAX SIZED
+  // END HANDLE MAX SIZED
 
+  const handleImageChange = (e) => {
+    const { name, files } = e.target;
+    if (name === "imageFile" && files.length > 0) {
+      const file = files[0];
 
-const handleImageChange = (e) => {
-  const { name, files } = e.target;
-  if (name === "imageFile" && files.length > 0) {
-    const file = files[0];
-    
-    setBlobImage(file);
+      setBlobImage(file);
 
-    resizeImage(file)
-      .then((resizedBase64) => {
-        setPreview(resizedBase64);
-      })
-      .catch((error) => {
-        console.error("Lỗi resize ảnh:", error);
-      });
-  }
-};
-
+      resizeImage(file)
+        .then((resizedBase64) => {
+          setPreview(resizedBase64);
+        })
+        .catch((error) => {
+          console.error("Lỗi resize ảnh:", error);
+        });
+    }
+  };
 
   const handleSwitchChange = (e) => {
     setPriceSwitch(e.target.checked);
@@ -155,7 +154,7 @@ const handleImageChange = (e) => {
 
     initialValues: {
       artworkID: 0,
-      creatorID: user.CreatorId, //CHANGE THE CREATOR ID
+      creatorID: user.userId, //CHANGE THE CREATOR ID
       artworkName: "",
       description: "",
       dateCreated: "",

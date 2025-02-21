@@ -10,44 +10,6 @@
   padding: 5% 5% 5% 5%;
 }
 
-/* Default card */
-.cardDefault {
-  position: relative;
-  min-width: 350px;
-  min-height: 500px;
-  max-width: 350px;
-  max-height: 500px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  transition: 0.5s ease-in-out;
-  box-sizing: border-box;
-}
-
-.cardDefault:hover {
-  scale: 120%;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-}
-/* End card */
-
-/* Premium card */
-.cardPremium {
-  min-width: 350px;
-  min-height: 500px;
-  max-width: 350px;
-  max-height: 500px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  transition: 0.5s ease-in-out;
-}
-
-.cardPremium:hover {
-  scale: 120%;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-}
-/* End card */
-
 .buyBtn {
   width: 100%;
   margin: auto;
@@ -96,3 +58,88 @@
 }
 
 /* End Text */
+
+/*Add Fonts*/
+@font-face {
+  font-family: "UniSpace";
+  src: url("/public/fonts/UNISPACE.TTF") format("truetype");
+}
+
+.package-title {
+  font-family: "UniSpace";
+  font-size: 2em;
+  margin-bottom: 5%;
+}
+/* End Add Fonts */
+
+/* Card */
+.cardRank {
+  min-width: 377px;
+  min-height: 450px;
+  max-width: 377px;
+  max-height: 450px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: 0.5s ease-in-out;
+  border-radius: 20px;
+
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s ease;
+}
+
+.cardRank::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(0deg, transparent, transparent 30%, rgba(0, 255, 255, 0.3));
+  transform: rotate(-45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+.cardRank:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.cardRank:hover::before {
+  opacity: 1;
+  transform: rotate(-45deg) translateY(100%);
+}
+
+.cardRank img {
+  width: 70%;
+
+  object-fit: contain;
+}
+/* End Card */
+
+.artist-card {
+  min-height: 290px;
+  max-height: 290px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.artist-card-img {
+  /* Optional: add padding or border styles for the image container */
+  padding: 1rem;
+}
+
+.artist-card-content {
+  /* Optional: adjust padding/margin as needed */
+  padding: 1rem;
+}
+
+.artist-card-button {
+  /* This class ensures a smooth hover transition */
+  transition: all 0.3s ease;
+}
