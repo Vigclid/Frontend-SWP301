@@ -14,7 +14,13 @@ import * as Yup from "yup";
 import { useFormik, FieldArray, FormikProvider } from "formik"; // useFormik instead of a custom handleChange event
 import axios from "axios";
 import { Tag } from "../../../Interfaces/TagInterface.ts";
-import { FormControlLabel, Input, InputLabel, FormControl, MenuItem } from "@mui/material";
+import {
+  FormControlLabel,
+  Input,
+  InputLabel,
+  FormControl,
+  MenuItem,
+} from "@mui/material";
 import { GetTagList } from "../../../API/TagAPI/GET.tsx";
 import { Creator } from "../../../Interfaces/UserInterface.ts";
 import { useNavigate } from "react-router-dom";
@@ -22,11 +28,13 @@ import { Artwork } from "../../../Interfaces/ArtworkInterfaces.ts";
 
 function UploadArtwork() {
   const { theme } = useContext(ThemeContext);
-  const [preview, setPreview] = useState<string>();
+  const [preview, setPreview] = useState<string>(
+    "https://scontent.fdad3-6.fna.fbcdn.net/v/t39.30808-1/412275689_1752721802217153_2393610321619100452_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=109&ccb=1-7&_nc_sid=e99d92&_nc_ohc=xk0cNLfp64MQ7kNvgERpEBP&_nc_oc=AdgqMG_zsOI-uSConoJjAHY_iE5IyJefYa8lm8IbStuuQuvtSEPVh6lw7pna9uk95DONTt3t55fXwDFgr9sSuEMk&_nc_zt=24&_nc_ht=scontent.fdad3-6.fna&_nc_gid=Ait6pYWsX0SurZJiXWjxDDi&oh=00_AYDDXDsNgryx-m8TRMK-zaQGeA2K1saXboiE9gqe3Y4wZA&oe=67BD1B40"
+  );
   const [blobImage, setBlobImage] = useState();
   const [priceSwitch, setPriceSwitch] = useState(false);
   const [listOfTags, setListOfTags] = useState<Tag[] | undefined>([]);
-  const url = "https://localhost:7233/api/Artworks/";
+  const url = "http://localhost:7233/api/artworks/";
   const redirectUrl = useNavigate();
 
   // Attempt to retrieve the auth state from sessionStorage
@@ -54,18 +62,73 @@ function UploadArtwork() {
     };
   }
 
+  // RESIZED IMAGE MORE THAN 4mb
+  function resizeImage(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const maxFileSize = 4 * 1024 * 1024; // 4MB
+      const reader = new FileReader();
+      reader.onload = (event: ProgressEvent<FileReader>) => {
+        if (!event.target || !event.target.result) {
+          reject(new Error("FileReader không trả về kết quả."));
+          return;
+        }
+        const result = event.target.result;
+        if (typeof result !== "string") {
+          reject(new Error("Kết quả của FileReader không phải là string."));
+          return;
+        }
+
+        const img = new Image();
+        img.onload = () => {
+          const originalWidth = img.width;
+          const originalHeight = img.height;
+          // Tính toán scale dựa trên kích thước file (dùng căn bậc hai để giữ tỉ lệ)
+          const scale = Math.sqrt(maxFileSize / file.size);
+          // Nếu scale >= 1 => file đã nhỏ hơn hoặc bằng 4MB, không cần resize
+          if (scale >= 1) {
+            resolve(result);
+            return;
+          }
+          const newWidth = Math.floor(originalWidth * scale);
+          const newHeight = Math.floor(originalHeight * scale);
+
+          // Tạo canvas và lấy context
+          const canvas = document.createElement("canvas");
+          canvas.width = newWidth;
+          canvas.height = newHeight;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            reject(new Error("Không thể lấy được canvas context."));
+            return;
+          }
+          ctx.drawImage(img, 0, 0, newWidth, newHeight);
+          // Chuyển canvas sang base64
+          const base64 = canvas.toDataURL(file.type);
+          resolve(base64);
+        };
+        img.onerror = (err) => reject(err);
+        img.src = result;
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  }
+  // END HANDLE MAX SIZED
+
   const handleImageChange = (e) => {
     const { name, files } = e.target;
-    if (name === "imageFile") {
-      // Files is a FileList object, you can grab the first file using indexing if you're accepting single files
+    if (name === "imageFile" && files.length > 0) {
       const file = files[0];
-      // Now you can set the file to your state, make sure you have a state property to hold it
+
       setBlobImage(file);
-      //console.log(artForm.imageFile)
-      blobToBase64(file, function (base64Image) {
-        setPreview(base64Image);
-        //console.log(base64Image)
-      });
+
+      resizeImage(file)
+        .then((resizedBase64) => {
+          setPreview(resizedBase64);
+        })
+        .catch((error) => {
+          console.error("Lỗi resize ảnh:", error);
+        });
     }
   };
 
@@ -97,7 +160,7 @@ function UploadArtwork() {
 
     initialValues: {
       artworkID: 0,
-      creatorID: user.CreatorId, //CHANGE THE CREATOR ID
+      creatorID: user.userId, //CHANGE THE CREATOR ID
       artworkName: "",
       description: "",
       dateCreated: "",
@@ -132,8 +195,17 @@ function UploadArtwork() {
   });
   return (
     <>
-      <div className="formup" style={{ backgroundImage: "url('/images/desk.jpg')", backgroundSize: "cover" }}>
-        <div className="userInfoForm" style={{ backgroundColor: `rgba(${theme.rgbBackgroundColor},0.80)` }}>
+      <div
+        className="formup"
+        style={{
+          backgroundImage: "url('/images/desk.jpg')",
+          backgroundSize: "cover",
+        }}
+      >
+        <div
+          className="userInfoForm"
+          style={{ backgroundColor: `rgba(${theme.rgbBackgroundColor},0.80)` }}
+        >
           <form onSubmit={formik.handleSubmit}>
             <CustomizedTypography variant="h4" component="h2" gutterBottom>
               Share Us Your Creation
@@ -147,7 +219,8 @@ function UploadArtwork() {
                   padding: "2%",
                   border: `solid 1px ${theme.color}`,
                   borderRadius: "5px",
-                }}>
+                }}
+              >
                 <div className="artTextField" style={{ marginBottom: "2%" }}>
                   <CustomizedTextField
                     name="artworkName"
@@ -179,7 +252,11 @@ function UploadArtwork() {
                   )}
                 </div>
                 <div className="artTextField" style={{ marginTop: "2%" }}>
-                  <CustomizedImageButton name="imageFile" onChange={handleImageChange} fullWidth />
+                  <CustomizedImageButton
+                    name="imageFile"
+                    onChange={handleImageChange}
+                    fullWidth
+                  />
                   {formik.errors.imageFile && (
                     <Typography variant="body2" color="red">
                       {formik.errors.imageFile}
@@ -192,7 +269,8 @@ function UploadArtwork() {
                 sx={{
                   backgroundColor: theme.backgroundColor,
                   borderColor: theme.color,
-                }}>
+                }}
+              >
                 <FormControlLabel
                   sx={{ color: theme.color, marginBottom: "10%" }}
                   control={
@@ -217,7 +295,8 @@ function UploadArtwork() {
                       border: `solid 1px ${theme.color}`,
                       padding: "2%",
                       borderRadius: "5px",
-                    }}>
+                    }}
+                  >
                     <FieldArray
                       name="artworkTag"
                       render={(arrayHelpers) => (
@@ -225,11 +304,15 @@ function UploadArtwork() {
                           <Autocomplete
                             options={(listOfTags || []).filter(
                               (option) =>
-                                !formik.values.artworkTag.some((tag) => tag.tagID === (option.tagId || option.tagID))
+                                !formik.values.artworkTag.some(
+                                  (tag) =>
+                                    tag.tagID === (option.tagId || option.tagID)
+                                )
                             )}
                             getOptionLabel={(option) => option.tagName}
                             isOptionEqualToValue={(option, value) =>
-                              option.tagId === value.tagId || option.tagID === value.tagID
+                              option.tagId === value.tagId ||
+                              option.tagID === value.tagID
                             }
                             onChange={(event, value) => {
                               if (value) {
@@ -240,7 +323,10 @@ function UploadArtwork() {
                                 };
                                 arrayHelpers.push(newTag);
                                 console.log("Selected tag:", value);
-                                console.log("Current artworkTag array:", formik.values.artworkTag);
+                                console.log(
+                                  "Current artworkTag array:",
+                                  formik.values.artworkTag
+                                );
                               }
                             }}
                             renderInput={(params) => (
@@ -254,7 +340,9 @@ function UploadArtwork() {
                                   border: `1px solid ${theme.color}`,
                                   borderRadius: "5px",
                                 }}
-                                InputLabelProps={{ style: { color: theme.color } }}
+                                InputLabelProps={{
+                                  style: { color: theme.color },
+                                }}
                                 InputProps={{
                                   ...params.InputProps,
                                   style: { color: theme.color3 },
@@ -263,26 +351,35 @@ function UploadArtwork() {
                             )}
                           />
                           <div className="tagChips">
-                            {formik.values.artworkTag.map((tag: { tagID }, index) => {
-                              const selectedTag = listOfTags?.find(
-                                (t) => t.tagId === tag.tagID || t.tagID === tag.tagID
-                              );
-                              console.log("Rendering chip for tag:", selectedTag);
-                              return (
-                                <Chip
-                                  key={index}
-                                  label={selectedTag?.tagName || "Unknown Tag"}
-                                  onDelete={() => arrayHelpers.remove(index)}
-                                  style={{
-                                    margin: "4px",
-                                    border: `1px solid ${theme.color}`,
-                                    backgroundColor: theme.backgroundColor,
-                                    color: theme.color,
-                                    boxShadow: `0 0 5px ${theme.color}`,
-                                  }}
-                                />
-                              );
-                            })}
+                            {formik.values.artworkTag.map(
+                              (tag: { tagID }, index) => {
+                                const selectedTag = listOfTags?.find(
+                                  (t) =>
+                                    t.tagId === tag.tagID ||
+                                    t.tagID === tag.tagID
+                                );
+                                console.log(
+                                  "Rendering chip for tag:",
+                                  selectedTag
+                                );
+                                return (
+                                  <Chip
+                                    key={index}
+                                    label={
+                                      selectedTag?.tagName || "Unknown Tag"
+                                    }
+                                    onDelete={() => arrayHelpers.remove(index)}
+                                    style={{
+                                      margin: "4px",
+                                      border: `1px solid ${theme.color}`,
+                                      backgroundColor: theme.backgroundColor,
+                                      color: theme.color,
+                                      boxShadow: `0 0 5px ${theme.color}`,
+                                    }}
+                                  />
+                                );
+                              }
+                            )}
                           </div>
                         </>
                       )}
@@ -293,7 +390,11 @@ function UploadArtwork() {
                 ""
               )}
               <div className="imageBox">
-                <Typography variant="h6" color={theme.color} sx={{ textAlign: "right" }}>
+                <Typography
+                  variant="h6"
+                  color={theme.color}
+                  sx={{ textAlign: "right" }}
+                >
                   Preview Image
                 </Typography>
                 <img
@@ -315,7 +416,8 @@ function UploadArtwork() {
                 marginTop: "5vh",
               }}
               variant="contained"
-              type="submit">
+              type="submit"
+            >
               Welcome To The Wolrd!
             </CustomizedButton>
           </form>
