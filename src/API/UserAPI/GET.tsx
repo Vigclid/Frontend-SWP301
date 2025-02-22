@@ -9,6 +9,18 @@ const accountemailurl = 'http://localhost:7233/api/Account/email/'
 const countcreatorurl = "http://localhost:7233/api/Creator/CountCreators"
 const creatorvipstatusurl = `http://localhost:7233/api/Creator/GetID/UserName/Vip`
 const gettotalartworklikesbycreatorurl = `http://localhost:7233/api/artworks/total-likes/`
+const top10UsersUrl = "http://localhost:7233/api/Creator/top-popular";
+
+
+export async function GetTop10Users() {
+  try {
+    let users: Creator[] = await axios.get(top10UsersUrl).then(response => response.data);
+    return users;
+  } catch (err) {
+    console.log("Lỗi khi lấy top 10 người dùng phổ biến:", err);
+  }
+}
+
 
 export async function GetTotalLikeByCreatorID(id:string|number) {
   try{

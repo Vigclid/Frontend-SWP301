@@ -18,8 +18,8 @@ export interface Account {
 }
 
 export interface Creator {
-  accountId: string | "0",
-  CreatorId: string | "0",
+  accountId: number | "0",
+  CreatorId: number | "0",
   coins: string | number,
   userName: string | "",
   profilePicture: string | "",
