@@ -8,6 +8,7 @@ export interface Artwork{
   likes: number,
   purchasable: boolean,
   price: number,
+  views: number,
   imageFile: string,
   artworkTag: [
     {

@@ -47,7 +47,6 @@ export default function PostWork() {
     const getArtWork = async () => {
       setLoading(true)
       const artworkbyid = await GetArtById(id ? id : "1");
-      // console.log('artwork by id: '+artworkbyid?.creatorID);
       if (!artworkbyid) {
         setLoading(false);
         return;
@@ -105,12 +104,12 @@ export default function PostWork() {
   }
 
   const handleDownload = async (id: string) => {
-    if (!artwork?.artworkID) return; // Nếu artworkID không có, không tiếp tục
+    if (!artwork?.artworkID) return;
 
     const downloadArtwork: DownloadArtwork = {
       ...artwork,
       idDowLoad: id,
-      artworkID: artwork.artworkID ?? "", // Nếu artworkID là undefined, gán một giá trị mặc định
+      artworkID: artwork.artworkID ?? "",
     };
 
     setArtwork(downloadArtwork);
@@ -123,6 +122,7 @@ export default function PostWork() {
       const response = await DeleteArtById(artwork?.artworkID ?? "")
       console.log(response.data)
       setLoading(false)
+      console.log('artwork: ', artwork)
       navigate(`/characters/profile/${savedUser?.userID}`)
     } catch (err) {
       console.log(err)
@@ -145,6 +145,11 @@ export default function PostWork() {
       </>
     )
   }
+  // const getArtWorkId = async () => {
+  //   const artworkbyid = await GetArtById(id ? id : "1");
+  //   return artworkbyid
+  // }
+  // getArtWorkId()
   return (
     <Box sx={{ paddingTop: '2%' }}>
       <Backdrop
@@ -182,6 +187,11 @@ export default function PostWork() {
             <div className='content-post-img'>
               <div>Name: {artwork?.artworkName}</div>
               <div>Description: {artwork?.description}</div>
+              <div>Posted date: {artwork?.dateCreated}</div>
+              <div>View: {artwork?.views}</div>
+              <div>
+                Price: {artwork?.price === 0 ? 'Free' : formatMoney(artwork?.price)}
+              </div>
               <h4 style={{ marginBottom: '5px', marginTop: '10px' }}>Tag:</h4>
               <div className='tag-container'>
                 {tags.length !== 0 ? <TagList /> : ""}

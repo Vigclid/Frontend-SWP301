@@ -116,7 +116,7 @@ export async function GetArtsByAccountId(id:string) {
 export async function GetArtById(id:string) {
   try{
       let artwork:Artwork = await axios.get(arturl+id).then(response => response.data)
-      console.log('artwork result: ',artwork)
+      // console.log('artwork result: ',artwork)
       return artwork
   }catch(err){
     console.log(err)

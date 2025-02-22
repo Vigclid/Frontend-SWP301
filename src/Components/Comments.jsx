@@ -109,13 +109,13 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID }) 
           setNewReply(''); // Reset lại nội dung input
           const _updateInteractData = async () => {
             try {
-              const response = await axios.put('http://localhost:7233/api/interact/update');
-              console.log('Interact data updated successfully:', response.data);
+              console.log("Calling /api/interact/update...");
+              return await axios.put('http://localhost:7233/api/interact/update'); //API chua chay duoc (API cua Cong Minh)
             } catch (error) {
               console.error('Error updating interact data:', error);
             }
           };
-
+          console.log("Now call _updateInteractData...");
           // Gọi API cập nhật tương tác
           _updateInteractData();
         })
