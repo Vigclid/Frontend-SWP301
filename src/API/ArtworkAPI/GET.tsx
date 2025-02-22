@@ -2,17 +2,27 @@
 import { Artwork, ArtworkPaymentStatus } from '../../Interfaces/ArtworkInterfaces' 
 import axios from 'axios'
 
-
 const arturl = "http://localhost:7233/api/artworks/"
 const top10arturl = `http://localhost:7233/api/artworks/Top10Liked`
-const random10arturl = `http://localhost:7233/api/artworks/`
+const random10arturl = `http://localhost:7233/api/artworks/random10`
 const artworkbycreatorurl = `http://localhost:7233/api/artworks/accountID/`
-const numberartworkurl = `http://localhost:7233/api/artworks/`
-const nearest7artworkurl = `http://localhost:7233/api/artworks/`
-const artworkbycreatornoimageurl = `http://localhost:7233/api/artworks/`
-const recentartworks = 'http://localhost:7233/api/artworks/'
-const artworkyidnoimageurl = 'http://localhost:7233/api/artworks/'
-const artworkPAymentStatus = 'http://localhost:7233/api/artworks/'
+const numberartworkurl = `http://localhost:7233/api/artworks/recent-artwork-count`
+const nearest7artworkurl = `http://localhost:7233/api/artworks/recent7artworksNotImage`
+const artworkbycreatornoimageurl = `http://localhost:7233/api/artworks/ByCreatorIDNotImage/`
+const recentartworks = 'http://localhost:7233/api/artworks/recent-likes-summary'
+const artworkyidnoimageurl = 'http://localhost:7233/api/artworks/ArtworkNotImageFile/'
+const artworkPAymentStatus = 'http://localhost:7233/api/artworks/GetArtworksWithPaymentStatus'
+const API_URL = "http://localhost:7233/api/interact";
+
+export async function CheckFavouriteStatus(userID: number, artworkID: number) {
+  try {
+    const response = await axios.get(`${API_URL}/favourite/status/${userID}/${artworkID}`);
+    return response.data; // Trả về true/false
+  } catch (error) {
+    console.error("Lỗi khi kiểm tra trạng thái favourite:", error);
+    return false;
+  }
+}
 
 export async function GetArtsPaymentStatus(creatorId:string,artworkId:string) {
   try{
