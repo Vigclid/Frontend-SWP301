@@ -1,113 +1,104 @@
-import React, { useContext } from "react";
-import { ListofUsers } from '../../../share/ListofUsers.js'
-
-import Card from '@mui/material/Card';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
 import CardMedia from '@mui/material/CardMedia';
-import { Button, CardActionArea, CardActions } from '@mui/material';
-import { ThemeContext } from "../../Themes/ThemeProvider.tsx";
-import { Carousel } from 'react-responsive-carousel'
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { Link } from "react-router-dom";
-import { Creator } from "../../../Interfaces/UserInterface.ts";
-import { PlaceHoldersImageCard } from "../PlaceHolders.jsx";
+import { CardActionArea, Typography } from '@mui/material';
+import { Creator } from '../../../Interfaces/UserInterface.ts';
+import { PlaceHoldersImageCard } from '../PlaceHolders.jsx';
+import axios from 'axios';
 
+export default function RecommendedUsers() {
+  const [hoveredID, setHoveredID] = useState<number | null>(null);
+  const [users, setUsers] = useState<Creator[]>([]);
 
-function RecommendedUsers({creatorList}) {
-  const { theme } = useContext(ThemeContext)
+  // Fetch danh sách top 10 người dùng phổ biến
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('http://localhost:7233/api/Creator/top-popular');
+        setUsers(response.data);
+      } catch (error) {
+        console.error('Error fetching top users:', error);
+      }
+    };
 
-  const sortedUsers = creatorList.sort((a: Creator, b: Creator) => b.followCount - a.followCount);
+    fetchUsers();
+  }, []);
 
-  const top12Users = sortedUsers.slice(0, 12); // Get top 12 most 'liked' users
-
-  /* What Next Is A Mess Of Randomness To Keep Things Fresh. Basically I will create 4 Carousel with 12 top users render 4 carousels in a row.
-   PLEASE DON'T TOUCH IT */
-
-  // Function to shuffle an array
-const shuffleArray = (array: number[]): never[] => {
-  const newArray = [...array];
-  for (let i = newArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-  }
-  return newArray as never[];
-};
-
-// Function to create 4 unique sets of 3 non-duplicate items
-const createUniqueSets = (array: number[], setCount: number, itemsPerSet: number): never[][] => {
-  const shuffledData = shuffleArray(array);
-  let uniqueSets: never[][] = [];
-  for (let i = 0; i < setCount; i++) {
-    uniqueSets.push(shuffledData.slice(i * itemsPerSet, i * itemsPerSet + itemsPerSet) as never[]);
-  }
-  return uniqueSets;
-};
-
-// Generate the 4 unique sets
-const uniqueSets = createUniqueSets(top12Users, 4, 3);
-
-  /* THE CODE WORKS!!! DON'T ME WHY!!! */
-
-  function ListOfCarouselCreators(){
-    return(
+  function RecommendedUserList() {
+    return (
       <>
-    {uniqueSets.map((set: Creator[], index) => (
-      <div key={index}>
-        <Carousel
-          infiniteLoop={true}
-          showArrows={false}
-          showStatus={false}
-          showIndicators={false}
-          showThumbs={false}
-          autoPlay={true}
-          interval={5000}
-          className="carouselCustom"
-        >
-          {set.map((user) => (
-            <div key={user.creatorID} >
-              <Link to={`profile/${user.creatorID}`}>
-                <Card >
-                  <CardActionArea>
-                    <CardMedia >
-                      <div className="inforuser" style={{ background: theme.backgroundColor, color: theme.color }}>
-                        <div className="imguser">
-                          <img
-                            src={user.profilePicture?
-                              `data:image/jpeg;base64,${user.profilePicture}`
-                              :
-                              "/images/anon.jpg"
-                            }
-                            alt={user.userName}
-                            loading="lazy" className="imgu"
-                          />
-                        </div>
-                        <div className="contentuser">
-                          <h1>{user.userName}</h1>
-                          <h2>Follower: {user.followCount??0}</h2>
-                        </div>
-                      </div>
-                    </CardMedia>
-                  </CardActionArea>
-                  <CardActions className="card-follow-button">
-                    <Button size="small" color="primary">
-                      + Follow
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Link>
-            </div>
+        <ImageList className='recommendedUsers' cols={5}>
+          {users.map((user) => (
+            <Link key={user.CreatorId} to={`/user/${user.CreatorId}`}>
+              <CardActionArea
+                onMouseEnter={() => setHoveredID(user.CreatorId)}
+                onMouseLeave={() => setHoveredID(null)}
+              >
+                <ImageListItem style={{ position: 'relative' }}>
+                  {/* Hình đại diện */}
+                  <CardMedia
+                    component="img"
+                    style={{
+                      pointerEvents: 'none',
+                      objectFit: 'cover',
+                      width: '15vw',
+                      height: '15vw',
+                      borderRadius: '50%',
+                      minWidth: '182px',
+                      minHeight: '182px',
+                    }}
+                    image={user.profilePicture && user.profilePicture.length > 0 ? user.profilePicture : "/images/default-avatar.png"}
+                    alt={`${user.firstName} ${user.lastName}`}
+                    loading="lazy"
+                  />
+
+                  {/* Hiển thị thông tin khi di chuột vào */}
+                  {hoveredID === user.CreatorId && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        fontSize: '18px',
+                        fontWeight: 'bold',
+                        color: 'white',
+                        textAlign: 'center',
+                        textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+                        zIndex: 1,
+                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                        padding: '10px',
+                        borderRadius: '10px',
+                      }}
+                    >
+                      <div>{`${user.firstName} ${user.lastName}`}</div>
+                      <div>Followers: {user.followerCount}</div>
+                    </div>
+                  )}
+                </ImageListItem>
+              </CardActionArea>
+            </Link>
           ))}
-        </Carousel>
-      </div>
-    ))}
-    </>
-    )
+        </ImageList>
+      </>
+    );
   }
 
   return (
-    <div className="groupOfCarousel">
-      {creatorList.length!==0 ? <ListOfCarouselCreators/>:<PlaceHoldersImageCard/>}
-    </div>
+    <>
+      <div className='headrecommended'>
+        <Typography variant='h5'>
+          Recommended Users
+        </Typography>
+        <Link to={`/top-users`}>
+          <div className='seemore'>See More</div>
+        </Link>
+      </div>
+      <div className='recommendedimg'>
+        {users.length !== 0 ? <RecommendedUserList /> : <PlaceHoldersImageCard />}
+      </div>
+    </>
   );
 }
-
-export default RecommendedUsers;

@@ -78,16 +78,14 @@ export default function HomePage() {
           <RecommendedWorks artworkList={reccomendedArtworklist} user={user} />
         </div>
 
+
         <div className='recommendedusers'>
-          <div className='headrecommended'>
-            <Typography variant='h5'>Recommended Users</Typography>
-            <Link to={`userrecomment`}>
-              <div className='seemore'>See More</div></Link>
-          </div>
-          <div>
-            <RecommendedUsers creatorList={creatorList} />
-          </div>
+            <RecommendedUsers/>
         </div>
+
+
+
+
         <div className='Randomimg'>
           <div className='headrecommended'>
             <Typography variant='h5'>Random Artworks, GO!!!</Typography>
