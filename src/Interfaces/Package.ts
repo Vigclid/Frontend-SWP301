@@ -6,9 +6,8 @@ export interface Package {
 }
 
 export interface CurrentPackage {
-  currentPackageID: number;
-  creatorID: number; // from table creator FK
-  packageID: number; // from table package FK
-  Date: string | Date; // ISO date
+  rankID: number; // fk của user (IN DB is RankID)
+  accountID: number;
+  typeID: number; //fk currentPackageID(IN DB is TypeofRank)
+  dayToRentRankAt: string | Date; // ISO date
 }
-
