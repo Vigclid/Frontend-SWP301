@@ -41,41 +41,50 @@ export default function PostWork() {
   ];
   const { theme } = useContext(ThemeContext);
   const { id } = useParams();
-  const [artwork, setArtwork] = useState<DownloadArtwork>();
-  const [status, setStatus] = useState<ArtworkPaymentStatus>();
-  const [creator, setCreator] = useState<Creator>();
-  const [tags, setTags] = useState<Tag[]>([]);
-  const savedAuth = sessionStorage.getItem("auth");
+  const [artwork, setArtwork] = useState<DownloadArtwork>()
+  const [status, setStatus] = useState<ArtworkPaymentStatus>()
+  const [creator, setCreator] = useState<Creator>()
+  const [tags, setTags] = useState<Tag[]>([])
+  const savedAuth = sessionStorage.getItem('auth');
   const savedUser: Creator = savedAuth ? JSON.parse(savedAuth) : null;
+  const viewIncremented = useRef(false);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [openDowload, setOpenDowload] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   useEffect(() => {
     const getArtWork = async () => {
-      setLoading(true);
+      setLoading(true)
       const artworkbyid = await GetArtById(id ? id : "1");
       // console.log('artwork by id: '+artworkbyid?.creatorID);
       if (!artworkbyid) {
         setLoading(false);
         return;
       }
-      setArtwork({ ...artworkbyid, idDowLoad: "" });
-      const paystatus = await GetArtsPaymentStatus(
-        savedUser?.userId,
-        artworkbyid.artworkID
-      );
+      // Sau khi lấy được artwork, set state
+      setArtwork({ ...artworkbyid, idDowLoad: '' });
+
+      if (savedUser && artworkbyid.creatorID !== savedUser.userId) {
+        try {
+          const response = await axios.put(
+            `http://localhost:7233/api/artworks/increment-views/${artworkbyid.artworkID}/${savedUser.userId}`
+          );
+          console.log('View incremented on direct access:', response.data);
+          // Đánh dấu đã gọi API tăng view cho artwork này trong session
+        } catch (error) {
+          console.error('Error incrementing view on direct access:', error);
+        }
+      }
+
+      const paystatus = await GetArtsPaymentStatus(savedUser?.userID, artworkbyid.artworkID);
       setStatus(paystatus);
-      const creator = await GetCreatorByID(
-        artworkbyid ? artworkbyid.creatorID : "1"
-      );
-      // console.log('Creator ID:', artworkbyid.creatorID);
-      // console.log('test'+creator);
-      setCreator(creator);
+      const creatorData = await GetCreatorByID(artworkbyid ? artworkbyid.creatorID : "1");
+      setCreator(creatorData);
       setLoading(false);
     };
     getArtWork();
   }, [id]);
+
 
   useEffect(() => {
     const getTags = async () => {
@@ -114,7 +123,7 @@ export default function PostWork() {
 
   const handleYesClick = async () => {
     await downloadSectionAsImage(artwork?.idDowLoad);
-  };
+  }
 
   const handleDownload = async (id: string) => {
     if (!artwork?.artworkID) return; // Nếu artworkID không có, không tiếp tục
@@ -131,11 +140,12 @@ export default function PostWork() {
 
   const handleDelete = async () => {
     try {
-      setLoading(true);
-      const response = await DeleteArtById(artwork?.artworkID ?? "");
-      console.log(response.data);
-      setLoading(false);
-      navigate(`/characters/profile/${savedUser?.userId}`);
+      setLoading(true)
+      const response = await DeleteArtById(artwork?.artworkID ?? "")
+      console.log(response.data)
+      setLoading(false)
+      console.log('artwork: ', artwork)
+      navigate(`/characters/profile/${savedUser?.userID}`)
     } catch (err) {
       console.log(err);
     }
@@ -169,6 +179,11 @@ export default function PostWork() {
       </>
     );
   }
+  // const getArtWorkId = async () => {
+  //   const artworkbyid = await GetArtById(id ? id : "1");
+  //   return artworkbyid
+  // }
+  // getArtWorkId()
   return (
     <Box sx={{ paddingTop: "2%" }}>
       <Backdrop
@@ -224,6 +239,13 @@ export default function PostWork() {
             <div className="content-post-img">
               <div>Name: {artwork?.artworkName}</div>
               <div>Description: {artwork?.description}</div>
+              <div>Posted date: {artwork?.dateCreated}</div>
+              <div>View: {artwork?.views}</div>
+              <div>
+                Price: {artwork?.price === 0 ? 'Free' : formatMoney(artwork?.price)}
+              </div>
+              <h4 style={{ marginBottom: '5px', marginTop: '10px' }}>Tag:</h4>
+              <div className='tag-container'>
               <h4 style={{ marginBottom: "5px", marginTop: "10px" }}>Tag:</h4>
               <div className="tag-container">
                 {tags.length !== 0 ? <TagList /> : ""}
@@ -316,3 +338,4 @@ export default function PostWork() {
   );
   console.log(artwork?.artworkID);
 }
+
