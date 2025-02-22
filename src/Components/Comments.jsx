@@ -6,6 +6,7 @@ import CustomizedTextField from './StyledMUI/CustomizedTextField.tsx';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import '../css/Comment.css';
 
 export default function Comments() {
   const [comments, setComments] = useState([]);

@@ -13,6 +13,7 @@ export default function RecommendedWords({ artworkList, user }) {
   const [hoveredID, setHoveredID] = useState(null);
   const [creators, setCreators] = useState([]);
   const authData = sessionStorage.getItem('auth');
+  console.log('artworkList:', artworkList);
   console.log('Auth data:', authData);
   const userid = authData ? JSON.parse(authData) : null;
   console.log('User ID:', userid?.userId);
@@ -34,16 +35,6 @@ export default function RecommendedWords({ artworkList, user }) {
     return creator ? `${creator.firstName} ${creator.lastName}` : "Unknown Author";
   };
 
-  // Hàm gọi API tăng views cho artwork
-  const incrementViewCount = async (artworkId) => {
-    try {
-      await axios.put(`http://localhost:7233/api/artworks/increment-views/${artworkId}/${userid?.userId}`);
-      console.log(`Incremented views for artwork ${artworkId}`);
-    } catch (error) {
-      console.error("Error incrementing views:", error);
-    }
-  };
-
   function ReccomendedArts() {
     return (
       <ImageList className='recommendedImages' cols={5}>
@@ -51,7 +42,6 @@ export default function RecommendedWords({ artworkList, user }) {
           <Link
             key={work.artworkID}
             to={`/characters/artwork/${work.artworkID}`}
-            onClick={() => incrementViewCount(work.artworkID)}
           >
             <CardActionArea
               onMouseEnter={() => setHoveredID(work.artworkID)}

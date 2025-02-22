@@ -1,5 +1,5 @@
 
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import CommentIcon from '@mui/icons-material/Comment';
 import Avatar from '@mui/material/Avatar';
@@ -26,6 +26,7 @@ import { DeleteArtById } from '../../API/ArtworkAPI/DELETE.tsx';
 import ArtShopConfirm from './ArtShopConfirm.jsx';
 import html2canvas from 'html2canvas';
 import ArtShopDialog from './ArtShopDialog.jsx';
+import axios from 'axios';
 import '../../css/ArtPost.css';
 
 
@@ -39,29 +40,42 @@ export default function PostWork() {
   const [tags, setTags] = useState<Tag[]>([])
   const savedAuth = sessionStorage.getItem('auth');
   const savedUser: Creator = savedAuth ? JSON.parse(savedAuth) : null;
+  const viewIncremented = useRef(false);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [openDowload, setOpenDowload] = useState(false);
   const navigate = useNavigate()
   useEffect(() => {
     const getArtWork = async () => {
-      setLoading(true)
+      setLoading(true);
       const artworkbyid = await GetArtById(id ? id : "1");
       if (!artworkbyid) {
         setLoading(false);
         return;
       }
-      setArtwork({ ...artworkbyid, idDowLoad: '' })
-      const paystatus = await GetArtsPaymentStatus(savedUser?.userID, artworkbyid.artworkID)
-      setStatus(paystatus)
-      const creator = await GetCreatorByID(artworkbyid ? artworkbyid.creatorID : "1")
-      // console.log('Creator ID:', artworkbyid.creatorID);
-      // console.log('test'+creator);
-      setCreator(creator)
-      setLoading(false)
-    }
-    getArtWork()
-  }, [id])
+      // Sau khi lấy được artwork, set state
+      setArtwork({ ...artworkbyid, idDowLoad: '' });
+
+      if (savedUser && artworkbyid.creatorID !== savedUser.userId) {
+        try {
+          const response = await axios.put(
+            `http://localhost:7233/api/artworks/increment-views/${artworkbyid.artworkID}/${savedUser.userId}`
+          );
+          console.log('View incremented on direct access:', response.data);
+          // Đánh dấu đã gọi API tăng view cho artwork này trong session
+        } catch (error) {
+          console.error('Error incrementing view on direct access:', error);
+        }
+      }
+
+      const paystatus = await GetArtsPaymentStatus(savedUser?.userID, artworkbyid.artworkID);
+      setStatus(paystatus);
+      const creatorData = await GetCreatorByID(artworkbyid ? artworkbyid.creatorID : "1");
+      setCreator(creatorData);
+      setLoading(false);
+    };
+    getArtWork();
+  }, [id]);
 
 
   useEffect(() => {
