@@ -28,8 +28,8 @@ export function NormalLogin() {
 
 export async function CheckLogin(checkAccount:initialUser, storeUserData:any) {
   try {
-    const response = await axios.get(accounturl);
-    const listOfAccounts = response.data;
+    // const response = await axios.get(accounturl);
+    // const listOfAccounts = response.data;
     let foundAccount: initialUser | undefined;
     // const foundAccount:initialUser = listOfAccounts.find((account: { email: string; password: string }) => account.email === checkAccount.email && account.password === checkAccount.password);
     try {
@@ -48,8 +48,7 @@ export async function CheckLogin(checkAccount:initialUser, storeUserData:any) {
 
     if (foundAccount) {
       //Get the user roles
-      const findRole = roleurl+foundAccount.roleID;
-      const userroleResponse = await axios.get(findRole);
+      const userroleResponse = await axios.get(roleurl+foundAccount.roleID);
       const userrole:roles = userroleResponse.data;
       //Store the user role in sesison
       (userrole.roleName === "Admin") ? sessionStorage.setItem('userRole', "AD") 

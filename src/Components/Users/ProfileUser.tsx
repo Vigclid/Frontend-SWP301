@@ -56,9 +56,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from "axios"
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
-
-
-
+import {parse} from "date-fns/parse";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -182,8 +180,9 @@ export default function ProfileUser() {
       biography: "",
       address: "",
       lastName: "",
-      dateOfBirth: "",
-
+      date: "",
+      phoneNumber: "",
+      
     },
 
 
@@ -191,10 +190,21 @@ export default function ProfileUser() {
     validationSchema: Yup.object({
       firstName: Yup.string().required("We need your first name"),
       lastName: Yup.string().required("Yo!!! we need to know you"),
-      dateOfBirth: Yup.string().required("What!?"),
-      address: Yup.string().required("Where are you from?"),
-      biography: Yup.string().required("Tell the community something about yourself")
+      date: Yup.date()
+      .transform(function (value, originalValue) {
+        if (this.isType(value)) {
+          return value;
+        }
+        const result = parse(originalValue, "dd/MM/yyyy", new Date());
+        return result;
+      })
+      .typeError("please enter a valid date")
+      .required()
+      .max(new Date().getFullYear(), "You can not born in the future!!"),
 
+      address: Yup.string().required("Where are you from?"),
+      biography: Yup.string().required("Tell the community something about yourself"),
+      phoneNumber: Yup.string().required("How should we contract you, genius? ")
     }),
 
     onSubmit: (values) => {
@@ -203,13 +213,16 @@ export default function ProfileUser() {
       const EditProfile = async () => {
         try {
           checkChangeProfile = await PutProfile({
-            email: userInSession?.email,
+            accountId: userInSession?.accountId,
             firstName: values.firstName,
             lastName: values.lastName,
             address: values.address,
             biography: values.biography,
+            dateOfBirth : values.date,
+            phoneNumber : values.phoneNumber
           },)
-
+          
+          
 
           if (String(checkChangeProfile) === "1") {
             setSnackbarChangePassword(true);
@@ -277,6 +290,7 @@ export default function ProfileUser() {
     getUserProfile()
     getUserArtworks()
   }, [])
+
 
 
   //Covert Blob to Base64 string to easily view the image
@@ -444,7 +458,7 @@ export default function ProfileUser() {
             <ImageListItem key={work.artworkID}>
 
               <img
-                src={`data:image/jpeg;base64,${work.imageFile}`}
+                src={`${work.imageFile}`}
                 alt={work.artworkName}
                 loading="lazy"
               />
@@ -897,6 +911,37 @@ export default function ProfileUser() {
                     {F4k.errors.address && (<Typography variant="body2" color="red">{F4k.errors.address}
                     </Typography>)}
                   </Grid>
+                  
+                  <Grid item xs={6}>
+                    <CustomizedTextField
+                      label="Date (dd/MM/yyyy) "
+                      name="date"
+                      autoComplete="date"
+                      fullWidth
+                      value={F4k.values.date} onChange={F4k.handleChange}
+                    />
+                      
+                    {F4k.errors.date && (
+                      <Typography variant="body2" color="red">
+                        {F4k.errors.date}
+                      </Typography>
+                    )}
+                  </Grid>
+                  
+                  <Grid item xs={6}>
+                    <CustomizedTextField
+                      id="phoneNumber"
+                      label="Phone Number"
+                      name="phoneNumber"
+                      autoComplete="phoneNumber"
+                      fullWidth
+                      multiline
+                      value={F4k.values.phoneNumber} onChange={F4k.handleChange}
+                    />
+                    {F4k.errors.phoneNumber && (<Typography variant="body2" color="red">{F4k.errors.phoneNumber}
+                    </Typography>)}
+                  </Grid>
+
 
                   <Grid item xs={12}>
                     <CustomizedTextField
