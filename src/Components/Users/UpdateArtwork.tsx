@@ -18,6 +18,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Artwork } from "../../Interfaces/ArtworkInterfaces.ts";
 import { FormControlLabel } from "@mui/material";
 import { GetArtById } from "../../API/ArtworkAPI/GET.tsx";
+import { GetTagByArtId } from "../../API/TagAPI/GET.tsx";
 function UpdateArtwork() {
   const { id } = useParams();
   const { theme } = useContext(ThemeContext);
@@ -153,6 +154,8 @@ function UpdateArtwork() {
       try {
         const artworkData: Artwork = await GetArtById(id);
         console.log(artworkData);
+        const tagList: tag[] = await GetTagByArtId(artworkData.artworkID);
+        console.log(tagList);
         // Nếu có imageFile, chuyển thành Data URL để xem trước
         if (artworkData.imageFile) {
           setPreview(`${artworkData.imageFile}`);
@@ -169,7 +172,7 @@ function UpdateArtwork() {
           purchasable: artworkData.purchasable,
           price: artworkData.price,
           imageFile: artworkData.imageFile,
-          artworkTag: artworkData.artworkTag || [],
+          artworkTag: tagList || [],
 
           // Không load hình ảnh trực tiếp, sẽ load qua preview\n          artworkTag: artworkData.artworkTag || [],
         });
@@ -295,6 +298,7 @@ function UpdateArtwork() {
                                 artworkTagID: 0,
                                 artworkID: 0,
                                 tagID: value.tagId || value.tagID,
+                                tagName: value.tagName, // thêm tagName để lưu đầy đủ thông tin
                               };
                               arrayHelpers.push(newTag);
                               console.log("Selected tag:", value);
@@ -326,32 +330,30 @@ function UpdateArtwork() {
                           )}
                         />
                         <div className="tagChips">
-                          {formik.values.artworkTag.map(
-                            (tag: { tagID }, index) => {
-                              const selectedTag = listOfTags?.find(
+                          {formik.values.artworkTag.map((tag, index) => {
+                            const label =
+                              tag.tagName ||
+                              listOfTags?.find(
                                 (t) =>
                                   t.tagId === tag.tagID || t.tagID === tag.tagID
-                              );
-                              console.log(
-                                "Rendering chip for tag:",
-                                selectedTag
-                              );
-                              return (
-                                <Chip
-                                  key={index}
-                                  label={selectedTag?.tagName || "Unknown Tag"}
-                                  onDelete={() => arrayHelpers.remove(index)}
-                                  style={{
-                                    margin: "4px",
-                                    border: `1px solid ${theme.color}`,
-                                    backgroundColor: theme.backgroundColor,
-                                    color: theme.color,
-                                    boxShadow: `0 0 5px ${theme.color}`,
-                                  }}
-                                />
-                              );
-                            }
-                          )}
+                              )?.tagName ||
+                              "Unknown Tag";
+                            console.log("Rendering chip for tag:", label);
+                            return (
+                              <Chip
+                                key={index}
+                                label={label}
+                                onDelete={() => arrayHelpers.remove(index)}
+                                style={{
+                                  margin: "4px",
+                                  border: `1px solid ${theme.color}`,
+                                  backgroundColor: theme.backgroundColor,
+                                  color: theme.color,
+                                  boxShadow: `0 0 5px ${theme.color}`,
+                                }}
+                              />
+                            );
+                          })}
                         </div>
                       </>
                     )}

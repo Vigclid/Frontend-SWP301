@@ -150,7 +150,8 @@ export default function PostWork() {
       const response = await DeleteArtById(artwork?.artworkID ?? "");
       console.log(response.data);
       setLoading(false);
-      navigate(`/characters/profile/${savedUser?.userId}`);
+      navigate(`/characters/profile/${savedUser?.accountId}`);
+      console.log();
     } catch (err) {
       console.log(err);
     }
