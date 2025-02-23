@@ -7,6 +7,10 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 
+
+
+
+
 export default function Comments() {
   const [comments, setComments] = useState([]);
   const [creators, setCreators] = useState([]);
@@ -38,7 +42,7 @@ export default function Comments() {
         .then((response) => response.json())
         .then((data) => setCreators(data))
         .catch((error) => setCreators([]));
-  }, [artworkID]);
+  },  [comments]);
 
   const getUserNameById = (userID) => {
     const creator = creators.find((creator) => creator.userId === userID);
@@ -196,6 +200,7 @@ function CommentInput({ artworkID }) {
 
       const user = authData ? JSON.parse(authData) : null;
 
+
       if (user) {
         const commentData = {
           commentDetail: values.commentDetail,
@@ -203,6 +208,9 @@ function CommentInput({ artworkID }) {
           userID: user.userId,    // Lấy userID từ session
           createdDate: new Date()
         };
+        
+
+        formik.values.commentDetail = "";
 
         fetch('http://localhost:7233/api/comments/', {
           method: 'POST',
@@ -261,7 +269,7 @@ function CommentInput({ artworkID }) {
                 variant="contained"
                 type="submit"
                 endIcon={<SendIcon />}
-                disabled={formik.isSubmitting || !formik.isValid}
+                // disabled={formik.isSubmitting || !formik.isValid}
             >
               Send
             </CustomizedButton>

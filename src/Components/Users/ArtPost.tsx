@@ -221,31 +221,35 @@ export default function PostWork() {
               />
             </div>
             <Divider orientation="vertical" />
-            <div className="contentpost">
-              <div className="infor-user-post">
-                <div className="avatar-user-post">
-                  <Stack direction="row" spacing={2}>
-                    <Avatar
-                        src={creator?.profilePicture}
-                        sx={{ width: 50, height: 50 }}
-                    />
-                  </Stack>
-                </div>
-                <div className="name-user-post">
-                  {" "}
-                  {creator?.firstName + " " + creator?.lastName}
-                </div>
-              </div>
-              <div className="content-post-img">
-                <div>Name: {artwork?.artworkName}</div>
-                <div>Description: {artwork?.description}</div>
-                <h4 style={{ marginBottom: "5px", marginTop: "10px" }}>Tag:</h4>
-                <div className="tag-container">
-                  {tags.length !== 0 ? <TagList /> : ""}
-                </div>
+            <div className='contentpost'>
+            <div className='infor-user-post'>
+              <div className='avatar-user-post'>
+                <Stack direction="row" spacing={2}>
+                  <Avatar src={creator?.profilePicture}
+                    sx={{ width: 50, height: 50 }} />
+                </Stack></div>
+              {/* <div className='name-user-post'> {creator?.firstName +' '+ creator?.lastName}</div> */}
+              <div className='name-user-post'>
+                <Link to={`/characters/profile/${creator?.accountId}`} className="name-link">
+                  {creator?.firstName + ' ' + creator?.lastName}
+                </Link>
               </div>
             </div>
-          </div>
+            <div className='content-post-img'>
+              <div>Name: {artwork?.artworkName}</div>
+              <div>Description: {artwork?.description}</div>
+              <div>Posted date: {artwork?.dateCreated}</div>
+              <div>View: {artwork?.views}</div>
+              <div>
+                Price: {artwork?.price === 0 ? 'Free' : formatMoney(artwork?.price)}
+              </div>
+              <h4 style={{ marginBottom: '5px', marginTop: '10px' }}>Tag:</h4>
+              <div className='tag-container'>
+                {tags.length !== 0 ? <TagList /> : ""}
+              </div>
+            </div >
+          </div >
+        </div >
           <Box className="comment-section">
             <div
                 style={{

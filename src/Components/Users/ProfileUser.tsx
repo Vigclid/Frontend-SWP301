@@ -57,6 +57,15 @@ import axios from "axios"
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
 import {parse} from "date-fns/parse";
+import '../../css/ArtPost.css';
+
+
+
+  // Attempt to retrieve the auth state from sessionStorage
+  const savedAuth = sessionStorage.getItem('auth');
+  // Check if there's any auth data saved and parse it
+  const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
+  // Now 'auth' contains your authentication state or null if there's nothing saved
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -126,9 +135,9 @@ export default function ProfileUser() {
 
 
     validationSchema: Yup.object({
-      OldPassword: Yup.string().required("What? Don't remember password?").min(5, "Must be 5 characters or more"),
-      NewPassword: Yup.string().required("Password! Or we gonna steal your account.").min(5, "Must be 5 characters or more"),
-      ConfirmPassword: Yup.string().required("Goldfish? Type new password again.").min(5, "Must be 5 characters or more"),
+      OldPassword: Yup.string().required("What? Don't remember the password?").min(5, "Must be 5 characters or more"),
+      NewPassword: Yup.string().required("Password! Or we're gonna steal your account.").min(5, "Must be 5 characters or more"),
+      ConfirmPassword: Yup.string().required("Goldfish? Type a new password again.").min(5, "Must be 5 characters or more"),
 
     }),
 
@@ -176,12 +185,12 @@ export default function ProfileUser() {
     validateOnChange: false,
     validateOnBlur: false,
     initialValues: {
-      firstName: "",
-      biography: "",
-      address: "",
-      lastName: "",
-      date: "",
-      phoneNumber: "",
+      firstName: userInSession?.firstName,
+      biography: userInSession?.biography,
+      address: userInSession?.address,
+      lastName: userInSession?.lastName,
+      date: userInSession?.dateOfBirth,
+      phoneNumber: userInSession?.phoneNumber,
       
     },
 
@@ -203,7 +212,7 @@ export default function ProfileUser() {
       .max(new Date().getFullYear(), "You can not born in the future!!"),
 
       address: Yup.string().required("Where are you from?"),
-      biography: Yup.string().required("Tell the community something about yourself"),
+      biography: Yup.string().required("Tell the community something about yourself").max(250,"Too much! We don't have enough money to handle that much!"),
       phoneNumber: Yup.string().required("How should we contract you, genius? ")
     }),
 
@@ -263,11 +272,7 @@ export default function ProfileUser() {
   const { theme } = useContext(ThemeContext)
 
 
-  // Attempt to retrieve the auth state from sessionStorage
-  const savedAuth = sessionStorage.getItem('auth');
-  // Check if there's any auth data saved and parse it
-  const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
-  // Now 'auth' contains your authentication state or null if there's nothing saved
+
 
   const handleClick = () => {
     setIsFollowing(!isFollowing)
@@ -845,7 +850,7 @@ export default function ProfileUser() {
 
 
                           <Grid item xs={6}>
-                            <Link style={{ fontStyle: "italic", color: "grey" }} to={`/forgotpassword`}> Create account from Email? Click here to set password!</Link>
+                            <Link style={{ fontStyle: "italic", color: "grey" }} to={`/forgotpassword`}> Create an account from the Email? Click here to set the password!</Link>
                           </Grid>
 
                         </Grid>

@@ -21,7 +21,7 @@ export default function TestFavouriteButton({ userID, artworkID }) {
   }, [userID, artworkID]); // Chạy lại khi userID hoặc artworkID thay đổi
 
   const handleClick = async () => {
-    const result = await ToggleFavourite(userID, <article></article>workID);
+    const result = await ToggleFavourite(userID, <article></article>artworkID);
     if (result) {
       setIsFavourite((prev) => !prev);
     }
