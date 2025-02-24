@@ -31,8 +31,8 @@ export default function RecommendedUsers() {
       <>
         <ImageList className="recommendedUsers" cols={5}>
           {users.map((user) => (
-            <Link key={user.CreatorId} to={`/characters/profile/${user.accountId}`}>
-              <CardActionArea onMouseEnter={() => setHoveredID(user.accountId)} onMouseLeave={() => setHoveredID(null)}>
+            <Link key={user.CreatorId} to={`/user/${user.CreatorId}`}>
+              <CardActionArea onMouseEnter={() => setHoveredID(user.CreatorId)} onMouseLeave={() => setHoveredID(null)}>
                 <ImageListItem style={{ position: "relative" }}>
                   {/* Hình đại diện */}
                   <CardMedia
