@@ -14,3 +14,16 @@ export async function ToggleFavourite(userID: number, artworkID: string) {
     return null;
   }
 }
+
+export async function ToggleThumbUp(userID: number, artworkID: string) {
+  try {
+    const response = await axios.post(`${API_URL}/favourite/toggle`, {
+      userID,
+      artworkID,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi thêm/bỏ Favourite:", error);
+    return null;
+  }
+}

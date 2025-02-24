@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Box, Button, Checkbox, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Typography } from "@mui/material";
 import axios from "axios";
 import { Report } from "../../../Interfaces/ReportInterfaces";
 import CustomizedTextField from "../../StyledMUI/CustomizedTextField.tsx";
@@ -70,7 +70,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ reporterId, reportedId, artwork
   };
 
   return (
-    <Box sx={{ p: 3, background: theme.backgroundColor, borderRadius: 5, color: theme.color }}>
+    <Box sx={{ p: 3, background: theme.backgroundColor, color: theme.color }}>
       <Typography variant="h5" color={theme.color}>
         Report Violation
       </Typography>
@@ -82,9 +82,16 @@ const ReportForm: React.FC<ReportFormProps> = ({ reporterId, reportedId, artwork
         {["Artwork", "User"].map((type) => (
           <Button
             key={type}
-            variant={selectedType === type ? "contained" : "outlined"}
+            variant="outlined"
             onClick={() => setSelectedType(type)}
-            sx={{ color: selectedType === type ? theme.color : theme.color2, borderColor: theme.color2 }}>
+            sx={{
+              color: selectedType === type ? (dark ? theme.color : theme.color4) : theme.color2,
+              borderColor: selectedType === type ? theme.color : theme.color2,
+              backgroundColor: selectedType === type && !dark ? theme.backgroundColor2 : "transparent",
+              "&:hover": {
+                backgroundColor: selectedType === type && !dark ? theme.backgroundColor2 : "transparent",
+              },
+            }}>
             {type}
           </Button>
         ))}
@@ -97,9 +104,16 @@ const ReportForm: React.FC<ReportFormProps> = ({ reporterId, reportedId, artwork
         {reasons.map((reason) => (
           <Button
             key={reason}
-            variant={selectedReasons.includes(reason) ? "contained" : "outlined"}
+            variant="outlined"
             onClick={() => handleReasonClick(reason)}
-            sx={{ color: selectedReasons.includes(reason) ? theme.color : theme.color2, borderColor: theme.color2 }}>
+            sx={{
+              color: selectedReasons.includes(reason) ? (dark ? theme.color : theme.color4) : theme.color2,
+              borderColor: selectedReasons.includes(reason) ? theme.color : theme.color2,
+              backgroundColor: selectedReasons.includes(reason) && !dark ? theme.backgroundColor2 : "transparent",
+              "&:hover": {
+                backgroundColor: selectedReasons.includes(reason) && !dark ? theme.backgroundColor2 : "transparent",
+              },
+            }}>
             {reason}
           </Button>
         ))}
@@ -110,7 +124,18 @@ const ReportForm: React.FC<ReportFormProps> = ({ reporterId, reportedId, artwork
           fullWidth
           variant="outlined"
           label="Describe the issue"
-          sx={{ mt: 2, color: theme.color }}
+          sx={{
+            mt: 2,
+            "& .MuiInputBase-root": {
+              color: theme.color,
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: theme.color2,
+            },
+            "& .MuiInputLabel-root": {
+              color: theme.color2,
+            },
+          }}
           value={otherDescription}
           onChange={(e) => setOtherDescription(e.target.value)}
         />
