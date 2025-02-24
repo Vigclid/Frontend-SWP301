@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import CommentIcon from "@mui/icons-material/Comment";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
-import TestIcon from "../TestIcon.jsx";
+import TestFavouriteButton from "../TestFavouriteButton.tsx"
 import Comments from "../Comments.jsx";
 import Box from "@mui/material/Box";
 import Backdrop from "@mui/material/Backdrop";
@@ -30,6 +30,7 @@ import ArtShopConfirm from "./ArtShopConfirm.jsx";
 import html2canvas from "html2canvas";
 import ArtShopDialog from "./ArtShopDialog.jsx";
 import axios from "axios";
+import TestIcon from "../TestIcon.jsx";
 
 export default function PostWork() {
   const colors = [
@@ -46,8 +47,10 @@ export default function PostWork() {
   const [status, setStatus] = useState<ArtworkPaymentStatus>();
   const [creator, setCreator] = useState<Creator>();
   const [tags, setTags] = useState<Tag[]>([]);
+
   const savedAuth = sessionStorage.getItem("auth");
   const savedUser: Creator = savedAuth ? JSON.parse(savedAuth) : null;
+
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [openDowload, setOpenDowload] = useState(false);
@@ -57,7 +60,7 @@ export default function PostWork() {
       setLoading(true);
       const artworkbyid = await GetArtById(id ? id : "1");
       // console.log('artwork by id: '+artworkbyid?.creatorID);
-      if (savedUser && artworkbyid.creatorID !== savedUser.userId) {
+
         try {
           const response = await axios.put(
               `http://localhost:7233/api/artworks/increment-views/${artworkbyid.artworkID}/${savedUser.userId}`
@@ -67,18 +70,18 @@ export default function PostWork() {
         } catch (error) {
           console.error('Error incrementing view on direct access:', error);
         }
-      }
+      
 
       if (!artworkbyid) {
         setLoading(false);
         return;
       }
       setArtwork({ ...artworkbyid, idDowLoad: "" });
-      const paystatus = await GetArtsPaymentStatus(
-          savedUser?.userId,
-          artworkbyid.artworkID
-      );
-      setStatus(paystatus);
+      // const paystatus = await GetArtsPaymentStatus(
+      //     savedUser?.userId,
+      //     artworkbyid.artworkID
+      // );
+      // setStatus(paystatus);
       const creator = await GetCreatorByID(
           artworkbyid ? artworkbyid.creatorID : "1"
       );
@@ -259,7 +262,7 @@ export default function PostWork() {
                   width: "60%",
                 }}
             >
-              <TestIcon />
+               <TestIcon userID={savedUser?.userId} artworkID={id}/>
               <div className="button-comment">
                 <a href="#comment" style={{ display: "flex" }}>
                   <CommentIcon

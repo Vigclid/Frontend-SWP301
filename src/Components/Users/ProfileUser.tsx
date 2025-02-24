@@ -66,7 +66,7 @@ import '../../css/ArtPost.css';
   // Check if there's any auth data saved and parse it
   const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
   // Now 'auth' contains your authentication state or null if there's nothing saved
-
+ 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -253,7 +253,7 @@ export default function ProfileUser() {
   })
   // |||||||||----END-EDIT-PROFILE----|||||||||
 
-
+  
 
 
   const [isFollowing, setIsFollowing] = useState(false)
@@ -270,9 +270,6 @@ export default function ProfileUser() {
   };
   let { id } = useParams()
   const { theme } = useContext(ThemeContext)
-
-
-
 
   const handleClick = () => {
     setIsFollowing(!isFollowing)
@@ -294,7 +291,7 @@ export default function ProfileUser() {
     }
     getUserProfile()
     getUserArtworks()
-  }, [])
+  }, [id])
 
 
 

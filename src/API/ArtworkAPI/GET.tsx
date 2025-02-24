@@ -14,6 +14,7 @@ const artworkbycreatornoimageurl = `http://localhost:7233/api/artworks/`;
 const recentartworks = "http://localhost:7233/api/artworks/";
 const artworkyidnoimageurl = "http://localhost:7233/api/artworks/";
 const artworkPAymentStatus = "http://localhost:7233/api/artworks/";
+const API_URL = "http://localhost:7233/api/interact";
 
 export async function GetArtsPaymentStatus(
   creatorId: string,
@@ -149,5 +150,15 @@ export async function GetArtByIdNoImage(id: string) {
     return artwork;
   } catch (err) {
     console.log(err);
+  }
+}
+
+export async function CheckFavouriteStatus(userID: number, artworkID: number) {
+  try {
+    const response = await axios.get(`${API_URL}/favourite/status/${userID}/${artworkID}`);
+    return response.data; // Trả về true/false
+  } catch (error) {
+    console.error("Lỗi khi kiểm tra trạng thái favourite:", error);
+    return false;
   }
 }
