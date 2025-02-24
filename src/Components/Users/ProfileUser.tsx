@@ -671,7 +671,7 @@ export default function ProfileUser() {
                   </DialogContent>
                   <DialogActions>
                     <Button onClick={handleClose} variant="outlined" color="error">Cancel</Button>
-                    <Button type="submit" variant="outlined" onClick={handleSubmitReport} >Report</Button>
+                    <Button type="submit" variant="outlined" onClick={handleSubmitReport} >Submit</Button>
                   </DialogActions>
                 </Dialog>
 
