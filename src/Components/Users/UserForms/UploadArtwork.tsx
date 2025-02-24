@@ -28,9 +28,9 @@ import { Artwork } from "../../../Interfaces/ArtworkInterfaces.ts";
 
 function UploadArtwork() {
   const { theme } = useContext(ThemeContext);
-  const [preview, setPreview] = useState<string>(
-    "https://scontent.fdad3-6.fna.fbcdn.net/v/t39.30808-1/412275689_1752721802217153_2393610321619100452_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=109&ccb=1-7&_nc_sid=e99d92&_nc_ohc=xk0cNLfp64MQ7kNvgERpEBP&_nc_oc=AdgqMG_zsOI-uSConoJjAHY_iE5IyJefYa8lm8IbStuuQuvtSEPVh6lw7pna9uk95DONTt3t55fXwDFgr9sSuEMk&_nc_zt=24&_nc_ht=scontent.fdad3-6.fna&_nc_gid=Ait6pYWsX0SurZJiXWjxDDi&oh=00_AYDDXDsNgryx-m8TRMK-zaQGeA2K1saXboiE9gqe3Y4wZA&oe=67BD1B40"
-  );
+  const defaultPreview =
+    "https://scontent.fdad3-6.fna.fbcdn.net/v/t39.30808-1/412275689_1752721802217153_2393610321619100452_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=109&ccb=1-7&_nc_sid=e99d92&_nc_ohc=xk0cNLfp64MQ7kNvgERpEBP&_nc_oc=AdgqMG_zsOI-uSConoJjAHY_iE5IyJefYa8lm8IbStuuQuvtSEPVh6lw7pna9uk95DONTt3t55fXwDFgr9sSuEMk&_nc_zt=24&_nc_ht=scontent.fdad3-6.fna&_nc_gid=Ait6pYWsX0SurZJiXWjxDDi&oh=00_AYDDXDsNgryx-m8TRMK-zaQGeA2K1saXboiE9gqe3Y4wZA&oe=67BD1B40";
+  const [preview, setPreview] = useState<string>(defaultPreview);
   const [blobImage, setBlobImage] = useState();
   const [priceSwitch, setPriceSwitch] = useState(false);
   const [listOfTags, setListOfTags] = useState<Tag[] | undefined>([]);
@@ -129,6 +129,8 @@ function UploadArtwork() {
         .catch((error) => {
           console.error("Lỗi resize ảnh:", error);
         });
+    } else {
+      alert("Vui lòng chọn một ảnh hợp lệ!");
     }
   };
 
@@ -171,26 +173,42 @@ function UploadArtwork() {
       artworkTag: [],
     },
     onSubmit: (values) => {
+      // Kiểm tra nếu preview chưa được thay đổi (vẫn là default)
+      if (!preview || preview === defaultPreview || !preview.includes(",")) {
+        alert("Please Add your Image");
+        return;
+      }
       const time = new Date();
       values.dateCreated = time.toISOString();
-      if (preview) {
-        values.imageFile = preview.split(",")[1];
+      const base64Image = preview.split(",")[1];
+      if (!base64Image) {
+        alert("Ảnh upload không hợp lệ!");
+        return;
       }
+      values.imageFile = base64Image;
       values.purchasable = priceSwitch;
-      // Split Data URL Base64 (data:image/jpeg,base64) => (base64)
       console.log(values);
       const postArtwork = async () => {
-        const response = await axios.post(url, values);
-        console.log("Post Artwork Complete!" + response.data);
-        const newArtwork: Artwork = response.data; //The response data will contain the newly post artwork infomations. Including its id
-        redirectUrl(`../artwork/${newArtwork.artworkID}`); //Redirect the user to the post with the new artwork
+        try {
+          const response = await axios.post(url, values);
+          console.log("Post Artwork Complete!", response.data);
+          const newArtwork: Artwork = response.data;
+          redirectUrl(`../artwork/${newArtwork.artworkID}`);
+        } catch (error) {
+          if (error.response && error.response.data) {
+            alert(`Lỗi: ${error.response.data.message || error.response.data}`);
+          } else {
+            alert("Có lỗi xảy ra khi đăng bài!");
+          }
+          console.error("Lỗi khi gửi bài:", error);
+        }
       };
       postArtwork();
     },
     validationSchema: Yup.object({
       artworkName: Yup.string().required("NAME! I want a name! Please..."),
       description: Yup.string().required("What? Tell me more about your work."),
-      //imageFile: Yup.mixed().required("Where the image, mate?"),
+      // imageFile: Yup.mixed().required("Where the image, mate?"),
     }),
   });
   return (

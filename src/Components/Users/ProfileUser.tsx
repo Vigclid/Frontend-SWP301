@@ -59,7 +59,8 @@ import CheckIcon from '@mui/icons-material/Check';
 import {parse} from "date-fns/parse";
 import '../../css/ArtPost.css';
 
-
+import ReportForm from "./UserForms/ReportForm.tsx"; // Import form bạn đã làm
+import { Report } from "../../Interfaces/ReportInterfaces.ts";
 
   // Attempt to retrieve the auth state from sessionStorage
   const savedAuth = sessionStorage.getItem('auth');
@@ -650,45 +651,14 @@ export default function ProfileUser() {
                 {/* Popup Report */}
                 <Dialog
                   open={open}
-                  onClose={handleClose}
-                  PaperProps={{
-                    component: 'form',
-                    onSubmit: (event) => {
-                      event.preventDefault();
-                      const formData = new FormData(event.currentTarget);
-                      const formJson = Object.fromEntries(formData.entries());
-                      const email = formJson.email;
-                      console.log(email);
-                      handleClose();
-                    },
-                  }}
+                  onClose={handleClose}          
                 >
-                  <DialogTitle>Report Information</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText>
-                      If this user violates community standards, please report the reason to us,
-                      ArtHub's moderators will review and handle this as soon as possible.
-                    </DialogContentText>
-                    <TextField
-                      autoFocus
-                      required
-                      margin="dense"
-                      id="reportID"
-                      label="Reason for being reported"
-                      fullWidth
-                      multiline
-                      rows={4}
-                      variant="outlined"
-                      style={{ marginTop: '25px' }}
-                      value={reportReason}
-                      onChange={(e) => setReportReason(e.target.value)}
-
-                    />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleClose} variant="outlined" color="error">Cancel</Button>
-                    <Button type="submit" variant="outlined" onClick={handleSubmitReport} >Report</Button>
-                  </DialogActions>
+                   <ReportForm
+                    reporterId={Number(userInSession.userId)}
+                    reportedId={Number(user?.userId)}
+                    // Nếu có artworkId thì truyền vào đây, ví dụ: artworkId={someArtworkId}
+                    onClose={() => setOpen(false)}
+                  />
                 </Dialog>
 
                 <Dialog
