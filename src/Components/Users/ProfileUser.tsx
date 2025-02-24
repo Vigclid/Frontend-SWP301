@@ -56,10 +56,18 @@ import { useNavigate } from 'react-router-dom';
 import axios from "axios"
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
+import {parse} from "date-fns/parse";
+import '../../css/ArtPost.css';
 
+import ReportForm from "./UserForms/ReportForm.tsx"; // Import form bạn đã làm
+import { Report } from "../../Interfaces/ReportInterfaces.ts";
 
-
-
+  // Attempt to retrieve the auth state from sessionStorage
+  const savedAuth = sessionStorage.getItem('auth');
+  // Check if there's any auth data saved and parse it
+  const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
+  // Now 'auth' contains your authentication state or null if there's nothing saved
+ 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -128,9 +136,9 @@ export default function ProfileUser() {
 
 
     validationSchema: Yup.object({
-      OldPassword: Yup.string().required("What? Don't remember password?").min(5, "Must be 5 characters or more"),
-      NewPassword: Yup.string().required("Password! Or we gonna steal your account.").min(5, "Must be 5 characters or more"),
-      ConfirmPassword: Yup.string().required("Goldfish? Type new password again.").min(5, "Must be 5 characters or more"),
+      OldPassword: Yup.string().required("What? Don't remember the password?").min(5, "Must be 5 characters or more"),
+      NewPassword: Yup.string().required("Password! Or we're gonna steal your account.").min(5, "Must be 5 characters or more"),
+      ConfirmPassword: Yup.string().required("Goldfish? Type a new password again.").min(5, "Must be 5 characters or more"),
 
     }),
 
@@ -178,12 +186,13 @@ export default function ProfileUser() {
     validateOnChange: false,
     validateOnBlur: false,
     initialValues: {
-      firstName: "",
-      biography: "",
-      address: "",
-      lastName: "",
-      dateOfBirth: "",
-
+      firstName: userInSession?.firstName,
+      biography: userInSession?.biography,
+      address: userInSession?.address,
+      lastName: userInSession?.lastName,
+      date: userInSession?.dateOfBirth,
+      phoneNumber: userInSession?.phoneNumber,
+      
     },
 
 
@@ -191,10 +200,21 @@ export default function ProfileUser() {
     validationSchema: Yup.object({
       firstName: Yup.string().required("We need your first name"),
       lastName: Yup.string().required("Yo!!! we need to know you"),
-      dateOfBirth: Yup.string().required("What!?"),
-      address: Yup.string().required("Where are you from?"),
-      biography: Yup.string().required("Tell the community something about yourself")
+      date: Yup.date()
+      .transform(function (value, originalValue) {
+        if (this.isType(value)) {
+          return value;
+        }
+        const result = parse(originalValue, "dd/MM/yyyy", new Date());
+        return result;
+      })
+      .typeError("please enter a valid date")
+      .required()
+      .max(new Date().getFullYear(), "You can not born in the future!!"),
 
+      address: Yup.string().required("Where are you from?"),
+      biography: Yup.string().required("Tell the community something about yourself").max(250,"Too much! We don't have enough money to handle that much!"),
+      phoneNumber: Yup.string().required("How should we contract you, genius? ")
     }),
 
     onSubmit: (values) => {
@@ -203,13 +223,16 @@ export default function ProfileUser() {
       const EditProfile = async () => {
         try {
           checkChangeProfile = await PutProfile({
-            email: userInSession?.email,
+            accountId: userInSession?.accountId,
             firstName: values.firstName,
             lastName: values.lastName,
             address: values.address,
             biography: values.biography,
+            dateOfBirth : values.date,
+            phoneNumber : values.phoneNumber
           },)
-
+          
+          
 
           if (String(checkChangeProfile) === "1") {
             setSnackbarChangePassword(true);
@@ -231,7 +254,7 @@ export default function ProfileUser() {
   })
   // |||||||||----END-EDIT-PROFILE----|||||||||
 
-
+  
 
 
   const [isFollowing, setIsFollowing] = useState(false)
@@ -249,13 +272,6 @@ export default function ProfileUser() {
   let { id } = useParams()
   const { theme } = useContext(ThemeContext)
 
-
-  // Attempt to retrieve the auth state from sessionStorage
-  const savedAuth = sessionStorage.getItem('auth');
-  // Check if there's any auth data saved and parse it
-  const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
-  // Now 'auth' contains your authentication state or null if there's nothing saved
-
   const handleClick = () => {
     setIsFollowing(!isFollowing)
   }
@@ -265,18 +281,23 @@ export default function ProfileUser() {
     setValue(newValue)
   };
 
+
+
+  // Cái này để chuyển tab profile từ profile người khác sang profile mình.
   useEffect(() => {
     const getUserProfile = async () => {
       const userProfile = await GetCreatorByAccountID(id ? id : "0")
       setUser(userProfile)
     }
     const getUserArtworks = async () => {
-      const userArtworks = await GetArtsByAccountId(id ? id : "0") //NOT DONE
+      const userArtworks = await GetArtsByAccountId(id ? id : "0") 
       setArtworks(userArtworks ? userArtworks : [])
     }
     getUserProfile()
     getUserArtworks()
-  }, [])
+  }, [id])
+
+  
 
 
   //Covert Blob to Base64 string to easily view the image
@@ -444,7 +465,7 @@ export default function ProfileUser() {
             <ImageListItem key={work.artworkID}>
 
               <img
-                src={`data:image/jpeg;base64,${work.imageFile}`}
+                src={`${work.imageFile}`}
                 alt={work.artworkName}
                 loading="lazy"
               />
@@ -634,19 +655,9 @@ export default function ProfileUser() {
                 {/* Popup Report */}
                 <Dialog
                   open={open}
-                  onClose={handleClose}
-                  PaperProps={{
-                    component: 'form',
-                    onSubmit: (event) => {
-                      event.preventDefault();
-                      const formData = new FormData(event.currentTarget);
-                      const formJson = Object.fromEntries(formData.entries());
-                      const email = formJson.email;
-                      console.log(email);
-                      handleClose();
-                    },
-                  }}
+                  onClose={handleClose}          
                 >
+<<<<<<< HEAD
                   <DialogTitle>Report Information</DialogTitle>
                   <DialogContent>
                     <DialogContentText>
@@ -673,6 +684,14 @@ export default function ProfileUser() {
                     <Button onClick={handleClose} variant="outlined" color="error">Cancel</Button>
                     <Button type="submit" variant="outlined" onClick={handleSubmitReport} >Submit</Button>
                   </DialogActions>
+=======
+                   <ReportForm
+                    reporterId={Number(userInSession.userId)}
+                    reportedId={Number(user?.userId)}
+                    // Nếu có artworkId thì truyền vào đây, ví dụ: artworkId={someArtworkId}
+                    onClose={() => setOpen(false)}
+                  />
+>>>>>>> 2f79c19bc8d1ca64e04246162360804935af481b
                 </Dialog>
 
                 <Dialog
@@ -831,7 +850,7 @@ export default function ProfileUser() {
 
 
                           <Grid item xs={6}>
-                            <Link style={{ fontStyle: "italic", color: "grey" }} to={`/forgotpassword`}> Create account from Email? Click here to set password!</Link>
+                            <Link style={{ fontStyle: "italic", color: "grey" }} to={`/forgotpassword`}> Create an account from the Email? Click here to set the password!</Link>
                           </Grid>
 
                         </Grid>
@@ -897,6 +916,37 @@ export default function ProfileUser() {
                     {F4k.errors.address && (<Typography variant="body2" color="red">{F4k.errors.address}
                     </Typography>)}
                   </Grid>
+                  
+                  <Grid item xs={6}>
+                    <CustomizedTextField
+                      label="Date (dd/MM/yyyy) "
+                      name="date"
+                      autoComplete="date"
+                      fullWidth
+                      value={F4k.values.date} onChange={F4k.handleChange}
+                    />
+                      
+                    {F4k.errors.date && (
+                      <Typography variant="body2" color="red">
+                        {F4k.errors.date}
+                      </Typography>
+                    )}
+                  </Grid>
+                  
+                  <Grid item xs={6}>
+                    <CustomizedTextField
+                      id="phoneNumber"
+                      label="Phone Number"
+                      name="phoneNumber"
+                      autoComplete="phoneNumber"
+                      fullWidth
+                      multiline
+                      value={F4k.values.phoneNumber} onChange={F4k.handleChange}
+                    />
+                    {F4k.errors.phoneNumber && (<Typography variant="body2" color="red">{F4k.errors.phoneNumber}
+                    </Typography>)}
+                  </Grid>
+
 
                   <Grid item xs={12}>
                     <CustomizedTextField

@@ -2,14 +2,24 @@ import React, { useEffect, useRef, useState, useContext } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { ThemeContext } from './Themes/ThemeProvider.tsx';
-export default function TestIcon() {
-  const { theme } = useContext(ThemeContext);
+import { ToggleFavourite } from "../API/ArtworkAPI/POST.tsx";
+import { CheckFavouriteStatus } from "../API/ArtworkAPI/GET.tsx"; 
+import { Sync } from '@mui/icons-material';
+
+
+export default function TestIcon({ userID, artworkID }) {
+  const { theme } = useContext(ThemeContext); 
   const [isClicked, setIsClicked] = useState(false);
   const spansRef = useRef([]);
 
+
   useEffect(() => {
-    const handleClick = () => {
-      setIsClicked((prevIsClicked) => !prevIsClicked);
+    // Cái này để handle cho Click
+    const handleClick = async () => {
+      const result = await ToggleFavourite(userID, artworkID);
+      if (result) {
+      setIsClicked(prev => !prev);
+    }
     };
 
     const btn = document.getElementById("btn");
@@ -21,6 +31,17 @@ export default function TestIcon() {
   }, []); // Dependency trống để chỉ chạy một lần sau khi render
 
   useEffect(() => {
+      const fetchFavouriteStatus = async () => {
+        if (userID && artworkID) {
+          const status = await CheckFavouriteStatus(userID, artworkID);
+          setIsClicked(status);
+        }
+      };
+      fetchFavouriteStatus();
+    }, []);
+
+  useEffect(() => {
+    // Cái này để xử lý animation khi isClicked thay đổi
     if (isClicked) {
       for (const span of spansRef.current) {
         span.classList.add("anim");
@@ -32,6 +53,7 @@ export default function TestIcon() {
       }, 700);
     }
   }, [isClicked]);
+
 
   return (
 

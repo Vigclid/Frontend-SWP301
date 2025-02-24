@@ -27,8 +27,10 @@ export default function RecommendedWords({ artworkList, user }) {
         console.error('Error fetching creators:', error);
       }
     };
+
     fetchCreators();
   }, []);
+
 
   const getCreatorName = (userID) => {
     const creator = creators.find(creator => creator.userId === userID);
@@ -64,7 +66,7 @@ export default function RecommendedWords({ artworkList, user }) {
                     fontSize="large"
                   />
                 )}
-  
+
                 <CardMedia
                   component="img"
                   style={{
@@ -84,7 +86,7 @@ export default function RecommendedWords({ artworkList, user }) {
                   alt={work.artworkName}
                   loading="lazy"
                 />
-  
+
                 {hoveredID === work.artworkID && (
                   <div
                     style={{

@@ -10,16 +10,17 @@ export interface GoogleUser {
 } // This is the Object google return for us, having all user infomation in their Gmail account
 
 export interface Account {
-  accountId:string,
-  roleID:string,
-  password:string,
-  email:string,
-  status:boolean
+  accountId: string;
+  userName: String;
+  roleID: string;
+  password: string;
+  email: string;
+  status: boolean;
 }
 
 export interface Creator {
-  accountId: string | "0",
-  CreatorId: string | "0",
+  accountId: number | "0",
+  CreatorId: number | "0",
   coins: string | number,
   userName: string | "",
   profilePicture: string | "",
