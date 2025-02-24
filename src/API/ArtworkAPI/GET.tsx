@@ -14,6 +14,7 @@ const artworkbycreatornoimageurl = `http://localhost:7233/api/artworks/`;
 const recentartworks = "http://localhost:7233/api/artworks/";
 const artworkyidnoimageurl = "http://localhost:7233/api/artworks/";
 const artworkPAymentStatus = "http://localhost:7233/api/artworks/";
+const artworkByTagname = "http://localhost:7233/api/artworks/Tag";
 
 export async function GetArtsPaymentStatus(
   creatorId: string,
@@ -149,5 +150,19 @@ export async function GetArtByIdNoImage(id: string) {
     return artwork;
   } catch (err) {
     console.log(err);
+  }
+}
+
+export async function GetArtworkByTagname(
+  tagName: string
+): Promise<Artwork[] | undefined> {
+  try {
+    const response = await axios.get(artworkByTagname, {
+      params: { TagName: tagName },
+    });
+    return response.data;
+  } catch (err) {
+    console.error("Error fetching artwork by tag name:", err);
+    return undefined;
   }
 }
