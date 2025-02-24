@@ -24,6 +24,7 @@ import ArtShop from "./ArtShop.jsx";
 import ArtShopDetail from "./ArtShopDetail.jsx";
 import PackagePage from "./PackagePage.tsx";
 import UpdateArtwork from "./UpdateArtwork.tsx";
+import SearchHome from "./MainPage/SearchHome.tsx";
 
 export default function Users() {
   return (
@@ -37,6 +38,7 @@ export default function Users() {
           <Route path={`profile/:id`} element={<ProfileUser />} />
           <Route path={`artwork/:id`} element={<ArtPost />} />
           <Route path={`artwork/update/:id`} element={<UpdateArtwork />} />
+          <Route path={`SearchHome/`} element={<SearchHome />} />
 
           <Route element={<ProtectedRoute allowedRoles={["AT", "AD"]} />}>
             <Route path={`artwork/:id/payment`} element={<Payment />} />

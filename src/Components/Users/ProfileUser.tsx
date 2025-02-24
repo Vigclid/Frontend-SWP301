@@ -281,19 +281,23 @@ export default function ProfileUser() {
     setValue(newValue)
   };
 
+
+
+  // Cái này để chuyển tab profile từ profile người khác sang profile mình.
   useEffect(() => {
     const getUserProfile = async () => {
       const userProfile = await GetCreatorByAccountID(id ? id : "0")
       setUser(userProfile)
     }
     const getUserArtworks = async () => {
-      const userArtworks = await GetArtsByAccountId(id ? id : "0") //NOT DONE
+      const userArtworks = await GetArtsByAccountId(id ? id : "0") 
       setArtworks(userArtworks ? userArtworks : [])
     }
     getUserProfile()
     getUserArtworks()
   }, [id])
 
+  
 
 
   //Covert Blob to Base64 string to easily view the image
