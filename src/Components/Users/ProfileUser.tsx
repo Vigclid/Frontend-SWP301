@@ -58,7 +58,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import { parse } from "date-fns/parse";
 import "../../css/ArtPost.css";
 
-import ReportForm from "./UserForms/ReportForm.tsx"; // Import form bạn đã làm
+import ReportForm from "./UserForms/ReportForm.tsx";
 import { Report } from "../../Interfaces/ReportInterfaces.ts";
 
 // Attempt to retrieve the auth state from sessionStorage
@@ -375,7 +375,7 @@ export default function ProfileUser() {
     return (
       <ImageList variant="masonry" cols={3} gap={8}>
         {artworks.map((work) => (
-          <Link key={work.artworkID} to={`artwork/${work.artworkID}`}>
+          <Link key={work.artworkID} to={`/characters/artwork/${work.artworkID}`}>
             <ImageListItem key={work.artworkID}>
               <img src={`${work.imageFile}`} alt={work.artworkName} loading="lazy" />
             </ImageListItem>
