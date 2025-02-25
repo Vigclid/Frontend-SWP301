@@ -62,29 +62,29 @@ import '../../css/ArtPost.css';
 import ReportForm from "./UserForms/ReportForm.tsx"; // Import form bạn đã làm
 import { Report } from "../../Interfaces/ReportInterfaces.ts";
 
-  // Attempt to retrieve the auth state from sessionStorage
-  const savedAuth = sessionStorage.getItem('auth');
-  // Check if there's any auth data saved and parse it
-  const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
-  // Now 'auth' contains your authentication state or null if there's nothing saved
- 
+// Attempt to retrieve the auth state from sessionStorage
+const savedAuth = sessionStorage.getItem('auth');
+// Check if there's any auth data saved and parse it
+const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
+// Now 'auth' contains your authentication state or null if there's nothing saved
+
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography component="div">{children}</Typography>
+      <div
+          role="tabpanel"
+          hidden={value !== index}
+          id={`simple-tabpanel-${index}`}
+          aria-labelledby={`simple-tab-${index}`}
+          {...other}
+      >
+        {value === index && (
+            <Box sx={{ p: 3 }}>
+              <Typography component="div">{children}</Typography>
 
-        </Box>
-      )}
-    </div>
+            </Box>
+        )}
+      </div>
   );
 }
 
@@ -111,8 +111,8 @@ export default function ProfileUser() {
   const [snackbarChangePasswordError, setSnackbarChangePasswordError] = useState(false)
 
   const snackbarChangePasswordAutoClose = (
-    event?: React.SyntheticEvent | Event,
-    reason?: SnackbarCloseReason,
+      event?: React.SyntheticEvent | Event,
+      reason?: SnackbarCloseReason,
   ) => {
     if (reason === 'clickaway') {
       return;
@@ -192,7 +192,7 @@ export default function ProfileUser() {
       lastName: userInSession?.lastName,
       date: userInSession?.dateOfBirth,
       phoneNumber: userInSession?.phoneNumber,
-      
+
     },
 
 
@@ -201,16 +201,16 @@ export default function ProfileUser() {
       firstName: Yup.string().required("We need your first name"),
       lastName: Yup.string().required("Yo!!! we need to know you"),
       date: Yup.date()
-      .transform(function (value, originalValue) {
-        if (this.isType(value)) {
-          return value;
-        }
-        const result = parse(originalValue, "dd/MM/yyyy", new Date());
-        return result;
-      })
-      .typeError("please enter a valid date")
-      .required()
-      .max(new Date().getFullYear(), "You can not born in the future!!"),
+          .transform(function (value, originalValue) {
+            if (this.isType(value)) {
+              return value;
+            }
+            const result = parse(originalValue, "dd/MM/yyyy", new Date());
+            return result;
+          })
+          .typeError("please enter a valid date")
+          .required()
+          .max(new Date().getFullYear(), "You can not born in the future!!"),
 
       address: Yup.string().required("Where are you from?"),
       biography: Yup.string().required("Tell the community something about yourself").max(250,"Too much! We don't have enough money to handle that much!"),
@@ -231,8 +231,8 @@ export default function ProfileUser() {
             dateOfBirth : values.date,
             phoneNumber : values.phoneNumber
           },)
-          
-          
+
+
 
           if (String(checkChangeProfile) === "1") {
             setSnackbarChangePassword(true);
@@ -254,7 +254,7 @@ export default function ProfileUser() {
   })
   // |||||||||----END-EDIT-PROFILE----|||||||||
 
-  
+
 
 
   const [isFollowing, setIsFollowing] = useState(false)
@@ -290,14 +290,14 @@ export default function ProfileUser() {
       setUser(userProfile)
     }
     const getUserArtworks = async () => {
-      const userArtworks = await GetArtsByAccountId(id ? id : "0") 
+      const userArtworks = await GetArtsByAccountId(id ? id : "0")
       setArtworks(userArtworks ? userArtworks : [])
     }
     getUserProfile()
     getUserArtworks()
   }, [id])
 
-  
+
 
 
   //Covert Blob to Base64 string to easily view the image
@@ -411,69 +411,69 @@ export default function ProfileUser() {
 
   function FreeImage() {
     return (
-      <ImageList variant="masonry" cols={3} gap={8}>
-        {artworks.map((work) => (
-          <Link key={work.artworkID} to={`artwork/${work.artworkID}`}>
-            <ImageListItem key={work.artworkID}>
-              <img
-                src={`${work.imageFile}`}
-                alt={work.artworkName}
-                loading="lazy"
-              />
+        <ImageList variant="masonry" cols={3} gap={8}>
+          {artworks.map((work) => (
+              <Link key={work.artworkID} to={`artwork/${work.artworkID}`}>
+                <ImageListItem key={work.artworkID}>
+                  <img
+                      src={`${work.imageFile}`}
+                      alt={work.artworkName}
+                      loading="lazy"
+                  />
 
-            </ImageListItem>
-          </Link>
-        ))}
-      </ImageList>
+                </ImageListItem>
+              </Link>
+          ))}
+        </ImageList>
     )
   }
   function CostImage() {
     return (
-      <ImageList sx={{ width: 1200, height: 'auto', overflow: 'visible' }} cols={4}>
-        {artworks.map((work) => (
-          <ImageListItem key={work.artworkID}>
-            <Link to={`../artwork/${work.artworkID}`}>
-              <img
-                src={`${work.imageFile}`}
-                alt={work.artworkName}
-                loading="lazy"
-                style={{ height: '200px' }}
-              />
-            </Link>
-            <ImageListItemBar
-              title={work.price}
-              subtitle={work.artworkName}
-              actionIcon={
-                <IconButton
-                  sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
-                  aria-label={`info about ${user?.userName}`}
-                >
-                  <InfoIcon />
-                </IconButton>
-              }
-            />
-          </ImageListItem>
-        ))}
-      </ImageList>
+        <ImageList sx={{ width: 1200, height: 'auto', overflow: 'visible' }} cols={4}>
+          {artworks.map((work) => (
+              <ImageListItem key={work.artworkID}>
+                <Link to={`../artwork/${work.artworkID}`}>
+                  <img
+                      src={`${work.imageFile}`}
+                      alt={work.artworkName}
+                      loading="lazy"
+                      style={{ height: '200px' }}
+                  />
+                </Link>
+                <ImageListItemBar
+                    title={work.price}
+                    subtitle={work.artworkName}
+                    actionIcon={
+                      <IconButton
+                          sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                          aria-label={`info about ${user?.userName}`}
+                      >
+                        <InfoIcon />
+                      </IconButton>
+                    }
+                />
+              </ImageListItem>
+          ))}
+        </ImageList>
     )
   }
   function AllImage() {
     return (
-      <ImageList variant="masonry" cols={4} gap={8}>
-        {artworks.map((work) => (
-          <Link to={`../artwork/${work.artworkID}`}>
-            <ImageListItem key={work.artworkID}>
+        <ImageList variant="masonry" cols={4} gap={8}>
+          {artworks.map((work) => (
+              <Link to={`../artwork/${work.artworkID}`}>
+                <ImageListItem key={work.artworkID}>
 
-              <img
-                src={`${work.imageFile}`}
-                alt={work.artworkName}
-                loading="lazy"
-              />
+                  <img
+                      src={`${work.imageFile}`}
+                      alt={work.artworkName}
+                      loading="lazy"
+                  />
 
-            </ImageListItem ></Link >
-        ))
-        }
-      </ImageList >
+                </ImageListItem ></Link >
+          ))
+          }
+        </ImageList >
     )
   }
 
@@ -504,479 +504,479 @@ export default function ProfileUser() {
   };
 
   return (
-    <div className=''>
-      <div className='headeruser'>
-        {/* <div className='backgrounduser'>
+      <div className=''>
+        <div className='headeruser'>
+          {/* <div className='backgrounduser'>
           <img src={selectedUser.background} alt='Background'></img>
         </div> */}
-        <Card sx={{ width: '100%' }}>
+          <Card sx={{ width: '100%' }}>
 
-          <div className='backgrounduser' style={{ backgroundImage: `url('${user?.backgroundPicture ? user?.backgroundPicture : previewProfile}')` }}>
-            <div
-              className='backgroundPicture'
-              style={{
-                position: 'relative',
-                display: 'flex',
-                justifyContent: 'center',
-                color: '#04a1fd',
-                backgroundColor: '#1A1A2E',
-                borderRadius: '10px', fontSize: '14px',
-                top: '80%',
-                left: '83%',
-                width: '15vw',
-              }}
-            >
-              {/* Check to see if User in sesion is the same as the user in view, if yes, they can edit image */}
-              {userInSession.accountId === user?.accountId ?
-                <>
-                  <input
-                    accept='.png,.jpeg,.jpg,.tif,.gif'
-                    style={{ display: 'none' }}
-                    id={"backgroundPicture"}
-                    name={"backgroundPicture"}
-                    type="file"
-                    onChange={handleImageChange}
-                  />
-                  <label htmlFor={"backgroundPicture"}>
-                    <Button
-                      className='button-edit-background'
-                      component="span"
-                      startIcon={<CameraAltIcon />}
-                    >
-                      Edit Cover Image
-                    </Button>
-                  </label>
-                </>
-                :
-                ""
-              }
-            </div>
-          </div>
-          <CardContent className='infouser1' sx={{ backgroundColor: theme.backgroundColor, color: theme.color }}>
-            <div className='infousername' >
-              <div className='avataruser'>
-                <img
-                  style={{ outline: `4px solid ${theme.backgroundColor}` }}
-                  src={user?.profilePicture ? user?.profilePicture : previewProfile} />
-                <div className='buttonavatar'>
-                  <div className='profilePicture'
-                    style={{
-                      backgroundColor: "none",
-                      position: "absolute",
-                      top: 10,
-                      right: 0,
-                      transform: "translate(10%, 100%)",
-                      zIndex: 2,
-                    }}
-                  >
-                    {/* Check to see if User in sesion is the same as the user in view, if yes, they can edit image */}
-                    {userInSession.accountId === user?.accountId ?
-                      <>
-                        <input
-                          style={{ display: 'none' }}
+            <div className='backgrounduser' style={{ backgroundImage: `url('${user?.backgroundPicture ? user?.backgroundPicture : previewProfile}')` }}>
+              <div
+                  className='backgroundPicture'
+                  style={{
+                    position: 'relative',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    color: '#04a1fd',
+                    backgroundColor: '#1A1A2E',
+                    borderRadius: '10px', fontSize: '14px',
+                    top: '80%',
+                    left: '83%',
+                    width: '15vw',
+                  }}
+              >
+                {/* Check to see if User in sesion is the same as the user in view, if yes, they can edit image */}
+                {userInSession.accountId === user?.accountId ?
+                    <>
+                      <input
                           accept='.png,.jpeg,.jpg,.tif,.gif'
-                          id={"profilePicture"}
-                          name={"profilePicture"}
+                          style={{ display: 'none' }}
+                          id={"backgroundPicture"}
+                          name={"backgroundPicture"}
                           type="file"
                           onChange={handleImageChange}
-                        />
+                      />
+                      <label htmlFor={"backgroundPicture"}>
+                        <Button
+                            className='button-edit-background'
+                            component="span"
+                            startIcon={<CameraAltIcon />}
+                        >
+                          Edit Cover Image
+                        </Button>
+                      </label>
+                    </>
+                    :
+                    ""
+                }
+              </div>
+            </div>
+            <CardContent className='infouser1' sx={{ backgroundColor: theme.backgroundColor, color: theme.color }}>
+              <div className='infousername' >
+                <div className='avataruser'>
+                  <img
+                      style={{ outline: `4px solid ${theme.backgroundColor}` }}
+                      src={user?.profilePicture ? user?.profilePicture : previewProfile} />
+                  <div className='buttonavatar'>
+                    <div className='profilePicture'
+                         style={{
+                           backgroundColor: "none",
+                           position: "absolute",
+                           top: 10,
+                           right: 0,
+                           transform: "translate(10%, 100%)",
+                           zIndex: 2,
+                         }}
+                    >
+                      {/* Check to see if User in sesion is the same as the user in view, if yes, they can edit image */}
+                      {userInSession.accountId === user?.accountId ?
+                          <>
+                            <input
+                                style={{ display: 'none' }}
+                                accept='.png,.jpeg,.jpg,.tif,.gif'
+                                id={"profilePicture"}
+                                name={"profilePicture"}
+                                type="file"
+                                onChange={handleImageChange}
+                            />
 
-                        <label htmlFor={"profilePicture"}>
-                          <Button style={{ color: 'white', borderRadius: '150px' }}
-                            component="span" //Component = 'span' allow you to span the lable across the input
-                          >
-                            <Avatar style={{ outline: '2px solid #fff' }}>
-                              <CameraAltIcon />
-                            </Avatar>
-                          </Button>
-                        </label>
-                      </>
+                            <label htmlFor={"profilePicture"}>
+                              <Button style={{ color: 'white', borderRadius: '150px' }}
+                                      component="span" //Component = 'span' allow you to span the lable across the input
+                              >
+                                <Avatar style={{ outline: '2px solid #fff' }}>
+                                  <CameraAltIcon />
+                                </Avatar>
+                              </Button>
+                            </label>
+                          </>
+                          :
+                          ""
+                      }
+                    </div>
+
+                  </div>
+                </div>
+                <div className='headerusername'>
+                  <Typography gutterBottom variant="h3" component="div" style={{ fontWeight: 700, marginBottom: '5px' }} >
+                    {user?.firstName} {user?.lastName}
+                  </Typography>
+                  <Typography variant="body2" style={{ fontWeight: 500, fontSize: '18px' }} >
+                    Followers: {user?.followCounts}
+                  </Typography>
+                </div> </div>
+
+              {userInSession.accountId !== user?.accountId ?
+                  <div className='buttonheaderuser'  >
+                    {isFollowing == true && (
+                        <Button className='follow' style={{ width: '120px', height: '40px' }} variant="contained" href="#contained-buttons" onClick={() => handleClick()}>
+                          + Follow
+                        </Button>)}
+                    {isFollowing == false && (
+                        <Button className='following' style={{ width: '120px', height: '40px' }} variant="contained" href="#contained-buttons" onClick={() => handleClick()}>
+                          Following
+                        </Button>)}
+                  </div> : ""
+              }
+            </CardContent>
+          </Card>
+
+        </div>
+        <div className='tabsBackground' style={{ backgroundColor: theme.backgroundColor }} >
+          <div className='inforuser2'>
+            <Box sx={{ width: '100%' }}>
+              <Box sx={{ borderBottom: '2px solid #ECECEC' }} className='navofuser'>
+                <div className='navuser'>
+                  <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" style={{ color: theme.color2, zIndex: '7' }}>
+
+                    <Tab label="Home" {...a11yProps(0)} style={{ color: theme.color2, }} />
+                    <Tab label="Shop" {...a11yProps(1)} style={{ color: theme.color2, }} />
+                    <Tab label="Favourites" {...a11yProps(2)} style={{ color: theme.color2, }} />
+                    {userInSession.accountId === user?.accountId ? <Tab label="Change Password" {...a11yProps(3)} style={{ color: theme.color2, }} /> : ""}
+                    {userInSession.accountId === user?.accountId ? <Tab label="Edit Profile" {...a11yProps(4)} style={{ color: theme.color2, }} /> : ""}
+
+                  </Tabs>
+                </div>
+                <div className='buttonSubcribe'>
+                  {user?.allowCommission === true ?
+                      <Link to={`commission`}>
+                        <Button variant="contained" href=""> <ShoppingBagIcon style={{ marginRight: '5px' }} />Open For Commission</Button>
+                      </Link>
+                      :
+                      <Button disabled={true} variant="contained"> <ShoppingBagIcon color='inherit' style={{ marginRight: '5px' }} />Commission Closed</Button>
+                  }
+                  {userInSession.accountId !== user?.accountId ?
+                      <Button onClick={handleClickOpen} variant="contained" color='error' href="" style={{ marginLeft: '20px' }}>Report</Button>
                       :
                       ""
-                    }
-                  </div>
+                  }
 
-                </div>
-              </div>
-              <div className='headerusername'>
-                <Typography gutterBottom variant="h3" component="div" style={{ fontWeight: 700, marginBottom: '5px' }} >
-                  {user?.firstName} {user?.lastName}
-                </Typography>
-                <Typography variant="body2" style={{ fontWeight: 500, fontSize: '18px' }} >
-                  Followers: {user?.followCounts}
-                </Typography>
-              </div> </div>
-
-            {userInSession.accountId !== user?.accountId ?
-              <div className='buttonheaderuser'  >
-                {isFollowing == true && (
-                  <Button className='follow' style={{ width: '120px', height: '40px' }} variant="contained" href="#contained-buttons" onClick={() => handleClick()}>
-                    + Follow
-                  </Button>)}
-                {isFollowing == false && (
-                  <Button className='following' style={{ width: '120px', height: '40px' }} variant="contained" href="#contained-buttons" onClick={() => handleClick()}>
-                    Following
-                  </Button>)}
-              </div> : ""
-            }
-          </CardContent>
-        </Card>
-
-      </div>
-      <div className='tabsBackground' style={{ backgroundColor: theme.backgroundColor }} >
-        <div className='inforuser2'>
-          <Box sx={{ width: '100%' }}>
-            <Box sx={{ borderBottom: '2px solid #ECECEC' }} className='navofuser'>
-              <div className='navuser'>
-                <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" style={{ color: theme.color2, zIndex: '7' }}>
-
-                  <Tab label="Home" {...a11yProps(0)} style={{ color: theme.color2, }} />
-                  <Tab label="Shop" {...a11yProps(1)} style={{ color: theme.color2, }} />
-                  <Tab label="Favourites" {...a11yProps(2)} style={{ color: theme.color2, }} />
-                  {userInSession.accountId === user?.accountId ? <Tab label="Change Password" {...a11yProps(3)} style={{ color: theme.color2, }} /> : ""}
-                  {userInSession.accountId === user?.accountId ? <Tab label="Edit Profile" {...a11yProps(4)} style={{ color: theme.color2, }} /> : ""}
-
-                </Tabs>
-              </div>
-              <div className='buttonSubcribe'>
-                {user?.allowCommission === true ?
-                  <Link to={`commission`}>
-                    <Button variant="contained" href=""> <ShoppingBagIcon style={{ marginRight: '5px' }} />Open For Commission</Button>
-                  </Link>
-                  :
-                  <Button disabled={true} variant="contained"> <ShoppingBagIcon color='inherit' style={{ marginRight: '5px' }} />Commission Closed</Button>
-                }
-                {userInSession.accountId !== user?.accountId ?
-                  <Button onClick={handleClickOpen} variant="contained" color='error' href="" style={{ marginLeft: '20px' }}>Report</Button>
-                  :
-                  ""
-                }
-
-                {/* Popup Report */}
-                <Dialog
-                  open={open}
-                  onClose={handleClose}          
-                >
-                   <ReportForm
-                    reporterId={Number(userInSession.userId)}
-                    reportedId={Number(user?.userId)}
-                    // Nếu có artworkId thì truyền vào đây, ví dụ: artworkId={someArtworkId}
-                    onClose={() => setOpen(false)}
-                  />
-                </Dialog>
-
-                <Dialog
-                  open={open1}
-                  onClose={handleClose1}
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
-                  maxWidth="sm"
-                >
-                  <DialogTitle id="alert-dialog-title">
-                    {"Congraturation"}
-                  </DialogTitle>
-                  <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                      <Alert severity="success">
-                        <AlertTitle>Report this user as successful!</AlertTitle>
-                      </Alert>
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions>
-
-                    <Button autoFocus onClick={handleClose1}>
-                      Close
-                    </Button>
-
-                  </DialogActions>
-                </Dialog>
-
-              </div>
-            </Box>
-            <CustomTabPanel value={value} index={0} >
-              <div className='tabhome'>
-                <div className='biouser'>
-                  <Box
-                    // height= {150}
-                    width={350}
-                    my={4}
-                    gap={4}
-                    p={2}
-                    style={{
-                      color: theme.color2,
-                      border: '2px solid grey',
-                      top: 0, // this defines the top position when it's sticky
-                      zIndex: 10 // you may want to add a zIndex to ensure it stacks on top of other contents
-                    }} className='boxintroduct'
+                  {/* Popup Report */}
+                  <Dialog
+                      open={open}
+                      onClose={handleClose}
                   >
-                    <h2 className='headintroduct'>About {user?.firstName} {user?.lastName}:</h2>
-                    <div className='contentintroduct'><CakeIcon className='iconintroduct' />Birthday: {user?.dateOfBirth} </div>
-                    <div className='contentintroduct'><RoomIcon className='iconintroduct' />Location: {user?.address}</div>
-                    <div className='contentintroduct'><RssFeedIcon className='iconintroduct' />Last Online: {user?.lastLogin} </div>
-                    <div className='contentintroduct'><PhoneIcon className='iconintroduct' />Phone: {user?.phoneNumber}</div>
-                    <div className='contentintroduct'> <AutoAwesomeIcon className='iconintroduct' />My Bio: {user?.biography}  </div>
-                  </Box></div>
-                <div className='workofuser'>
-                  <div className='head-workofuser'>
-                    <h2 style={{ color: theme.color2, }}> My Works:</h2>
-                    <Box>
-                      {artworks.length !== 0 ? <FreeImage /> : <PlaceHoldersImageCard />}
-                    </Box>
-                  </div>
+                    <ReportForm
+                        reporterId={Number(userInSession.userId)}
+                        reportedId={Number(user?.userId)}
+                        // Nếu có artworkId thì truyền vào đây, ví dụ: artworkId={someArtworkId}
+                        onClose={() => setOpen(false)}
+                    />
+                  </Dialog>
+
+                  <Dialog
+                      open={open1}
+                      onClose={handleClose1}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                      maxWidth="sm"
+                  >
+                    <DialogTitle id="alert-dialog-title">
+                      {"Congraturation"}
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        <Alert severity="success">
+                          <AlertTitle>Report this user as successful!</AlertTitle>
+                        </Alert>
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+
+                      <Button autoFocus onClick={handleClose1}>
+                        Close
+                      </Button>
+
+                    </DialogActions>
+                  </Dialog>
+
                 </div>
-              </div>
-            </CustomTabPanel>
-
-            <CustomTabPanel value={value} index={1} >
-              <div style={{ marginLeft: '120px' }}>
-                {artworks.length !== 0 ? <CostImage /> : <PlaceHoldersImageCard />}</div>
-            </CustomTabPanel>
-
-            <CustomTabPanel value={value} index={2}>
-              {artworks.length !== 0 ? <AllImage /> : <PlaceHoldersImageCard />}
-            </CustomTabPanel>
-
-
-
-            {/* THIS IS TABPANEL TO EDIT PROFILE */}
-            <CustomTabPanel value={value} index={3} >
-              <>
-
-                <div className='createaccount'>
-                  <div className='signupForm' style={{ marginTop: '2%' }}>
+              </Box>
+              <CustomTabPanel value={value} index={0} >
+                <div className='tabhome'>
+                  <div className='biouser'>
                     <Box
-                      height={'auto'}
-                      width={'80%'}
-                      my={4}
-                      display="flex"
-                      alignItems="center"
-                      gap={4}
-                      p={2}
-                      sx={{ backgroundColor: theme.backgroundColor, margin: 'auto' }}
+                        // height= {150}
+                        width={350}
+                        my={4}
+                        gap={4}
+                        p={2}
+                        style={{
+                          color: theme.color2,
+                          border: '2px solid grey',
+                          top: 0, // this defines the top position when it's sticky
+                          zIndex: 10 // you may want to add a zIndex to ensure it stacks on top of other contents
+                        }} className='boxintroduct'
                     >
-                      <form onSubmit={formik.handleSubmit}>
-                        <Grid className='formregister' container spacing={2}>
-                          <Grid item xs={12}>
-                            <div className='header'>
-                              <Typography sx={{ color: theme.color }} variant="h4" component="h1" gutterBottom>
-                                Change Password
-                              </Typography></div>
-                          </Grid>
-
-
-                          {/* END OF OTP HANDLE */}
-                          <Grid item xs={12}>
-                            <CustomizedTextField
-
-                              id="passwword"
-                              label="Old Password"
-                              name="OldPassword"
-                              autoComplete="OldPassword"
-                              fullWidth
-                              value={formik.values.OldPassword} onChange={formik.handleChange}
-                            />
-                            {formik.errors.OldPassword && (<Typography variant="body2" color="red">{formik.errors.OldPassword}
-                            </Typography>)}
-                          </Grid>
-
-                          <Grid item xs={12}>
-                            <CustomizedTextField
-
-                              id="passwword"
-                              label="New Passwword"
-                              name="NewPassword"
-                              autoComplete="password"
-                              fullWidth
-                              value={formik.values.NewPassword} onChange={formik.handleChange}
-                            />
-                            {formik.errors.NewPassword && (<Typography variant="body2" color="red">{formik.errors.NewPassword}
-                            </Typography>)}
-                          </Grid>
-
-                          <Grid item xs={12}>
-                            <CustomizedTextField
-
-                              id="firstName"
-                              label="Confirm Password"
-                              name="ConfirmPassword"
-                              autoComplete="ConfirmPassword"
-                              fullWidth
-                              value={formik.values.ConfirmPassword} onChange={formik.handleChange}
-                            />
-                            {formik.errors.ConfirmPassword && (<Typography variant="body2" color="red">{formik.errors.ConfirmPassword}
-                            </Typography>)}
-                          </Grid>
-
-                          <Grid item xs={12}>
-                            <Button
-                              disabled={open}
-                              variant="contained"
-                              type='submit'
-                              style={{ marginBottom: '20px' }}
-                              fullWidth
-                            >
-                              Update Password!
-                            </Button>
-                          </Grid>
-
-
-                          <Grid item xs={6}>
-                            <Link style={{ fontStyle: "italic", color: "grey" }} to={`/forgotpassword`}> Create an account from the Email? Click here to set the password!</Link>
-                          </Grid>
-
-                        </Grid>
-                      </form>
-                    </Box>
-
+                      <h2 className='headintroduct'>About {user?.firstName} {user?.lastName}:</h2>
+                      <div className='contentintroduct'><CakeIcon className='iconintroduct' />Birthday: {user?.dateOfBirth} </div>
+                      <div className='contentintroduct'><RoomIcon className='iconintroduct' />Location: {user?.address}</div>
+                      <div className='contentintroduct'><RssFeedIcon className='iconintroduct' />Last Online: {user?.lastLogin} </div>
+                      <div className='contentintroduct'><PhoneIcon className='iconintroduct' />Phone: {user?.phoneNumber}</div>
+                      <div className='contentintroduct'> <AutoAwesomeIcon className='iconintroduct' />My Bio: {user?.biography}  </div>
+                    </Box></div>
+                  <div className='workofuser'>
+                    <div className='head-workofuser'>
+                      <h2 style={{ color: theme.color2, }}> My Works:</h2>
+                      <Box>
+                        {artworks.length !== 0 ? <FreeImage /> : <PlaceHoldersImageCard />}
+                      </Box>
+                    </div>
                   </div>
                 </div>
+              </CustomTabPanel>
+
+              <CustomTabPanel value={value} index={1} >
+                <div style={{ marginLeft: '120px' }}>
+                  {artworks.length !== 0 ? <CostImage /> : <PlaceHoldersImageCard />}</div>
+              </CustomTabPanel>
+
+              <CustomTabPanel value={value} index={2}>
+                {artworks.length !== 0 ? <AllImage /> : <PlaceHoldersImageCard />}
+              </CustomTabPanel>
 
 
-              </>
-            </CustomTabPanel>
+
+              {/* THIS IS TABPANEL TO EDIT PROFILE */}
+              <CustomTabPanel value={value} index={3} >
+                <>
+
+                  <div className='createaccount'>
+                    <div className='signupForm' style={{ marginTop: '2%' }}>
+                      <Box
+                          height={'auto'}
+                          width={'80%'}
+                          my={4}
+                          display="flex"
+                          alignItems="center"
+                          gap={4}
+                          p={2}
+                          sx={{ backgroundColor: theme.backgroundColor, margin: 'auto' }}
+                      >
+                        <form onSubmit={formik.handleSubmit}>
+                          <Grid className='formregister' container spacing={2}>
+                            <Grid item xs={12}>
+                              <div className='header'>
+                                <Typography sx={{ color: theme.color }} variant="h4" component="h1" gutterBottom>
+                                  Change Password
+                                </Typography></div>
+                            </Grid>
 
 
-            {/* THIS IS TABPANEL TO EDIT PROFILE */}
-            <CustomTabPanel value={value} index={4}>
-              <form onSubmit={F4k.handleSubmit}>
-                <Grid className='formregister' container spacing={2}>
+                            {/* END OF OTP HANDLE */}
+                            <Grid item xs={12}>
+                              <CustomizedTextField
 
-                  <Grid item xs={12}>
-                    <div className='header'>
-                      <Typography sx={{ color: theme.color }} variant="h4" component="h1" gutterBottom>
-                        Edit Profile
-                      </Typography></div>
+                                  id="passwword"
+                                  label="Old Password"
+                                  name="OldPassword"
+                                  autoComplete="OldPassword"
+                                  fullWidth
+                                  value={formik.values.OldPassword} onChange={formik.handleChange}
+                              />
+                              {formik.errors.OldPassword && (<Typography variant="body2" color="red">{formik.errors.OldPassword}
+                              </Typography>)}
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <CustomizedTextField
+
+                                  id="passwword"
+                                  label="New Passwword"
+                                  name="NewPassword"
+                                  autoComplete="password"
+                                  fullWidth
+                                  value={formik.values.NewPassword} onChange={formik.handleChange}
+                              />
+                              {formik.errors.NewPassword && (<Typography variant="body2" color="red">{formik.errors.NewPassword}
+                              </Typography>)}
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <CustomizedTextField
+
+                                  id="firstName"
+                                  label="Confirm Password"
+                                  name="ConfirmPassword"
+                                  autoComplete="ConfirmPassword"
+                                  fullWidth
+                                  value={formik.values.ConfirmPassword} onChange={formik.handleChange}
+                              />
+                              {formik.errors.ConfirmPassword && (<Typography variant="body2" color="red">{formik.errors.ConfirmPassword}
+                              </Typography>)}
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <Button
+                                  disabled={open}
+                                  variant="contained"
+                                  type='submit'
+                                  style={{ marginBottom: '20px' }}
+                                  fullWidth
+                              >
+                                Update Password!
+                              </Button>
+                            </Grid>
+
+
+                            <Grid item xs={6}>
+                              <Link style={{ fontStyle: "italic", color: "grey" }} to={`/forgotpassword`}> Create an account from the Email? Click here to set the password!</Link>
+                            </Grid>
+
+                          </Grid>
+                        </form>
+                      </Box>
+
+                    </div>
+                  </div>
+
+
+                </>
+              </CustomTabPanel>
+
+
+              {/* THIS IS TABPANEL TO EDIT PROFILE */}
+              <CustomTabPanel value={value} index={4}>
+                <form onSubmit={F4k.handleSubmit}>
+                  <Grid className='formregister' container spacing={2}>
+
+                    <Grid item xs={12}>
+                      <div className='header'>
+                        <Typography sx={{ color: theme.color }} variant="h4" component="h1" gutterBottom>
+                          Edit Profile
+                        </Typography></div>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <CustomizedTextField
+
+                          id="firstName"
+                          label="First Name"
+                          name="firstName"
+                          autoComplete="email"
+                          fullWidth
+                          value={F4k.values.firstName} onChange={F4k.handleChange}
+                      />
+                      {F4k.errors.firstName && (<Typography variant="body2" color="red">{F4k.errors.firstName}
+                      </Typography>)}
+                    </Grid>
+                    <Grid item xs={6}>
+                      <CustomizedTextField
+                          id="lastName"
+                          label="Last Name"
+                          name="lastName"
+                          autoComplete="email"
+                          fullWidth
+                          value={F4k.values.lastName} onChange={F4k.handleChange}
+                      />
+                      {F4k.errors.lastName && (<Typography variant="body2" color="red">{F4k.errors.lastName}
+                      </Typography>)}
+                    </Grid>
+
+
+
+                    <Grid item xs={12}>
+                      <CustomizedTextField
+                          id="address"
+                          label="Address"
+                          name="address"
+                          autoComplete="address"
+                          fullWidth
+                          value={F4k.values.address} onChange={F4k.handleChange}
+                      />
+                      {F4k.errors.address && (<Typography variant="body2" color="red">{F4k.errors.address}
+                      </Typography>)}
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <CustomizedTextField
+                          label="Date (dd/MM/yyyy) "
+                          name="date"
+                          autoComplete="date"
+                          fullWidth
+                          value={F4k.values.date} onChange={F4k.handleChange}
+                      />
+
+                      {F4k.errors.date && (
+                          <Typography variant="body2" color="red">
+                            {F4k.errors.date}
+                          </Typography>
+                      )}
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <CustomizedTextField
+                          id="phoneNumber"
+                          label="Phone Number"
+                          name="phoneNumber"
+                          autoComplete="phoneNumber"
+                          fullWidth
+                          multiline
+                          value={F4k.values.phoneNumber} onChange={F4k.handleChange}
+                      />
+                      {F4k.errors.phoneNumber && (<Typography variant="body2" color="red">{F4k.errors.phoneNumber}
+                      </Typography>)}
+                    </Grid>
+
+
+                    <Grid item xs={12}>
+                      <CustomizedTextField
+                          id="biography"
+                          label="Biography"
+                          name="biography"
+                          autoComplete="biography"
+                          fullWidth
+                          multiline
+                          rows={3}
+                          value={F4k.values.biography} onChange={F4k.handleChange}
+                      />
+                      {F4k.errors.biography && (<Typography variant="body2" color="red">{F4k.errors.biography}
+                      </Typography>)}
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <Button
+                          disabled={open}
+                          variant="contained"
+                          type='submit'
+                          style={{ marginBottom: '20px' }}
+                          fullWidth
+                      >
+                        Update Profile!
+                      </Button>
+                    </Grid>
+
                   </Grid>
-                  <Grid item xs={6}>
-                    <CustomizedTextField
+                </form>
 
-                      id="firstName"
-                      label="First Name"
-                      name="firstName"
-                      autoComplete="email"
-                      fullWidth
-                      value={F4k.values.firstName} onChange={F4k.handleChange}
-                    />
-                    {F4k.errors.firstName && (<Typography variant="body2" color="red">{F4k.errors.firstName}
-                    </Typography>)}
-                  </Grid>
-                  <Grid item xs={6}>
-                    <CustomizedTextField
-                      id="lastName"
-                      label="Last Name"
-                      name="lastName"
-                      autoComplete="email"
-                      fullWidth
-                      value={F4k.values.lastName} onChange={F4k.handleChange}
-                    />
-                    {F4k.errors.lastName && (<Typography variant="body2" color="red">{F4k.errors.lastName}
-                    </Typography>)}
-                  </Grid>
+              </CustomTabPanel>
 
-
-
-                  <Grid item xs={12}>
-                    <CustomizedTextField
-                      id="address"
-                      label="Address"
-                      name="address"
-                      autoComplete="address"
-                      fullWidth
-                      value={F4k.values.address} onChange={F4k.handleChange}
-                    />
-                    {F4k.errors.address && (<Typography variant="body2" color="red">{F4k.errors.address}
-                    </Typography>)}
-                  </Grid>
-                  
-                  <Grid item xs={6}>
-                    <CustomizedTextField
-                      label="Date (dd/MM/yyyy) "
-                      name="date"
-                      autoComplete="date"
-                      fullWidth
-                      value={F4k.values.date} onChange={F4k.handleChange}
-                    />
-                      
-                    {F4k.errors.date && (
-                      <Typography variant="body2" color="red">
-                        {F4k.errors.date}
-                      </Typography>
-                    )}
-                  </Grid>
-                  
-                  <Grid item xs={6}>
-                    <CustomizedTextField
-                      id="phoneNumber"
-                      label="Phone Number"
-                      name="phoneNumber"
-                      autoComplete="phoneNumber"
-                      fullWidth
-                      multiline
-                      value={F4k.values.phoneNumber} onChange={F4k.handleChange}
-                    />
-                    {F4k.errors.phoneNumber && (<Typography variant="body2" color="red">{F4k.errors.phoneNumber}
-                    </Typography>)}
-                  </Grid>
-
-
-                  <Grid item xs={12}>
-                    <CustomizedTextField
-                      id="biography"
-                      label="Biography"
-                      name="biography"
-                      autoComplete="biography"
-                      fullWidth
-                      multiline
-                      rows={3}
-                      value={F4k.values.biography} onChange={F4k.handleChange}
-                    />
-                    {F4k.errors.biography && (<Typography variant="body2" color="red">{F4k.errors.biography}
-                    </Typography>)}
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <Button
-                      disabled={open}
-                      variant="contained"
-                      type='submit'
-                      style={{ marginBottom: '20px' }}
-                      fullWidth
-                    >
-                      Update Profile!
-                    </Button>
-                  </Grid>
-
-                </Grid>
-              </form>
-
-            </CustomTabPanel>
-
-          </Box>
+            </Box>
+          </div>
         </div>
+
+        <Snackbar open={snackbarChangePassword} autoHideDuration={2000} onClose={snackbarChangePasswordAutoClose}>
+          <Alert
+              onClose={snackbarChangePasswordAutoClose}
+              severity="success"
+              variant="filled"
+              sx={{ width: '100%' }}
+          >
+            Change successfully!
+          </Alert>
+        </Snackbar>
+
+        <Snackbar open={snackbarChangePasswordError} autoHideDuration={2000} onClose={snackbarChangePasswordAutoClose}>
+          <Alert
+              onClose={snackbarChangePasswordAutoClose}
+              severity="error"
+              variant="filled"
+              sx={{ width: '100%' }}
+          >
+            Change not successfully!
+          </Alert>
+        </Snackbar>
+
       </div>
-
-      <Snackbar open={snackbarChangePassword} autoHideDuration={2000} onClose={snackbarChangePasswordAutoClose}>
-        <Alert
-          onClose={snackbarChangePasswordAutoClose}
-          severity="success"
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          Change successfully!
-        </Alert>
-      </Snackbar>
-
-      <Snackbar open={snackbarChangePasswordError} autoHideDuration={2000} onClose={snackbarChangePasswordAutoClose}>
-        <Alert
-          onClose={snackbarChangePasswordAutoClose}
-          severity="error"
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          Change not successfully!
-        </Alert>
-      </Snackbar>
-
-    </div>
   );
 }

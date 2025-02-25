@@ -10,13 +10,13 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import { ListTag } from "../../share/ListofTag.js";
 import { ThemeContext } from "../Themes/ThemeProvider.tsx";
-import { GetArtById, GetArtsPaymentStatus } from "../../API/ArtworkAPI/GET.tsx";
+import {GetArtById, GetArtsByAccountId, GetArtsPaymentStatus} from "../../API/ArtworkAPI/GET.tsx";
 import {
   Artwork,
   ArtworkPaymentStatus,
   DownloadArtwork,
 } from "../../Interfaces/ArtworkInterfaces.ts";
-import { GetCreatorByID } from "../../API/UserAPI/GET.tsx";
+import { GetCreatorByID , GetCreatorByAccountID } from "../../API/UserAPI/GET.tsx";
 import { Creator } from "../../Interfaces/UserInterface.ts";
 import Chip from "@mui/material/Chip";
 import { Download } from "@mui/icons-material";
@@ -31,6 +31,19 @@ import html2canvas from "html2canvas";
 import ArtShopDialog from "./ArtShopDialog.jsx";
 import axios from "axios";
 import TestIcon from "../TestIcon.jsx";
+
+
+
+
+import Dialog from "@mui/material/Dialog";
+import ReportForm from "./UserForms/ReportForm.tsx";
+
+
+// Attempt to retrieve the auth state from sessionStorage
+const savedAuth = sessionStorage.getItem("auth");
+// Check if there's any auth data saved and parse it
+const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
+// Now 'auth' contains your authentication state or null if there's nothing saved
 
 export default function PostWork() {
   const colors = [
@@ -47,14 +60,20 @@ export default function PostWork() {
   const [status, setStatus] = useState<ArtworkPaymentStatus>();
   const [creator, setCreator] = useState<Creator>();
   const [tags, setTags] = useState<Tag[]>([]);
+  const [user, setUser] = useState<Creator>();
+  const [artworks, setArtworks] = useState<Artwork[]>([]);
 
   const savedAuth = sessionStorage.getItem("auth");
   const savedUser: Creator = savedAuth ? JSON.parse(savedAuth) : null;
 
   const [loading, setLoading] = useState(false);
+  const [openArtShopConfirm, setOpenArtShopConfirm] = useState(false);
+  const [openDownload, setOpenDownload] = useState(false);
+  const [openReport, setOpenReport] = useState(false);
   const [open, setOpen] = useState(false);
   const [openDowload, setOpenDowload] = useState(false);
   const navigate = useNavigate();
+
   useEffect(() => {
     const getArtWork = async () => {
       setLoading(true);
@@ -111,11 +130,23 @@ export default function PostWork() {
     setOpen(!open);
   };
 
-  // Handle Download Arkwork
-  const handleClose = () => {
-    setOpen(false);
-    setOpenDowload(false);
+  const handleOpenArtShopConfirm = () => {
+    setOpenArtShopConfirm(!openArtShopConfirm);
   };
+
+  const handleOpenReport = () => {
+    setOpenReport(!openReport);
+  };
+
+  // Handle Download Artwork
+  const handleClose = () => {
+    setOpenArtShopConfirm(false);
+    setOpenDownload(false);
+    setOpenReport(false);
+  };
+
+
+
   const downloadSectionAsImage = async (elementId) => {
     const element = document.getElementById(elementId);
 
@@ -166,6 +197,30 @@ export default function PostWork() {
       currency: "VND",
     });
   }
+
+  const handleClickOpen = () => {
+    setOpenArtShopConfirm(true);
+  };
+
+  const [value, setValue] = useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  useEffect(() => {
+    const getUserProfile = async () => {
+      const userProfile = await GetCreatorByAccountID(id ? id : "0");
+      setUser(userProfile);
+    };
+    const getUserArtworks = async () => {
+      const userArtworks = await GetArtsByAccountId(id ? id : "0");
+      setArtworks(userArtworks ? userArtworks : []);
+    };
+    getUserProfile();
+    getUserArtworks();
+  }, [id]);
+
   function TagList() {
     return (
         <>
@@ -277,9 +332,13 @@ export default function PostWork() {
                   <>
                     <Button
                         onClick={handleDelete}
-                        variant="contained"
                         color="error"
-                    >
+                        variant="contained"
+                        style={{
+                          color: "white",
+                          height: "50px",
+                          margin: "10px",
+                        }}>
                       Delete Artwork
                     </Button>
                     <Link to={`/characters/artwork/update/${artwork?.artworkID}`}>
@@ -288,7 +347,8 @@ export default function PostWork() {
                           style={{
                             backgroundColor: "#5dbae5",
                             color: "white",
-                            height: "60px",
+                            height: "50px",
+                            margin: "10px",
                           }}
                       >
                         Update Artwork
@@ -300,7 +360,7 @@ export default function PostWork() {
                     {artwork?.purchasable === true && status?.status === false ? (
                         <Chip
                             label={formatMoney(artwork?.price)}
-                            onClick={handleOpen}
+                            onClick={handleOpenArtShopConfirm}
                             style={{
                               fontSize: "20px",
                               padding: "20px",
@@ -309,31 +369,52 @@ export default function PostWork() {
                             }}
                         />
                     ) : (
-                        <Button
-                            sx={{ minWidth: "30%", marginBottom: "5px" }}
-                            variant="contained"
-                            size="small"
-                            title="Dowload"
-                            onClick={() => handleDownload(`img-${artwork?.artworkID}`)}
-                            endIcon={<Download />}
-                        >
-                          Download Artwork
-                        </Button>
+                        <>
+                          <Button
+                              sx={{ minWidth: "40%", marginBottom: "5px", height: "40px" }}
+                              variant="contained"
+                              size="small"
+                              title="Dowload"
+                              onClick={() => handleDownload(`img-${artwork?.artworkID}`)}
+                              endIcon={<Download />}>
+                            Download Artwork
+                          </Button>
+                          <Button
+                              sx={{ minWidth: "20%", marginBottom: "5px", height: "40px" }}
+                              onClick={handleOpenReport}
+                              variant="contained"
+                              color="error"
+                              href=""
+                              style={{ marginLeft: "20px" }}>
+                            Report
+                          </Button>
+                        </>
                     )}
                   </div>
               )}
+              {/* {userInSession.accountId !== creator?.userId ? (
+
+            ) : (
+              ""
+            )} */}
+
+              {/* Popup Report */}
+              <Dialog open={openReport} onClose={handleClose}>
+                <ReportForm
+                    reporterId={Number(userInSession.userId)}
+                    reportedId={Number(creator?.userId)}
+                    artworkId={Number(artwork?.artworkID)}
+                    onClose={() => setOpenReport(false)}
+                />
+              </Dialog>
             </div>
             <div id='"#comment"'>
               <Comments />
             </div>
           </Box>
         </div>
-        {open && (
-            <ArtShopConfirm
-                open={open}
-                handleClose={handleOpen}
-                item={artwork ?? null}
-            />
+        {openArtShopConfirm && (
+            <ArtShopConfirm open={openArtShopConfirm} handleClose={handleOpenArtShopConfirm} item={artwork ?? null} />
         )}
       </Box>
   );

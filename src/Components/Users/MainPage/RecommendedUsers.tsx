@@ -31,7 +31,7 @@ export default function RecommendedUsers() {
       <>
         <ImageList className='recommendedUsers' cols={5}>
           {users.map((user) => (
-            <Link key={user.CreatorId} to={`/user/${user.CreatorId}`}>
+              <Link key={user.accountId} to={`/characters/profile/${user.accountId}`}>
               <CardActionArea
                 onMouseEnter={() => setHoveredID(user.CreatorId)}
                 onMouseLeave={() => setHoveredID(null)}
