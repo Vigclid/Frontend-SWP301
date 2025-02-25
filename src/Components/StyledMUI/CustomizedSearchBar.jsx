@@ -81,26 +81,35 @@ export default function ExpandingSearchBar() {
 
   const fetchCreator = async (value) => {
     try {
-      const response = await axios.get(`http://localhost:7233/api/Creator/`);
+      const response = await axios.get(`http://localhost:7233/api/Creator`);
       const creators = response.data;
 
       const creatorsWithAccount = await Promise.all(
-          creators.map(async (creator) => {
-            const account = await getAccountByAccountId(creator.accountId);
-            return { ...creator, account };
-          })
+        creators.map(async (creator) => {
+          const account = await getAccountByAccountId(creator.accountId);
+          return { ...creator, account };
+        })
       );
-      const filteredResults = creatorsWithAccount.filter(({ account }) => {
-        return (
-            value &&
+
+      const filteredResults = creatorsWithAccount.filter(
+        ({ account, firstName, lastName }) => {
+          if (!value) return false;
+          const searchValue = value.toLowerCase();
+          const userNameMatch =
             account &&
             account.userName &&
-            account.userName.toLowerCase().includes(value.toLowerCase())
-        );
-      });
+            account.userName.toLowerCase().includes(searchValue);
+          const lastNameMatch =
+            lastName && lastName.toLowerCase().includes(searchValue);
+          const firstNameMatch =
+            firstName && firstName.toLowerCase().includes(searchValue);
+          return userNameMatch || lastNameMatch || firstNameMatch;
+        }
+      );
+      setDataCreator(creatorsWithAccount);
 
-      setDataCreator(filteredResults);
-      console.log(filteredResults);
+      // setDataCreator(filteredResults);
+      // console.log(filteredResults);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -108,57 +117,53 @@ export default function ExpandingSearchBar() {
 
   const fetchArt = (value) => {
     axios
-        .get(`http://localhost:7233/api/artworks/`)
-        .then((response) => {
-          // console.log(response);
-          const filteredResults = response.data.filter((art) => {
-            return (
-                value &&
-                art &&
-                art.artworkName &&
-                art.artworkName.toLowerCase().includes(value.toLowerCase())
-            );
-          });
-          // console.log(filteredResults);
-          setDataArt(filteredResults);
-          // setShowResults(true);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
+      .get(`http://localhost:7233/api/artworks/`)
+      .then((response) => {
+        // console.log(response);
+        const filteredResults = response.data.filter((art) => {
+          return (
+            value &&
+            art &&
+            art.artworkName &&
+            art.artworkName.toLowerCase().includes(value.toLowerCase())
+          );
         });
+        // console.log(filteredResults);
+        setDataArt(filteredResults);
+        // setShowResults(true);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   };
 
   const fetchTag = async (value) => {
     try {
+      // Fetch danh sách tag từ API
       const response = await axios.get(`http://localhost:7233/api/Tag/`);
       const tags = response.data; // tags là một mảng tag
 
-      // Lọc tag theo tên chứa giá trị search (value)
+      // Lọc tag theo tên chứa chuỗi nhập vào
       const filteredTags = tags.filter((tag) => {
         return (
-            value &&
-            tag &&
-            tag.tagName &&
-            tag.tagName.toLowerCase().includes(value.toLowerCase())
+          value &&
+          tag &&
+          tag.tagName &&
+          tag.tagName.toLowerCase().includes(value.toLowerCase())
         );
       });
-
-      // Nếu bạn cần lấy thông tin artwork cho mỗi tag, bạn có thể sử dụng Promise.all
-      // Lưu ý: Chỉ fetch artwork nếu cần dùng cho chuyển hướng hay hiển thị sau
       const tagsWithArtwork = await Promise.all(
-          filteredTags.map(async (tag) => {
-            const artworks = await GetArtworkByTagname(tag.tagName);
-            return { ...tag, artworks }; // lưu cả mảng artwork vào tag
-          })
+        filteredTags.map(async (tag) => {
+          const artworks = await GetArtworkByTagname(tag.tagName);
+          return { ...tag, artworks };
+        })
       );
 
-      // Cập nhật state với danh sách tag có kèm artwork (nếu cần)
       setDataTag(tagsWithArtwork);
     } catch (error) {
       console.error("Error fetching tag data:", error);
     }
   };
-
   const handleChange = (value) => {
     setInput(value);
     fetchCreator(value);
@@ -262,69 +267,69 @@ export default function ExpandingSearchBar() {
   //     }
   // };
   const searchBarComponent = (
-      // <Box onBlur={handleBlur}
-      // onFocus={handleFocus}>
-      <>
-        <SearchIconWrapper>
-          <SearchIcon />
-        </SearchIconWrapper>
-        <StyledInputBase
-            placeholder="Search..."
-            inputProps={{ "aria-label": "search" }}
-            value={input}
-            onChange={(e) => handleChange(e.target.value)}
-            //  onBlur={handleBlur}
-            // onFocus={handleFocus}>
-        />
-        {/* bo cho nay */}
+    // <Box onBlur={handleBlur}
+    // onFocus={handleFocus}>
+    <>
+      <SearchIconWrapper>
+        <SearchIcon />
+      </SearchIconWrapper>
+      <StyledInputBase
+        placeholder="Search..."
+        inputProps={{ "aria-label": "search" }}
+        value={input}
+        onChange={(e) => handleChange(e.target.value)}
+        //  onBlur={handleBlur}
+        // onFocus={handleFocus}>
+      />
+      {/* bo cho nay */}
 
-        {/* // {showResults && results && results.length > 0 && <SearchResultsList results={results} />} */}
-        {/* // </Box> */}
-      </>
+      {/* // {showResults && results && results.length > 0 && <SearchResultsList results={results} />} */}
+      {/* // </Box> */}
+    </>
   );
   const lightMode = <SearchLightMode>{searchBarComponent}</SearchLightMode>;
   const darkMode = <SearchDarkMode>{searchBarComponent}</SearchDarkMode>;
 
   return (
-      // dark? darkMode : lightMode
-      <div>
-        {dark ? (
-            <SearchDarkMode>
-              {searchBarComponent}
-              {dataCreator && dataCreator.length > 0 && (
-                  <SearchResultsList
-                      dataCreator={dataCreator}
-                      dataArt={dataArt}
-                      dataTag={dataTag}
-                  />
-              )}
-            </SearchDarkMode>
-        ) : (
-            <SearchLightMode>
-              {searchBarComponent}
-              {dataCreator && dataCreator.length > 0 && (
-                  <SearchResultsList
-                      dataCreator={dataCreator}
-                      dataArt={dataArt}
-                      dataTag={dataTag}
-                  />
-              )}
-            </SearchLightMode>
-        )}
-      </div>
+    // dark? darkMode : lightMode
+    <div>
+      {dark ? (
+        <SearchDarkMode>
+          {searchBarComponent}
+          {dataCreator && dataCreator.length > 0 && (
+            <SearchResultsList
+              dataCreator={dataCreator}
+              dataArt={dataArt}
+              dataTag={dataTag}
+            />
+          )}
+        </SearchDarkMode>
+      ) : (
+        <SearchLightMode>
+          {searchBarComponent}
+          {dataCreator && dataCreator.length > 0 && (
+            <SearchResultsList
+              dataCreator={dataCreator}
+              dataArt={dataArt}
+              dataTag={dataTag}
+            />
+          )}
+        </SearchLightMode>
+      )}
+    </div>
 
-      //     <div>
-      //     {dark ? (
-      //         <SearchDarkMode>
-      //             {searchBarComponent}
-      //             {/* {showResults && results && results.length > 0 && <SearchResultsList results={results} />} */}
-      //         </SearchDarkMode>
-      //     ) : (
-      //         <SearchLightMode>
-      //             {searchBarComponent}
-      //             {/* {showResults && results && results.length > 0 && <SearchResultsList results={results} />} */}
-      //         </SearchLightMode>
-      //     )}
-      // </div>
+    //     <div>
+    //     {dark ? (
+    //         <SearchDarkMode>
+    //             {searchBarComponent}
+    //             {/* {showResults && results && results.length > 0 && <SearchResultsList results={results} />} */}
+    //         </SearchDarkMode>
+    //     ) : (
+    //         <SearchLightMode>
+    //             {searchBarComponent}
+    //             {/* {showResults && results && results.length > 0 && <SearchResultsList results={results} />} */}
+    //         </SearchLightMode>
+    //     )}
+    // </div>
   );
 }

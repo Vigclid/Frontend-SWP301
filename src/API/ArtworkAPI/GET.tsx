@@ -4,7 +4,7 @@ import {
 } from "../../Interfaces/ArtworkInterfaces";
 import axios from "axios";
 
-const arturl = "http://localhost:7233/api/artworks/";
+const arturl = "http://localhost:7233/api/artworks";
 const top10arturl = `http://localhost:7233/api/artworks/`;
 const random10arturl = `http://localhost:7233/api/artworks/`;
 const artworkbycreatorurl = `http://localhost:7233/api/artworks/accountID/`;
@@ -170,7 +170,9 @@ export async function GetArtworkByTagname(
 
 export async function CheckFavouriteStatus(userID: number, artworkID: number) {
   try {
-    const response = await axios.get(`${API_URL}/favourite/status/${userID}/${artworkID}`);
+    const response = await axios.get(
+      `${API_URL}/favourite/status/${userID}/${artworkID}`
+    );
     return response.data; // Trả về true/false
   } catch (error) {
     console.error("Lỗi khi kiểm tra trạng thái favourite:", error);
