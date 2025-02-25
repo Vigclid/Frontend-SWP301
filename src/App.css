@@ -48,7 +48,7 @@ custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-attachment: fixed;
   background-position: center;
   /* Ensure the image is centered on the screen */
-  width: 100vw;
+  width: 100%;
   /* 100% of the viewport width */
   height: auto;
   /* 100% of the viewport height */

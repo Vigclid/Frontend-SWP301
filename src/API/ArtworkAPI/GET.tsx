@@ -137,7 +137,7 @@ export async function CheckFavouriteStatus(userID: number, artworkID: number) {
   }
 }
 
-export async function CheckThumbUpStatus(userID: number, artworkID: number) {
+export async function CheckLikeStatus(userID: number, artworkID: number) {
   try {
     const response = await axios.get(`${API_URL}/like/status/${userID}/${artworkID}`);
     return response.data; // Trả về true/false
@@ -146,3 +146,16 @@ export async function CheckThumbUpStatus(userID: number, artworkID: number) {
     return false;
   }
 }
+export const GetLikeCount = async (artworkID: number) => {
+  try {
+    const response = await fetch(`${API_URL}/like/count/${artworkID}`);
+    if (response.ok) {
+      return await response.json(); // số lượng like
+    }
+    console.error("Failed to get like count");
+    return 0;
+  } catch (error) {
+    console.error("Error getting like count:", error);
+    return 0;
+  }
+};

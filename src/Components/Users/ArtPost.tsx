@@ -26,7 +26,7 @@ import html2canvas from "html2canvas";
 import ArtShopDialog from "./ArtShopDialog.jsx";
 import axios from "axios";
 import FavouritesIcon from "../FavouritesIcon.jsx";
-import ThumbUpIcon from "../ThumbUpIcon.jsx";
+import LikeIcon from "../LikeIcon.jsx";
 import Dialog from "@mui/material/Dialog";
 import ReportForm from "./UserForms/ReportForm.tsx";
 import { GetArtsByCreatorId, GetArtsByAccountId } from "../../API/ArtworkAPI/GET.tsx";
@@ -262,7 +262,7 @@ export default function PostWork() {
               justifyContent: "space-between",
               width: "60%",
             }}>
-            <ThumbUpIcon userID={savedUser?.userId} artworkID={id} />
+            <LikeIcon userID={savedUser?.userId} artworkID={id} />
             <FavouritesIcon userID={savedUser?.userId} artworkID={id} />
             <div className="button-comment">
               <a href="#comment" style={{ display: "flex" }}>
