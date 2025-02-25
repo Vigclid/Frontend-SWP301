@@ -74,6 +74,7 @@ export default function PostWork() {
   const [openDowload, setOpenDowload] = useState(false);
   const navigate = useNavigate();
 
+
   useEffect(() => {
     const getArtWork = async () => {
       setLoading(true);
