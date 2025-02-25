@@ -81,7 +81,7 @@ export default function ExpandingSearchBar() {
 
   const fetchCreator = async (value) => {
     try {
-      const response = await axios.get(`http://localhost:7233/api/Creator/`);
+      const response = await axios.get(`http://localhost:7233/api/Creator`);
       const creators = response.data;
 
       const creatorsWithAccount = await Promise.all(

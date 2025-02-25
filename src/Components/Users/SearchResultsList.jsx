@@ -27,13 +27,13 @@ export const SearchResultsList = (props) => {
   return (
     <div className="results-list">
       {creatorsToShow.map((creator, id) => {
-        const account = getAccountByAccountId(creator.AccountId);
+        const account = getAccountByAccountId(creator.accountId);
         return (
           <>
             <SearchResultUser
               key={id}
-              result={account.userName}
-              resultId={creator.creatorID}
+              result={account.userName }
+              resultId={creator.accountId}
               resultIdkey={id}
             />
           </>
