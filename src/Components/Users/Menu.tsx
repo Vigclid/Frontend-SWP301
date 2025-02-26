@@ -68,7 +68,7 @@ export default function Menu() {
           </Fade>
         )}
       </Popper>
-      <Box sx={{ flexGrow: 1, boxShadow: '50px' }}>
+      <Box sx={{ flexGrow: 1, boxShadow: '50px', width: '100vw' }}>
         <AppBar sx={{ transition: theme.transition, color: theme.color, backgroundColor: theme.backgroundColor }} position="static">
           <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>

@@ -1,16 +1,11 @@
 import axios from "axios";
 
-const arturl = "https://localhost:7233/api/artworks";
+const arturl = "http://localhost:7233/api/artworks";
 const arturlVnpayPayment = "https://localhost:7233";
 
-const packageVnPayment = ""
-
-export const getArtWithStatus = (id, pageNumber) => {
+export const getArtWithStatus = (userId, pageNumber) => {
   return axios.get(
-    arturl +
-      "/GetArtworksWithPaymentStatus/" +
-      id +
-      `?pageNumber=${pageNumber || 1}&pageSize=8`
+    `${arturl}/GetArtworksWithPaymentStatus?userId=${userId || ''}&pageNumber=${pageNumber || 1}&pageSize=8`
   );
 };
 

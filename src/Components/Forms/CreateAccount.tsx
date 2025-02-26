@@ -77,7 +77,7 @@ export default function CreateAccount() {
     validateOnChange: false,
     validateOnBlur: false,
     initialValues: {
-      profilePicture: "",
+      profilePicture: "https://res.cloudinary.com/djprssm3o/image/upload/v1740558383/avatar/ffa0b63b-fbc8-4e46-8757-145c6ee80161.jpg",
       backgroundPicture: "",
       paypalAccountID: 1,
       allowCommission: false,

@@ -58,6 +58,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
 import {parse} from "date-fns/parse";
 import '../../css/ArtPost.css';
+import '../../css/ProfileUser.css';
 
 import ReportForm from "./UserForms/ReportForm.tsx"; // Import form bạn đã làm
 import { Report } from "../../Interfaces/ReportInterfaces.ts";
@@ -600,7 +601,7 @@ export default function ProfileUser() {
               </div>
               <div className='headerusername'>
                 <Typography gutterBottom variant="h3" component="div" style={{ fontWeight: 700, marginBottom: '5px' }} >
-                  {user?.firstName} {user?.lastName}
+                  <div className='headername'>{user?.firstName} {user?.lastName}</div>
                 </Typography>
                 <Typography variant="body2" style={{ fontWeight: 500, fontSize: '18px' }} >
                   Followers: {user?.followCounts}
@@ -657,7 +658,6 @@ export default function ProfileUser() {
                   open={open}
                   onClose={handleClose}          
                 >
-<<<<<<< HEAD
                   <DialogTitle>Report Information</DialogTitle>
                   <DialogContent>
                     <DialogContentText>
@@ -684,14 +684,12 @@ export default function ProfileUser() {
                     <Button onClick={handleClose} variant="outlined" color="error">Cancel</Button>
                     <Button type="submit" variant="outlined" onClick={handleSubmitReport} >Submit</Button>
                   </DialogActions>
-=======
                    <ReportForm
                     reporterId={Number(userInSession.userId)}
                     reportedId={Number(user?.userId)}
                     // Nếu có artworkId thì truyền vào đây, ví dụ: artworkId={someArtworkId}
                     onClose={() => setOpen(false)}
                   />
->>>>>>> 2f79c19bc8d1ca64e04246162360804935af481b
                 </Dialog>
 
                 <Dialog
