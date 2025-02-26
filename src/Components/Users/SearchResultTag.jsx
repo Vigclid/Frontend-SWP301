@@ -1,4 +1,3 @@
-
 // dungf cho searchuser
 // import { useNavigate } from 'react-router-dom';
 // import '../../css/SearchResult.css';
@@ -10,7 +9,6 @@
 //     navigate(`profile/${accountID}`)
 //   }
 
-
 //     return (
 //       <div
 //         className="search-result"
@@ -21,10 +19,10 @@
 //       </div>
 //     );
 //   };
-import { useNavigate } from 'react-router-dom';
-import '../../css/SearchResult.css';
-import ColorLensIcon from '@mui/icons-material/ColorLens';
-export const SearchResultTag = ({ result, resultId}) => {
+import { useNavigate } from "react-router-dom";
+import "../../css/SearchResult.css";
+import ColorLensIcon from "@mui/icons-material/ColorLens";
+export const SearchResultTag = ({ result, resultId }) => {
   const navigate = useNavigate();
 
   // console.log(result);
@@ -35,14 +33,14 @@ export const SearchResultTag = ({ result, resultId}) => {
     //   // Nếu là userName, điều hướng đến trang profile
     //   navigate(`profile/${result.accountID}`);
     // } else if (result.type === "artwork") {
-      // Nếu là tên artwork, điều hướng đến trang bài post
-      navigate(`artwork/${resultId}`);
+    // Nếu là tên artwork, điều hướng đến trang bài post
+    navigate(`artwork/${resultId}`);
     // }
   };
 
   return (
     <div className="search-result" onClick={handleSelect}>
-        <ColorLensIcon/> {result}
+      <ColorLensIcon /> {result} on Tag
     </div>
   );
 };

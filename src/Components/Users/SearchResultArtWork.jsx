@@ -1,8 +1,7 @@
+import { useNavigate } from "react-router-dom";
+import "../../css/SearchResult.css";
 
-import { useNavigate } from 'react-router-dom';
-import '../../css/SearchResult.css';
-
-import PaletteIcon from '@mui/icons-material/Palette';
+import PaletteIcon from "@mui/icons-material/Palette";
 export const SearchResultsArtWork = ({ result, resultId }) => {
   const navigate = useNavigate();
 
@@ -11,8 +10,8 @@ export const SearchResultsArtWork = ({ result, resultId }) => {
   const handleSelect = () => {
     console.log("Xử lý chọn được kích hoạt");
     // if (result.type === "user") {
-      // Nếu là userName, điều hướng đến trang profile
-      navigate(`artwork/${resultId}`);
+    // Nếu là userName, điều hướng đến trang profile
+    navigate(`Artwork/${resultId}`);
     // } else if (result.type === "artwork") {
     //   // Nếu là tên artwork, điều hướng đến trang bài post
     //   navigate(`artwork/${result.artworkID}`);
@@ -21,7 +20,7 @@ export const SearchResultsArtWork = ({ result, resultId }) => {
 
   return (
     <div className="search-result" onClick={handleSelect}>
-     <PaletteIcon/> {result}
+      <PaletteIcon /> {result} on Artwork
     </div>
   );
 };

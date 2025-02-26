@@ -4,7 +4,7 @@ export interface Artwork{
   creatorID: string,
   artworkName: string,
   description: string,
-  dateCreated: Date,
+  dateCreated: string,
   likes: number,
   purchasable: boolean,
   price: number,
@@ -12,33 +12,33 @@ export interface Artwork{
   imageFile: string,
   artworkTag: [
     {
-      "artworkTagID": number,
-      "artworkID": number,
-      "tagID": number
-    },   
-  ]
+      artworkTagID: number;
+      artworkID: number;
+      tagID: number;
+    }
+  ];
 }
 
 export interface ArtworkPaymentStatus{
   status: boolean
 }
 
-export interface DownloadArtwork extends Artwork{
-  artworkID: string,
-  creatorID: string,
-  artworkName: string,
-  description: string,
-  dateCreated: Date,
-  likes: number,
-  purchasable: boolean,
-  price: number,
-  imageFile: string,
-  idDowLoad: string,
+export interface DownloadArtwork extends Artwork {
+  artworkID: string;
+  creatorID: string;
+  artworkName: string;
+  description: string;
+  dateCreated: string;
+  likes: number;
+  purchasable: boolean;
+  price: number;
+  imageFile: string;
+  idDowLoad: string;
   artworkTag: [
     {
-      "artworkTagID": number,
-      "artworkID": number,
-      "tagID": number
-    },
-  ]
+      artworkTagID: number;
+      artworkID: number;
+      tagID: number;
+    }
+  ];
 }

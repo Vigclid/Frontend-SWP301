@@ -6,13 +6,18 @@ import CustomizedTextField from './StyledMUI/CustomizedTextField.tsx';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import '../css/Comment.css';
+
+
+
+
 
 export default function Comments() {
   const [comments, setComments] = useState([]);
   const [creators, setCreators] = useState([]);
   const [artworkID, setArtworkID] = useState(null);
   const [replyComments, setReplyComments] = useState([]);
+
+
 
   useEffect(() => {
     // Get artworkID from URL
@@ -22,22 +27,22 @@ export default function Comments() {
 
     // Fetch comments data
     fetch('http://localhost:7233/api/comments/')
-      .then((response) => response.json())
-      .then((data) => setComments(data))
-      .catch((error) => setComments([]));
+        .then((response) => response.json())
+        .then((data) => setComments(data))
+        .catch((error) => setComments([]));
 
     // Fetch reply comments data
     fetch('http://localhost:7233/api/replycomment')
-      .then((response) => response.json())
-      .then((data) => setReplyComments(data))
-      .catch((error) => setReplyComments([]));
+        .then((response) => response.json())
+        .then((data) => setReplyComments(data))
+        .catch((error) => setReplyComments([]));
 
     // Fetch creators data
     fetch('http://localhost:7233/api/Creator')
-      .then((response) => response.json())
-      .then((data) => setCreators(data))
-      .catch((error) => setCreators([]));
-  }, [artworkID]);
+        .then((response) => response.json())
+        .then((data) => setCreators(data))
+        .catch((error) => setCreators([]));
+  },  [comments]);
 
   const getUserNameById = (userID) => {
     const creator = creators.find((creator) => creator.userId === userID);
@@ -50,22 +55,22 @@ export default function Comments() {
   const onComment = (newComment) => setComments((prev) => [newComment, ...prev]);
 
   return (
-    <div>
-      <h2>Comments</h2>
-      <div className='inputcomment'>
-        <CommentInput onComment={onComment} artworkID={artworkID} />
-      </div>
       <div>
-        {filteredComments.map((comment, index) => (
-          <CommentItem
-            key={index}
-            comment={comment}
-            getUserNameById={getUserNameById}
-            getReplyCommentsByCommentID={getReplyCommentsByCommentID}
-          />
-        ))}
+        <h2>Comments</h2>
+        <div className='inputcomment'>
+          <CommentInput onComment={onComment} artworkID={artworkID} />
+        </div>
+        <div>
+          {filteredComments.map((comment, index) => (
+              <CommentItem
+                  key={index}
+                  comment={comment}
+                  getUserNameById={getUserNameById}
+                  getReplyCommentsByCommentID={getReplyCommentsByCommentID}
+              />
+          ))}
+        </div>
       </div>
-    </div>
   );
 }
 
@@ -104,29 +109,30 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID }) 
         },
         body: JSON.stringify(newReplyData),
       })
-        .then((response) => response.json())
-        .then((data) => {
-          setReplyComments((prevReplies) => [data, ...prevReplies]); // Cập nhật UI với reply mới
-          setNewReply(''); // Reset lại nội dung input
-          const _updateInteractData = async () => {
-            try {
-              console.log("Calling /api/interact/update...");
-              return await axios.put('http://localhost:7233/api/interact/update'); //API chua chay duoc (API cua Cong Minh)
-            } catch (error) {
-              console.error('Error updating interact data:', error);
-            }
-          };
-          console.log("Now call _updateInteractData...");
-          // Gọi API cập nhật tương tác
-          _updateInteractData();
-        })
-        .catch((error) => {
-          console.error('Error posting reply comment:', error);
-        });
+          .then((response) => response.json())
+          .then((data) => {
+            setReplyComments((prevReplies) => [data, ...prevReplies]); // Cập nhật UI với reply mới
+            setNewReply(''); // Reset lại nội dung input
+            const _updateInteractData = async () => {
+              try {
+                console.log("Calling /api/interact/update...");
+                return await axios.put('http://localhost:7233/api/interact/update'); //API chua chay duoc (API cua Cong Minh)
+              } catch (error) {
+                console.error('Error updating interact data:', error);
+              }
+            };
+            console.log("Now call _updateInteractData...");
+            // Gọi API cập nhật tương tác
+            _updateInteractData();
+          })
+          .catch((error) => {
+            console.error('Error posting reply comment:', error);
+          });
       const _Func = async () => {
         return await axios.put('http://localhost:7233/api/artworks/update-comments-count');
       }
       _Func();
+      
     }
     // console.log('newReplyData:', newReplyData);  // Kiểm tra dữ liệu trước khi gửi
   };
@@ -135,43 +141,43 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID }) 
 
 
   return (
-    <div className="commented">
-      <div className="buttonrepandcacel" style={{ display: 'flex' }}>
-        <span>{getUserNameById(comment.userID)}: {comment.commentDetail}</span>
-        {isReplying ? (
-          <CustomizedButton variant="contained" size="small" onClick={() => setIsReplying(false)}>
-            Cancel
-          </CustomizedButton>
-        ) : (
-          <CustomizedButton
-            variant="contained"
-            size="small"
-            onClick={() => setIsReplying(true)}
-          >
-            Reply
-          </CustomizedButton>
-        )}
+      <div className="commented">
+        <div className="buttonrepandcacel" style={{ display: 'flex' }}>
+          <span>{getUserNameById(comment.userID)}: {comment.commentDetail}</span>
+          {isReplying ? (
+              <CustomizedButton variant="contained" size="small" onClick={() => setIsReplying(false)}>
+                Cancel
+              </CustomizedButton>
+          ) : (
+              <CustomizedButton
+                  variant="contained"
+                  size="small"
+                  onClick={() => setIsReplying(true)}
+              >
+                Reply
+              </CustomizedButton>
+          )}
+        </div>
+        <div>
+          {isReplying && (
+              <div>
+                <CustomizedTextField
+                    value={newReply}
+                    onChange={(e) => setNewReply(e.target.value)}
+                    placeholder="Reply to this comment..."
+                />
+                {/*{console.log('newReplyyyyyyyyyyyy:', newReply)}*/}
+                <Button onClick={onReplyComment}>Submit</Button>
+              </div>
+          )}
+          {replyComments.map((reply, index) => (
+              <div key={index} className="reply-comment" style={{ marginLeft: '20px' }}>
+                <span>{getUserNameById(reply.replierID)}: {reply.commentDetail}</span>
+                {/*{console.log('replyyyyyyyyyy:', reply)}*/}
+              </div>
+          ))}
+        </div>
       </div>
-      <div>
-        {isReplying && (
-          <div>
-            <CustomizedTextField
-              value={newReply}
-              onChange={(e) => setNewReply(e.target.value)}
-              placeholder="Reply to this comment..."
-            />
-            {/*{console.log('newReplyyyyyyyyyyyy:', newReply)}*/}
-            <Button onClick={onReplyComment}>Submit</Button>
-          </div>
-        )}
-        {replyComments.map((reply, index) => (
-          <div key={index} className="reply-comment" style={{ marginLeft: '20px' }}>
-            <span>{getUserNameById(reply.replierID)}: {reply.commentDetail}</span>
-            {/*{console.log('replyyyyyyyyyy:', reply)}*/}
-          </div>
-        ))}
-      </div>
-    </div>
   );
 };
 
@@ -179,18 +185,21 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID }) 
 function CommentInput({ artworkID }) {
   const [commentBody, setCommentBody] = useState('');
 
+
+
   const formik = useFormik({
     initialValues: {
       commentDetail: '',
     },
     validationSchema: Yup.object({
       commentDetail: Yup.string()
-        .required('Comment cannot be empty')
+          .required('Comment cannot be empty')
     }),
     onSubmit: (values) => {
       const authData = sessionStorage.getItem("auth");  // Lấy thông tin người dùng từ sessionStorage
 
       const user = authData ? JSON.parse(authData) : null;
+
 
       if (user) {
         const commentData = {
@@ -199,37 +208,42 @@ function CommentInput({ artworkID }) {
           userID: user.userId,    // Lấy userID từ session
           createdDate: new Date()
         };
+        
+
+        formik.values.commentDetail = "";
 
         fetch('http://localhost:7233/api/comments/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(commentData)
         })
-          .then(response => response.json())
-          .then(data => {
-            console.log('Comment saved successfully:', data);
-            console.log('hello')
-            const _updateInteractData = async () => {
-              try {
-                const response = await axios.put('http://localhost:7233/api/interact/update');
-                console.log('Interact data updated successfully:', response.data);
-              } catch (error) {
-                console.error('Error updating interact data:', error);
-              }
-            };
+            .then(response => response.json())
+            .then(data => {
+              console.log('Comment saved successfully:', data);
+              console.log('hello')
+              const _updateInteractData = async () => {
+                try {
+                  const response = await axios.put('http://localhost:7233/api/interact/update');
+                  console.log('Interact data updated successfully:', response.data);
+                } catch (error) {
+                  console.error('Error updating interact data:', error);
+                }
+              };
 
-            // Gọi API cập nhật tương tác
-            _updateInteractData();
-            formik.resetForm();
-          })
-          .catch(error => {
-            console.error('Error posting comment:', error);
-          });
+              // Gọi API cập nhật tương tác
+              _updateInteractData();
+              formik.resetForm();
+            })
+            .catch(error => {
+              console.error('Error posting comment:', error);
+            });
 
         const _Func = async () => {
           return await axios.put('http://localhost:7233/api/artworks/update-comments-count');
         }
         _Func();
+
+
       } else {
         console.log('User not logged in');
       }
@@ -237,30 +251,30 @@ function CommentInput({ artworkID }) {
   });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '70%' }}>
-      <form onSubmit={formik.handleSubmit}>
-        <CustomizedTextField
-          id="comment"
-          style={{ width: '100%' }}
-          name="commentDetail"
-          value={formik.values.commentDetail}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          placeholder="Share your thoughts..."
-          error={formik.touched.commentDetail && Boolean(formik.errors.commentDetail)}
-          helperText={formik.touched.commentDetail && formik.errors.commentDetail}
-        />
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1%' }}>
-          <CustomizedButton
-            variant="contained"
-            type="submit"
-            endIcon={<SendIcon />}
-            disabled={formik.isSubmitting || !formik.isValid}
-          >
-            Send
-          </CustomizedButton>
-        </div>
-      </form>
-    </div>
+      <div style={{ display: 'flex', flexDirection: 'column', width: '70%' }}>
+        <form onSubmit={formik.handleSubmit}>
+          <CustomizedTextField
+              id="comment"
+              style={{ width: '100%' }}
+              name="commentDetail"
+              value={formik.values.commentDetail}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              placeholder="Share your thoughts..."
+              error={formik.touched.commentDetail && Boolean(formik.errors.commentDetail)}
+              helperText={formik.touched.commentDetail && formik.errors.commentDetail}
+          />
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1%' }}>
+            <CustomizedButton
+                variant="contained"
+                type="submit"
+                endIcon={<SendIcon />}
+                // disabled={formik.isSubmitting || !formik.isValid}
+            >
+              Send
+            </CustomizedButton>
+          </div>
+        </form>
+      </div>
   );
 }

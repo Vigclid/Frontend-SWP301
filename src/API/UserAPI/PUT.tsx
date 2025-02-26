@@ -66,7 +66,7 @@ export async function PutCreatorProfilePicture(CreatorID:string,imageFile:string
         // Optionally, add additional headers such as Authorization if required
         // 'Authorization': 'Bearer your-token',
       };
-      const response = await axios.put(creatorurl, values, { headers });
+      const response = await axios.put(creatorurl+'update-user', values, { headers });
       return response.data;
     } catch (err) {
       console.error(err);
