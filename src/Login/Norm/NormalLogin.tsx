@@ -22,14 +22,14 @@ type roles = {
 
 export function NormalLogin() {
   return (
-    <div>NormalLogin</div>
+      <div>NormalLogin</div>
   )
 }
 
 export async function CheckLogin(checkAccount:initialUser, storeUserData:any) {
   try {
-    const response = await axios.get(accounturl);
-    const listOfAccounts = response.data;
+    // const response = await axios.get(accounturl);
+    // const listOfAccounts = response.data;
     let foundAccount: initialUser | undefined;
     // const foundAccount:initialUser = listOfAccounts.find((account: { email: string; password: string }) => account.email === checkAccount.email && account.password === checkAccount.password);
     try {
@@ -48,13 +48,12 @@ export async function CheckLogin(checkAccount:initialUser, storeUserData:any) {
 
     if (foundAccount) {
       //Get the user roles
-      const findRole = roleurl+foundAccount.roleID;
-      const userroleResponse = await axios.get(findRole);
+      const userroleResponse = await axios.get(roleurl+foundAccount.roleID);
       const userrole:roles = userroleResponse.data;
       //Store the user role in sesison
-      (userrole.roleName === "Admin") ? sessionStorage.setItem('userRole', "AD") 
-                                      : sessionStorage.setItem('userRole', userrole.roleName);
-       // Once the user is verified, get additional user data.
+      (userrole.roleName === "Admin") ? sessionStorage.setItem('userRole', "AD")
+          : sessionStorage.setItem('userRole', userrole.roleName);
+      // Once the user is verified, get additional user data.
       const creatorResponse = await axios.get(creatorurl + foundAccount.accountId);
       const creatorData:Creator = creatorResponse.data;
       const creatorWithoutTheImages = {
@@ -62,7 +61,7 @@ export async function CheckLogin(checkAccount:initialUser, storeUserData:any) {
         'email' : foundAccount.email
       }
       storeUserData(creatorWithoutTheImages);
-    } else {  
+    } else {
       alert("No account found or Banned Account");
     }
   } catch (err) {
