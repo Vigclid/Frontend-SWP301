@@ -1,4 +1,3 @@
-
 import { Backdrop, Box, Button, Card, CardActions, CardContent, CircularProgress, IconButton, Pagination, Stack, Typography } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { getArtWithStatus } from '../../API/ArtShop/ArtShopServices.js';
@@ -10,12 +9,13 @@ import { Link } from 'react-router-dom';
 import ArtShopDialog from './ArtShopDialog.jsx';
 import { ThemeContext } from '../Themes/ThemeProvider.tsx';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-function ArtShop() {
 
+function ArtShop() {
     const auth = JSON.parse(sessionStorage.getItem("auth"));
     const [dataState, setDataSate] = useState([]);
     const [open, setOpen] = useState(false);
     const [openDowload, setOpenDowload] = useState(false);
+
     const handleClose = () => {
         setOpen(false);
         setOpenDowload(false);
@@ -24,6 +24,7 @@ function ArtShop() {
             idDowLoad: null
         }))
     };
+
     const handleOpen = () => {
         setOpen(true);
     };
@@ -31,25 +32,25 @@ function ArtShop() {
     const search = async () => {
         try {
             handleOpen();
-            const data = await getArtWithStatus(auth?.creatorID, dataState?.currentPage);
+            const userId = auth?.userId; // Lấy userId từ session
+            const data = await getArtWithStatus(userId, dataState?.currentPage); // Truyền userId vào API
+            console.log('data: ', data);
             setDataSate((pre) => ({
                 ...pre,
-                listItem: data?.data?.artworkViewModels,
-                totalPages: data?.data?.totalPages,
+                listItem: data?.data, // Điều chỉnh nếu cần dựa trên cấu trúc response từ backend
+                totalPages: data?.headers['x-total-pages'] ? parseInt(data.headers['x-total-pages']) : Math.ceil(data?.data?.length / 8), // Tính tổng số trang
             }))
         } catch (error) {
-
+            console.log('error: ', error);
         } finally {
             handleClose();
         }
-    }
-
+    };
 
     function formatMoney(amount) {
         amount *= 1000;
         return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
     }
-
 
     const downloadSectionAsImage = async (elementId) => {
         const element = document.getElementById(elementId);
@@ -67,7 +68,7 @@ function ArtShop() {
 
     const handleYesClick = async () => {
         await downloadSectionAsImage(dataState?.idDowLoad);
-    }
+    };
 
     const handleDownload = async (id) => {
         setDataSate((pre) => ({
@@ -79,13 +80,12 @@ function ArtShop() {
 
     useEffect(() => {
         search();
-    }, [])
-    useEffect(() => {
-        search();
-    }, [dataState?.currentPage])
-    const { theme } = useContext(ThemeContext)
+    }, [dataState?.currentPage, auth?.userId]); // Re-fetch khi currentPage hoặc userId thay đổi
+
+    const { theme } = useContext(ThemeContext);
+
     return (
-        <div style={{paddingTop: "2%",paddingBottom:"5%"}}>
+        <div style={{ paddingTop: "2%", paddingBottom: "5%" }}>
             <Box className='box'
                 sx={{
                     color: '#61dafb',
@@ -100,7 +100,6 @@ function ArtShop() {
                     paddingLeft: 5,
                     paddingRight: 5,
                     paddingBottom: '1%',
-
                 }}
             >
                 <Backdrop
@@ -118,7 +117,6 @@ function ArtShop() {
                         return (
                             <div class="card1" key={index}>
                                 <div class="card1-info">
-
                                     <Card sx={{ width: 280, height: 'auto', background: theme.backgroundColor3, display: "flex", flexDirection: "column", justifyContent: "space-between", borderRadius: 1 }}>
                                         <Link to={`../artwordrecomment/artwork/${art?.artworkID}`}>
                                             <CardContent>
@@ -126,7 +124,7 @@ function ArtShop() {
                                                     {art?.artworkName}
                                                 </Typography>
                                                 <div>
-                                                    <img style={{ pointerEvents: 'none', objectFit: 'cover' }} id={`img-${index}`} className='w-full h-500' src={"data:image/jpeg;base64," + art?.image} alt={art?.artworkName} />
+                                                    <img style={{ pointerEvents: 'none', objectFit: 'cover' }} id={`img-${index}`} className='w-full h-500' src={art?.imageFile} alt={art?.artworkName} />
                                                 </div>
 
                                                 <Typography variant="body2" color="text.secondary">
@@ -139,44 +137,44 @@ function ArtShop() {
                                                     </IconButton>
                                                     {formatMoney(art?.price)}
                                                 </Typography>
-                                            </CardContent></Link>
-                                        <CardActions  >
+                                            </CardContent>
+                                        </Link>
+                                        <CardActions>
                                             <Link to={`../artwordrecomment/artwork/${art?.artworkID}`}>
-                                                <Button sx={{ minWidth: '30%', margin: '0px 50px 5px 15px' }} variant="contained" size="small" title='Detail'><More /></Button></Link>
-                                            {/* {i?.purchasable && <Button sx={{ minWidth: 0 }} variant="contained" size="small" title='Buy'><Shop /></Button>} */}
-                                            {
-                                                art?.status === true
-                                                &&
+                                                <Button sx={{ minWidth: '30%', margin: '0px 50px 5px 15px' }} variant="contained" size="small" title='Detail'><More /></Button>
+                                            </Link>
+                                            {/* {
+                                                art?.purchasable === true 
+                                                && // Kiểm tra nếu artwork có purchasable = 1
                                                 <Button sx={{ minWidth: '30%', marginBottom: '5px' }}
-                                                    variant="contained" size="small" title='Dowload' onClick={() => handleDownload(`img-${index}`)}>
+                                                    variant="contained" size="small" title='Download' onClick={() => handleDownload(`img-${index}`)}>
                                                     <Download />
-                                                </Button>}
+                                                </Button>
+                                            } */}
                                         </CardActions>
                                     </Card>
                                 </div>
                             </div>
                         )
-                    })
-                    }
+                    })}
                 </Box>
                 <Box sx={{ display: "flex", justifyContent: "center", margin: "15px 0px 10px 0px", padding: "2%" }}>
                     <Stack spacing={2}>
                         <Pagination
                             sx={{
                                 background: theme.color, borderRadius: "20px",
-                                // Styling the pagination items
                                 '& .MuiPaginationItem-root': {
-                                    color: theme.backgroundColor, // Normal state color
+                                    color: theme.backgroundColor,
                                     borderColor: 'white',
                                     '&:hover': {
-                                        backgroundColor: theme.backgroundColor, // Hover state color
+                                        backgroundColor: theme.backgroundColor,
                                         color: theme.color
                                     },
                                     '&.Mui-selected': {
-                                        backgroundColor: theme.backgroundColor, // Selected item color
+                                        backgroundColor: theme.backgroundColor,
                                         color: theme.color,
                                         '&:hover': {
-                                            backgroundColor: 'darkgray', // Hover color for the selected item
+                                            backgroundColor: 'darkgray',
                                         }
                                     }
                                 }
@@ -196,4 +194,3 @@ function ArtShop() {
 }
 
 export default ArtShop
-

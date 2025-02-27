@@ -148,7 +148,7 @@ export default function TransactionHistory() {
                     <TableRow style={{ backgroundColor: '#0b81ff' }}>
                       <TableCell style={{ color: 'white' }} align="left">Artwork</TableCell>
                       <TableCell style={{ color: 'white' }} align="left">Artist</TableCell>
-                      <TableCell style={{ color: 'white' }} align="left">Pice</TableCell>
+                      <TableCell style={{ color: 'white' }} align="left">Price</TableCell>
                       <TableCell style={{ color: 'white' }} align="left">Date</TableCell>
                       <TableCell style={{ color: 'white' }} align="left">Status</TableCell>
                     </TableRow>
@@ -203,7 +203,7 @@ export default function TransactionHistory() {
                     <TableRow style={{ backgroundColor: '#0b81ff' }}>
                       <TableCell style={{ color: 'white' }} align="left">Artwork</TableCell>
                       <TableCell style={{ color: 'white' }} align="left">Customer Name</TableCell>
-                      <TableCell style={{ color: 'white' }} align="left">Pice</TableCell>
+                      <TableCell style={{ color: 'white' }} align="left">Price</TableCell>
                       <TableCell style={{ color: 'white' }} align="left">Date</TableCell>
                       <TableCell style={{ color: 'white' }} align="left">Status</TableCell>
                     </TableRow>

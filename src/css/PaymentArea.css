@@ -1,0 +1,58 @@
+.failed-box {
+    color: #fff;
+    background-color: rgba(49, 49, 49, 0.8);
+    box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.8);
+    width: 40%;
+    height: 60%;
+    margin: 5% auto 0 5%;
+    border-radius: 15px;
+    padding: 16px; /* padding: 4 trong sx */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    animation: flashRed 1.5s infinite alternate;
+  }
+  
+  @keyframes flashRed {
+    0% {
+      box-shadow: 0px 0px 10px rgba(133, 0, 0, 0.8);
+    }
+    100% {
+      box-shadow: 0px 0px 20px rgb(255, 82, 82);
+    }
+  }
+  
+
+
+.successed-box {
+    color: #fff;
+    background-color: rgba(49, 49, 49, 0.8);
+    box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.8);
+    width: 40%;
+    height: 60%;
+    margin: 5% auto 0 5%;
+    border-radius: 15px;
+    padding: 16px; /* padding: 4 trong sx */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    animation: flashgreen 1.5s infinite alternate;
+  }
+  
+@keyframes flashgreen {
+    0% {
+      box-shadow: 0px 0px 10px rgba(7, 133, 0, 0.8);
+    }
+    100% {
+      box-shadow: 0px 0px 20px rgb(117, 255, 82);
+    }
+  }
+    

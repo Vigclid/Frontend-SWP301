@@ -160,6 +160,15 @@ function UpdateArtwork() {
         if (artworkData.imageFile) {
           setPreview(`${artworkData.imageFile}`);
         }
+        const artworkTagsFromBE = (artworkData.artworkTag || tagList).map(tag => ({
+          ...tag,
+          tagID: tag.tagID ?? tag.tagId, // Giữ nguyên tagID nếu có
+          tagName:
+              tag.tagName ||
+              listOfTags.find(t => t.tagId === tag.tagID || t.tagID === tag.tagID)?.tagName ||
+              "Unknown Tag", // Tìm tên tag từ danh sách có sẵn
+          artworkID: artworkData.artworkID,
+        }));
         // Cập nhật giá trị priceSwitch và formik
         setPriceSwitch(artworkData.purchasable);
         formik.setValues({
@@ -172,7 +181,8 @@ function UpdateArtwork() {
           purchasable: artworkData.purchasable,
           price: artworkData.price,
           imageFile: artworkData.imageFile,
-          artworkTag: tagList || [],
+          // artworkTag: tagList || [],
+          artworkTag : artworkTagsFromBE,
 
           // Không load hình ảnh trực tiếp, sẽ load qua preview\n          artworkTag: artworkData.artworkTag || [],
         });
@@ -296,7 +306,7 @@ function UpdateArtwork() {
                             if (value) {
                               const newTag = {
                                 artworkTagID: 0,
-                                artworkID: 0,
+                                artworkID: formik.values.artworkID || 0,
                                 tagID: value.tagId || value.tagID,
                                 tagName: value.tagName, // thêm tagName để lưu đầy đủ thông tin
                               };

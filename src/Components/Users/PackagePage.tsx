@@ -385,7 +385,7 @@ export default function PackagePage() {
   };
 
   return (
-    <div className="packagePage">
+    <div className="packagePage"> 
       <Box
         sx={{
           color: theme.color,

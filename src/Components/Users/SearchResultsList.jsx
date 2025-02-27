@@ -1,11 +1,11 @@
 import "../../css/SearchResultsList.css";
 import { SearchResultUser } from "./SearchResultUser";
-import { Link } from "react-router-dom";
-// import { SearchResultTag } from './SearchResultTag';
 import { SearchResultsArtWork } from "./SearchResultArtWork";
 import { SearchResultTag } from "./SearchResultTag";
-import { getAccountByAccountId } from "../../API/AccountAPI/GET.tsx";
+import { GetArtworkByTagname } from "../../API/ArtworkAPI/GET.tsx";
+import { useState, useEffect } from "react";
 
+// Hàm lấy 3 phần tử ngẫu nhiên (giữ nguyên)
 const getRandomThree = (arr) => {
   if (arr.length < 3) return arr;
   const shuffled = [...arr];
@@ -18,51 +18,78 @@ const getRandomThree = (arr) => {
 
 export const SearchResultsList = (props) => {
   const { dataCreator = [], dataArt = [], dataTag = [] } = props;
-  console.log(dataArt);
 
-  const creatorsToShow = getRandomThree(dataCreator);
-  const artToShow = getRandomThree(dataArt);
-  const tagsToShow = getRandomThree(dataTag);
+  console.log("dataArt received in SearchResultsList:", dataArt);
+  const creatorsToShow = getRandomThree(dataCreator); // 3 creators ngẫu nhiên
+  const artToShow = getRandomThree(dataArt); // 3 artworks ngẫu nhiên
+  const [tagsWithArtwork, setTagsWithArtwork] = useState([]);
+
+  useEffect(() => {
+    const fetchTagsArtwork = async () => {
+      try {
+        if (dataTag.length > 0) {
+          const tagsToShow = getRandomThree(dataTag); // 3 tags ngẫu nhiên
+          const tagsData = await Promise.all(
+              tagsToShow.map(async (tag) => {
+                const artworks = await GetArtworkByTagname(tag.tagName);
+                // Lấy tối đa 3 artworks cho mỗi tag
+                return { ...tag, artworks: artworks.slice(0, 3) };
+              })
+          );
+          setTagsWithArtwork(tagsData);
+        } else {
+          setTagsWithArtwork([]);
+        }
+      } catch (error) {
+        console.error("Error fetching artworks for tags:", error);
+      }
+    };
+    fetchTagsArtwork();
+  }, [dataTag]);
 
   return (
-    <div className="results-list">
-      {creatorsToShow.map((creator, id) => {
-        const account = getAccountByAccountId(creator.AccountId);
-        return (
-          <>
+      <div className="results-list">
+        {/* Hiển thị tối đa 3 creators */}
+        {creatorsToShow.map((creator) => (
             <SearchResultUser
-              key={id}
-              result={account.userName}
-              resultId={creator.creatorID}
-              resultIdkey={id}
+                key={creator.accountId}
+                result={
+                    creator.account?.userName ||
+                    `${creator.lastName} ${creator.firstName}`
+                }
+                resultId={creator.accountId}
+                resultIdkey={creator.accountId}
             />
-          </>
-        );
-      })}
+        ))}
 
-      {artToShow.map((art, id) => {
-        return (
-          <>
+        {/* Hiển thị tối đa 3 artworks */}
+        {artToShow.map((art) => (
             <SearchResultsArtWork
-              key={id}
-              result={art.artworkName}
-              resultId={art.artworkID}
-              resultIdkey={id}
+                key={art.artworkID}
+                result={art.artworkName}
+                resultId={art.artworkID}
+                resultIdkey={art.artworkID}
             />
-          </>
-        );
-      })}
+        ))}
 
-      {tagsToShow.map((tag, id) => {
-        return (
-          <SearchResultTag
-            key={id}
-            result={tag.tagName}
-            resultId={tag.tagID}
-            resultIdkey={id}
-          />
-        );
-      })}
-    </div>
+        {/* Hiển thị tối đa 3 tags, mỗi tag tối đa 3 artworks */}
+        {tagsWithArtwork.map((tag) => (
+            <div key={tag.tagName || tag.tagIndex}>
+              <h3>{tag.tagName}</h3>
+              {tag.artworks && tag.artworks.length > 0 ? (
+                  tag.artworks.map((art) => (
+                      <SearchResultsArtWork
+                          key={art.artworkID}
+                          result={art.artworkName}
+                          resultId={art.artworkID}
+                          resultIdkey={art.artworkID}
+                      />
+                  ))
+              ) : (
+                  <p>No artworks found for this tag</p>
+              )}
+            </div>
+        ))}
+      </div>
   );
 };

@@ -11,6 +11,7 @@ import axios from 'axios';
 export default function RecommendedUsers() {
   const [hoveredID, setHoveredID] = useState<number | null>(null);
   const [users, setUsers] = useState<Creator[]>([]);
+  console.log('Users:', users);
 
   // Fetch danh sách top 10 người dùng phổ biến
   useEffect(() => {

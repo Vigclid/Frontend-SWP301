@@ -14,3 +14,17 @@ export async function ToggleFavourite(userID: number, artworkID: string) {
     return null;
   }
 }
+
+
+export async function ToggleLike(userID: number, artworkID: number) {
+  try {
+    const response = await axios.post(`${API_URL}/like/toggle`, {
+      userID,
+      artworkID,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi thêm/bỏ Like:", error);
+    return null;
+  }
+}
