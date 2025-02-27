@@ -353,7 +353,7 @@ function UpdateArtwork() {
                               <Chip
                                 key={index}
                                 label={label}
-                                // onDelete={() => arrayHelpers.remove(index)}
+                                onDelete={() => arrayHelpers.remove(index)}
                                 style={{
                                   margin: "4px",
                                   border: `1px solid ${theme.color}`,

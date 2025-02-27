@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import CommentIcon from "@mui/icons-material/Comment";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
-import TestFavouriteButton from "../TestFavouriteButton.tsx"
 import Comments from "../Comments.jsx";
 import Box from "@mui/material/Box";
 import Backdrop from "@mui/material/Backdrop";
@@ -40,7 +39,7 @@ import ArtShopDialog from "./ArtShopDialog.jsx";
 import axios from "axios";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import TestIcon from "../TestIcon.jsx";
-
+import LikeIcon from "../LikeIcon.jsx";
 
 
 
@@ -356,6 +355,7 @@ export default function PostWork() {
               width: "60%",
             }}
           >
+            <LikeIcon userID={savedUser?.userId} artworkID={id} />
             <TestIcon userID={savedUser?.userId} artworkID={id} />
             <div className="button-comment">
               <a href="#comment" style={{ display: "flex" }}>
