@@ -58,6 +58,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
 import {parse} from "date-fns/parse";
 import '../../css/ArtPost.css';
+import '../../css/ProfileUser.css';
 
 import ReportForm from "./UserForms/ReportForm.tsx"; // Import form bạn đã làm
 import { Report } from "../../Interfaces/ReportInterfaces.ts";
@@ -505,12 +506,12 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
 
   return (
       <div className=''>
-        
+
         <div className='headeruser'>
           {/* <div className='backgrounduser'>
           <img src={selectedUser.background} alt='Background'></img>
         </div> */}
-        
+
           <Card sx={{ width: '100%' }}>
 
             <div className='backgrounduser' style={{ backgroundImage: `url('${user?.backgroundPicture ? user?.backgroundPicture : previewProfile}')` }}>
@@ -529,7 +530,7 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
                   }}
               >
                 {/* Check to see if User in sesion is the same as the user in view, if yes, they can edit image */}
-                
+
                 {userInSession.accountId === user?.accountId ?
                     <>
                       <input
@@ -599,16 +600,16 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
                       }
                     </div>
 
-                  </div>
                 </div>
-                <div className='headerusername'>
-                  <Typography gutterBottom variant="h3" component="div" style={{ fontWeight: 700, marginBottom: '5px' }} >
-                    {user?.firstName} {user?.lastName}
-                  </Typography>
-                  <Typography variant="body2" style={{ fontWeight: 500, fontSize: '18px' }} >
-                    Followers: {user?.followCounts}
-                  </Typography>
-                </div> </div>
+              </div>
+              <div className='headerusername'>
+                <Typography gutterBottom variant="h3" component="div" style={{ fontWeight: 700, marginBottom: '5px' }} >
+                  <div className='headername'>{user?.firstName} {user?.lastName}</div>
+                </Typography>
+                <Typography variant="body2" style={{ fontWeight: 500, fontSize: '18px' }} >
+                  Followers: {user?.followCounts}
+                </Typography>
+              </div> </div>
 
               {userInSession.accountId !== user?.accountId ?
                   <div className='buttonheaderuser'  >
@@ -655,18 +656,44 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
                       ""
                   }
 
-                  {/* Popup Report */}
-                  <Dialog
-                      open={open}
-                      onClose={handleClose}
-                  >
-                    <ReportForm
-                        reporterId={Number(userInSession.userId)}
-                        reportedId={Number(user?.userId)}
-                        // Nếu có artworkId thì truyền vào đây, ví dụ: artworkId={someArtworkId}
-                        onClose={() => setOpen(false)}
+                {/* Popup Report */}
+                <Dialog
+                  open={open}
+                  onClose={handleClose}          
+                >
+                  <DialogTitle>Report Information</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      If this user violates community standards, please report the reason to us,
+                      ArtHub's moderators will review and handle this as soon as possible.
+                    </DialogContentText>
+                    <TextField
+                      autoFocus
+                      required
+                      margin="dense"
+                      id="reportID"
+                      label="Reason for being reported"
+                      fullWidth
+                      multiline
+                      rows={4}
+                      variant="outlined"
+                      style={{ marginTop: '25px' }}
+                      value={reportReason}
+                      onChange={(e) => setReportReason(e.target.value)}
+
                     />
-                  </Dialog>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleClose} variant="outlined" color="error">Cancel</Button>
+                    <Button type="submit" variant="outlined" onClick={handleSubmitReport} >Submit</Button>
+                  </DialogActions>
+                   <ReportForm
+                    reporterId={Number(userInSession.userId)}
+                    reportedId={Number(user?.userId)}
+                    // Nếu có artworkId thì truyền vào đây, ví dụ: artworkId={someArtworkId}
+                    onClose={() => setOpen(false)}
+                  />
+                </Dialog>
 
                   <Dialog
                       open={open1}
@@ -878,108 +905,108 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
 
 
 
-                    <Grid item xs={12}>
-                      <CustomizedTextField
-                          id="address"
-                          label="Address"
-                          name="address"
-                          autoComplete="address"
-                          fullWidth
-                          value={F4k.values.address} onChange={F4k.handleChange}
-                      />
-                      {F4k.errors.address && (<Typography variant="body2" color="red">{F4k.errors.address}
-                      </Typography>)}
-                    </Grid>
-
-                    <Grid item xs={6}>
-                      <CustomizedTextField
-                          label="Date (dd/MM/yyyy) "
-                          name="date"
-                          autoComplete="date"
-                          fullWidth
-                          value={F4k.values.date} onChange={F4k.handleChange}
-                      />
-
-                      {F4k.errors.date && (
-                          <Typography variant="body2" color="red">
-                            {F4k.errors.date}
-                          </Typography>
-                      )}
-                    </Grid>
-
-                    <Grid item xs={6}>
-                      <CustomizedTextField
-                          id="phoneNumber"
-                          label="Phone Number"
-                          name="phoneNumber"
-                          autoComplete="phoneNumber"
-                          fullWidth
-                          multiline
-                          value={F4k.values.phoneNumber} onChange={F4k.handleChange}
-                      />
-                      {F4k.errors.phoneNumber && (<Typography variant="body2" color="red">{F4k.errors.phoneNumber}
-                      </Typography>)}
-                    </Grid>
-
-
-                    <Grid item xs={12}>
-                      <CustomizedTextField
-                          id="biography"
-                          label="Biography"
-                          name="biography"
-                          autoComplete="biography"
-                          fullWidth
-                          multiline
-                          rows={3}
-                          value={F4k.values.biography} onChange={F4k.handleChange}
-                      />
-                      {F4k.errors.biography && (<Typography variant="body2" color="red">{F4k.errors.biography}
-                      </Typography>)}
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      <Button
-                          disabled={open}
-                          variant="contained"
-                          type='submit'
-                          style={{ marginBottom: '20px' }}
-                          fullWidth
-                      >
-                        Update Profile!
-                      </Button>
-                    </Grid>
-
+                  <Grid item xs={12}>
+                    <CustomizedTextField
+                      id="address"
+                      label="Address"
+                      name="address"
+                      autoComplete="address"
+                      fullWidth
+                      value={F4k.values.address} onChange={F4k.handleChange}
+                    />
+                    {F4k.errors.address && (<Typography variant="body2" color="red">{F4k.errors.address}
+                    </Typography>)}
                   </Grid>
-                </form>
+                  
+                  <Grid item xs={6}>
+                    <CustomizedTextField
+                      label="Date (dd/MM/yyyy) "
+                      name="date"
+                      autoComplete="date"
+                      fullWidth
+                      value={F4k.values.date} onChange={F4k.handleChange}
+                    />
+                      
+                    {F4k.errors.date && (
+                      <Typography variant="body2" color="red">
+                        {F4k.errors.date}
+                      </Typography>
+                    )}
+                  </Grid>
+                  
+                  <Grid item xs={6}>
+                    <CustomizedTextField
+                      id="phoneNumber"
+                      label="Phone Number"
+                      name="phoneNumber"
+                      autoComplete="phoneNumber"
+                      fullWidth
+                      multiline
+                      value={F4k.values.phoneNumber} onChange={F4k.handleChange}
+                    />
+                    {F4k.errors.phoneNumber && (<Typography variant="body2" color="red">{F4k.errors.phoneNumber}
+                    </Typography>)}
+                  </Grid>
 
-              </CustomTabPanel>
 
-            </Box>
-          </div>
+                  <Grid item xs={12}>
+                    <CustomizedTextField
+                      id="biography"
+                      label="Biography"
+                      name="biography"
+                      autoComplete="biography"
+                      fullWidth
+                      multiline
+                      rows={3}
+                      value={F4k.values.biography} onChange={F4k.handleChange}
+                    />
+                    {F4k.errors.biography && (<Typography variant="body2" color="red">{F4k.errors.biography}
+                    </Typography>)}
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Button
+                      disabled={open}
+                      variant="contained"
+                      type='submit'
+                      style={{ marginBottom: '20px' }}
+                      fullWidth
+                    >
+                      Update Profile!
+                    </Button>
+                  </Grid>
+
+                </Grid>
+              </form>
+
+            </CustomTabPanel>
+
+          </Box>
         </div>
-
-        <Snackbar open={snackbarChangePassword} autoHideDuration={2000} onClose={snackbarChangePasswordAutoClose}>
-          <Alert
-              onClose={snackbarChangePasswordAutoClose}
-              severity="success"
-              variant="filled"
-              sx={{ width: '100%' }}
-          >
-            Change successfully!
-          </Alert>
-        </Snackbar>
-
-        <Snackbar open={snackbarChangePasswordError} autoHideDuration={2000} onClose={snackbarChangePasswordAutoClose}>
-          <Alert
-              onClose={snackbarChangePasswordAutoClose}
-              severity="error"
-              variant="filled"
-              sx={{ width: '100%' }}
-          >
-            Change not successfully!
-          </Alert>
-        </Snackbar>
-
       </div>
+
+      <Snackbar open={snackbarChangePassword} autoHideDuration={2000} onClose={snackbarChangePasswordAutoClose}>
+        <Alert
+          onClose={snackbarChangePasswordAutoClose}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Change successfully!
+        </Alert>
+      </Snackbar>
+
+      <Snackbar open={snackbarChangePasswordError} autoHideDuration={2000} onClose={snackbarChangePasswordAutoClose}>
+        <Alert
+          onClose={snackbarChangePasswordAutoClose}
+          severity="error"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Change not successfully!
+        </Alert>
+      </Snackbar>
+
+    </div>
   );
 }

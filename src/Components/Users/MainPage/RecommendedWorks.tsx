@@ -13,8 +13,8 @@ export default function RecommendedWords({ artworkList, user }) {
   const [hoveredID, setHoveredID] = useState(null);
   const [creators, setCreators] = useState([]);
   const authData = sessionStorage.getItem('auth');
-  console.log('artworkList:', artworkList);
-  console.log('Auth data:', authData);
+  // console.log('artworkList:', artworkList);
+  // console.log('Auth data:', authData);
   const userid = authData ? JSON.parse(authData) : null;
   console.log('User ID:', userid?.userId);
 

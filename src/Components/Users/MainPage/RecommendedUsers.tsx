@@ -11,6 +11,7 @@ import axios from 'axios';
 export default function RecommendedUsers() {
   const [hoveredID, setHoveredID] = useState<number | null>(null);
   const [users, setUsers] = useState<Creator[]>([]);
+  console.log('Users:', users);
 
   // Fetch danh sách top 10 người dùng phổ biến
   useEffect(() => {
@@ -31,9 +32,9 @@ export default function RecommendedUsers() {
       <>
         <ImageList className='recommendedUsers' cols={5}>
           {users.map((user) => (
-              <Link key={user.accountId} to={`/characters/profile/${user.accountId}`}>
+            <Link key={user.accountId} to={`/characters/profile/${user.accountId}`}>
               <CardActionArea
-                onMouseEnter={() => setHoveredID(user.CreatorId)}
+                onMouseEnter={() => setHoveredID(user.userId)}
                 onMouseLeave={() => setHoveredID(null)}
               >
                 <ImageListItem style={{ position: 'relative' }}>
@@ -55,7 +56,7 @@ export default function RecommendedUsers() {
                   />
 
                   {/* Hiển thị thông tin khi di chuột vào */}
-                  {hoveredID === user.CreatorId && (
+                  {hoveredID === user.userId && (
                     <div
                       style={{
                         position: 'absolute',
