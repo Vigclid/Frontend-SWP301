@@ -62,11 +62,7 @@ import '../../css/ArtPost.css';
 import ReportForm from "./UserForms/ReportForm.tsx"; // Import form bạn đã làm
 import { Report } from "../../Interfaces/ReportInterfaces.ts";
 
-// Attempt to retrieve the auth state from sessionStorage
-const savedAuth = sessionStorage.getItem('auth');
-// Check if there's any auth data saved and parse it
-const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
-// Now 'auth' contains your authentication state or null if there's nothing saved
+
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -104,7 +100,11 @@ function a11yProps(index) {
 export default function ProfileUser() {
 
 
-
+// Attempt to retrieve the auth state from sessionStorage
+const savedAuth = sessionStorage.getItem('auth');
+// Check if there's any auth data saved and parse it
+const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
+// Now 'auth' contains your authentication state or null if there's nothing saved
   // HANDLE CHANGE PASSWORD 
 
   const [snackbarChangePassword, setSnackbarChangePassword] = useState(false)
@@ -505,10 +505,12 @@ export default function ProfileUser() {
 
   return (
       <div className=''>
+        
         <div className='headeruser'>
           {/* <div className='backgrounduser'>
           <img src={selectedUser.background} alt='Background'></img>
         </div> */}
+        
           <Card sx={{ width: '100%' }}>
 
             <div className='backgrounduser' style={{ backgroundImage: `url('${user?.backgroundPicture ? user?.backgroundPicture : previewProfile}')` }}>
@@ -527,6 +529,7 @@ export default function ProfileUser() {
                   }}
               >
                 {/* Check to see if User in sesion is the same as the user in view, if yes, they can edit image */}
+                
                 {userInSession.accountId === user?.accountId ?
                     <>
                       <input

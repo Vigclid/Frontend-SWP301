@@ -17,8 +17,9 @@ import { GetCreatorByID } from '../../API/UserAPI/GET.tsx';
 import { Creator } from '../../Interfaces/UserInterface';
 import "../../css/Package.css"
 import PremiumTypography from '../StyledMUI/PremiumTypography.tsx';
-import { GetCurrentPackageByCreatorID } from '../../API/PackageAPI/GET.tsx';
+import {  } from '../../API/PackageAPI/GET.tsx';
 import { CurrentPackage } from '../../Interfaces/Package.ts';
+import ChipDepositeCoin from '../StyledMUI/ChipDepositeCoin.tsx';
 
 export default function Menu() {
   const { theme } = useContext(ThemeContext);
@@ -90,6 +91,11 @@ export default function Menu() {
                   </h3>
                 </Link>
               </Button>
+              <Link to={`depositecoin`}>
+                <Button>
+                  <ChipDepositeCoin user={ user}  />
+                </Button>
+              </Link>
               <CustomizedDropdown
                 handleClickAsGuest={handleClick}
                 user={ user} 
