@@ -4,19 +4,22 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { GetTagList } from "../../../API/TagAPI/GET.tsx";
 import { Tag } from "../../../Interfaces/TagInterface";
+import "../../../css/CarouselTag.css";
 
 export default function CarouselTag() {
   const settings = {
     dots: false,
     infinite: true,
-    // speed: 5000,
+    speed: 2000, // Increase the speed for smoother transitions
     slidesToShow: 3,
     variableWidth: true,
-    slidesToScroll: 3,
+    slidesToScroll: 1, // Change to 1 for smoother scrolling
     arrows: true,
     autoplay: true,
-    autoplaySpeed: 8000,
+    autoplaySpeed: 0, // Set to 0 for continuous scrolling
     draggable: true,
+    cssEase: "linear", // Use a linear easing function for smooth transitions
+    pauseOnHover: false, // Disable pause on hover for continuous scrolling
   };
   const colors = ["#82c87e", "#c07ec8", "#c89c7e", "#7E8DC8", "#C07EC8", "#C87E8A", "#ff2d00"];
   const [tagList, SetTagList] = useState<Tag[]>([]);
@@ -34,7 +37,7 @@ export default function CarouselTag() {
         <Slider {...settings}>
           {tagList.map((tag, index) => (
             <div key={tag.tagID}>
-              <button className="itemtag" style={{ backgroundColor: colors[index % colors.length] }}>
+              <button className="itemtag glassmorphism" style={{ backgroundColor: colors[index % colors.length] }}>
                 {tag.tagName}
               </button>
             </div>
@@ -46,22 +49,3 @@ export default function CarouselTag() {
 
   return tagList.length !== 0 ? <TagList /> : "";
 }
-// export default function CarouselTag() {
-//   return (
-//     <div>
-
-// {/* <carouseltag> */}
-//         {/* <ArrowBackIosNewIcon  sx={{ fontSize: 15 }} className='arrow-left'/> */}
-//         <ul className='ListofTag'>
-//         {ListTag.map(tag => (
-//             <li key={tag.id}>
-//               <button className='itemtag'>{tag.nameTag}</button>
-//             </li>
-//           ))}
-//         </ul>
-//         {/* <ArrowForwardIosIcon  sx={{ fontSize: 15 }} className='arrow-right'/> */}
-//         {/* </carouseltag> */}
-
-//     </div>
-//   )
-// }
