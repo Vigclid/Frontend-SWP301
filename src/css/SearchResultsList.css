@@ -11,3 +11,9 @@
     position: absolute;
     z-index: 2;
   }
+
+.titlesearch{
+    margin:10px;
+    padding-bottom: 10px;
+    border-bottom: #8b8e98 0.05px solid;
+}

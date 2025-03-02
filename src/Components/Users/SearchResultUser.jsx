@@ -40,7 +40,7 @@ export const SearchResultUser = ({ result, resultId }) => {
 
   return (
     <div className="search-result" onClick={handleSelect}>
-      <PersonIcon /> {result} On User
+      <PersonIcon /> {result}
     </div>
   );
 };

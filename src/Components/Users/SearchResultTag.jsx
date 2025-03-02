@@ -40,7 +40,7 @@ export const SearchResultTag = ({ result, resultId }) => {
 
   return (
     <div className="search-result" onClick={handleSelect}>
-      <ColorLensIcon /> {result} on Tag
+      <ColorLensIcon /> {result}
     </div>
   );
 };

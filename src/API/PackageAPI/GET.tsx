@@ -1,4 +1,4 @@
-import axios from "axios";
+  import axios from "axios";
 import { Package, CurrentPackage } from "../../Interfaces/Package";
 
 const packageUrl = "http://localhost:7233/api/Rank/";

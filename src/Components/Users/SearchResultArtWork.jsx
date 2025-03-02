@@ -20,7 +20,7 @@ export const SearchResultsArtWork = ({ result, resultId }) => {
 
   return (
     <div className="search-result" onClick={handleSelect}>
-      <PaletteIcon /> {result} on Artwork
+      <PaletteIcon /> {result}
     </div>
   );
 };

@@ -1,9 +1,11 @@
 import "../../css/SearchResultsList.css";
 import { SearchResultUser } from "./SearchResultUser";
 import { SearchResultsArtWork } from "./SearchResultArtWork";
-import { SearchResultTag } from "./SearchResultTag";
-import { GetArtworkByTagname } from "../../API/ArtworkAPI/GET.tsx";
-import { useState, useEffect } from "react";
+import { GetArtworkByTagName } from "../../API/ArtworkAPI/GET.tsx";
+import {useState, useEffect, useContext,} from "react";
+import {ThemeContext} from "../Themes/ThemeProvider.tsx"
+
+
 
 // Hàm lấy 3 phần tử ngẫu nhiên (giữ nguyên)
 const getRandomThree = (arr) => {
@@ -16,80 +18,91 @@ const getRandomThree = (arr) => {
   return shuffled.slice(0, 3);
 };
 
-export const SearchResultsList = (props) => {
-  const { dataCreator = [], dataArt = [], dataTag = [] } = props;
-
+export const SearchResultsList = ({ dataCreator = [], dataArt = [], dataTag = [], onSelect }) => {
   console.log("dataArt received in SearchResultsList:", dataArt);
   const creatorsToShow = getRandomThree(dataCreator); // 3 creators ngẫu nhiên
-  const artToShow = getRandomThree(dataArt); // 3 artworks ngẫu nhiên
-  const [tagsWithArtwork, setTagsWithArtwork] = useState([]);
+  const [artFromTags, setArtFromTags] = useState([]); // Lưu trữ tất cả artworks từ các tag
+  const artFromDataArtToShow = getRandomThree(dataArt).slice(0, 3); // 1 artwork từ dataArt
+  const artFromTagsToShow = getRandomThree(artFromTags).slice(0, 3); // 2 artworks từ tags
 
   useEffect(() => {
-    const fetchTagsArtwork = async () => {
+    const fetchArtworksFromTags = async () => {
       try {
         if (dataTag.length > 0) {
-          const tagsToShow = getRandomThree(dataTag); // 3 tags ngẫu nhiên
-          const tagsData = await Promise.all(
-              tagsToShow.map(async (tag) => {
-                const artworks = await GetArtworkByTagname(tag.tagName);
-                // Lấy tối đa 3 artworks cho mỗi tag
-                return { ...tag, artworks: artworks.slice(0, 3) };
-              })
-          );
-          setTagsWithArtwork(tagsData);
+          const allArtworksFromTags = [];
+          for (const tag of dataTag) {
+            const artworks = await GetArtworkByTagName(tag.tagName);
+            allArtworksFromTags.push(...(artworks || []));
+          }
+          // Lấy ngẫu nhiên 3 artworks từ tất cả artworks của các tag
+          const randomArtworks = getRandomThree(allArtworksFromTags);
+          setArtFromTags(randomArtworks);
         } else {
-          setTagsWithArtwork([]);
+          setArtFromTags([]);
         }
       } catch (error) {
         console.error("Error fetching artworks for tags:", error);
       }
     };
-    fetchTagsArtwork();
+    fetchArtworksFromTags();
   }, [dataTag]);
+
+  const handleClick = () => {
+    if (onSelect) {
+      onSelect(); // Gọi callback để reset input trong ExpandingSearchBar
+    }
+  };
+
+  const {theme} = useContext(ThemeContext);
 
   return (
       <div className="results-list">
         {/* Hiển thị tối đa 3 creators */}
+        <h4 className="titlesearch" style={{color:theme.color6}}>On User</h4>
         {creatorsToShow.map((creator) => (
+
             <SearchResultUser
                 key={creator.accountId}
                 result={
-                    creator.account?.userName ||
-                    `${creator.lastName} ${creator.firstName}`
+                    creator.account?.userName || `${creator.lastName} ${creator.firstName}`
                 }
                 resultId={creator.accountId}
                 resultIdkey={creator.accountId}
             />
         ))}
 
-        {/* Hiển thị tối đa 3 artworks */}
-        {artToShow.map((art) => (
-            <SearchResultsArtWork
-                key={art.artworkID}
-                result={art.artworkName}
-                resultId={art.artworkID}
-                resultIdkey={art.artworkID}
-            />
-        ))}
+        {artFromDataArtToShow.length > 0 && (
+            <div className="art-group">
+              <h4 className="titlesearch" style={{color:theme.color6}}>On Artwork</h4>
 
-        {/* Hiển thị tối đa 3 tags, mỗi tag tối đa 3 artworks */}
-        {tagsWithArtwork.map((tag) => (
-            <div key={tag.tagName || tag.tagIndex}>
-              <h3>{tag.tagName}</h3>
-              {tag.artworks && tag.artworks.length > 0 ? (
-                  tag.artworks.map((art) => (
-                      <SearchResultsArtWork
-                          key={art.artworkID}
-                          result={art.artworkName}
-                          resultId={art.artworkID}
-                          resultIdkey={art.artworkID}
-                      />
-                  ))
-              ) : (
-                  <p>No artworks found for this tag</p>
-              )}
+              {artFromDataArtToShow.map((art) => (
+                  <SearchResultsArtWork
+                      key={art.artworkID}
+                      result={art.artworkName}
+                      resultId={art.artworkID}
+                      resultIdkey={art.artworkID}
+                      onClick={handleClick}
+                  />
+              ))}
             </div>
-        ))}
+        )}
+
+        {/* Hiển thị artworks từ tags (tối đa 2 artworks) */}
+
+        {artFromTagsToShow.length > 0 && (
+            <div className="art-group">
+              <h4 className="titlesearch" style={{color:theme.color6}}>On Tag</h4>
+              {artFromTagsToShow.map((art) => (
+                  <SearchResultsArtWork
+                      key={art.artworkID}
+                      result={art.artworkName}
+                      resultId={art.artworkID}
+                      resultIdkey={art.artworkID}
+                      onClick={handleClick}
+                  />
+              ))}
+            </div>
+        )}
       </div>
   );
 };
