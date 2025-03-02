@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import { styled } from "@mui/material/styles";
@@ -6,8 +6,9 @@ import { ThemeContext } from "../Themes/ThemeProvider.tsx";
 import { SearchResultsList } from "../Users/SearchResultsList.jsx";
 import axios from "axios";
 import { getAccountByAccountId } from "../../API/AccountAPI/GET.tsx";
-import { GetArtworkByTagname } from "../../API/ArtworkAPI/GET.tsx";
+import { GetArtworkByTagName } from "../../API/ArtworkAPI/GET.tsx";
 import debounce from "lodash/debounce";
+
 
 const SearchDarkMode = styled("div")(({ theme }) => ({
     position: "relative",
@@ -86,7 +87,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-export default function ExpandingSearchBar() {
+export default function CustomizedSearchBar() {
     const { dark } = useContext(ThemeContext);
 
     const [input, setInput] = useState("");
@@ -94,6 +95,7 @@ export default function ExpandingSearchBar() {
     const [dataArt, setDataArt] = useState([]);
     const [dataTag, setDataTag] = useState([]);
     const [showResults, setShowResults] = useState(false);
+    const searchRef = useRef(null); // Ref để theo dõi thanh tìm kiếm
 
     const fetchCreator = async (value) => {
         try {
@@ -150,8 +152,8 @@ export default function ExpandingSearchBar() {
             );
             const tagsWithArtwork = await Promise.all(
                 filteredTags.map(async (tag) => {
-                    const artworks = await GetArtworkByTagname(tag.tagName);
-                    return { ...tag, artworks };
+                    const artworks = await GetArtworkByTagName(tag.tagName);
+                    return { ...tag, artworks: artworks.slice(0,3) }
                 })
             );
             setDataTag(tagsWithArtwork);
@@ -179,11 +181,33 @@ export default function ExpandingSearchBar() {
         setInput(value);
         debouncedSearch(value);
     };
+    const handleSelectResult = () => {
+        // Reset khi chọn một kết quả
+        setInput(""); // Reset input về rỗng
+        setShowResults(false); // Ẩn kết quả tìm kiếm
+    };
+
+    const handleClickOutside = (event) => {
+        if (searchRef.current && !searchRef.current.contains(event.target)) {
+            // Click ra ngoài thanh tìm kiếm
+            setInput(""); // Reset input về rỗng
+            setShowResults(false); // Ẩn kết quả tìm kiếm
+        }
+    };
+
+    useEffect(() => {
+        // Thêm event listener khi component mount
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            // Xóa event listener khi component unmount
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     const SearchWrapper = dark ? SearchDarkMode : SearchLightMode;
 
     return (
-        <SearchWrapper>
+        <SearchWrapper ref={searchRef}>
             <SearchIconWrapper>
                 <SearchIcon />
             </SearchIconWrapper>
@@ -199,6 +223,7 @@ export default function ExpandingSearchBar() {
                         dataCreator={dataCreator}
                         dataArt={dataArt}
                         dataTag={dataTag}
+                        onSelect={handleSelectResult} // Truyền callback để reset khi chọn
                     />
                 )}
         </SearchWrapper>

@@ -26,6 +26,7 @@ const lightimages = [
 // ex: /<imagefolder>/image.png
 const Theme = {
   light:{
+    color6: '#272626',
     color5:'#05f589',
     color4:'white',
     color3:'#A1A1A1',
@@ -42,6 +43,7 @@ const Theme = {
     hoverBackgroundColor:"#F5F5F5",
   },
   dark:{
+    color6:'#999a99',
     color5: '#dd05f5',
     color4:'#61dafb',
     color3:'#ECECEC',

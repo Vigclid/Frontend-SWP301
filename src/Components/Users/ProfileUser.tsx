@@ -50,7 +50,7 @@ import * as Yup from "yup";
 import CustomizedTextField from '../StyledMUI/CustomizedTextField.tsx';
 import Snackbar from '@mui/material/Snackbar';
 import LoadingScreen from '../LoadingScreens/LoadingScreenSpokes.jsx';
-import { PostCreator, PostUserAccount } from '../../API/UserAPI/POST.tsx';
+import { PostCreator, PostUserAccount,PostFollowUser } from '../../API/UserAPI/POST.tsx';
 import { PutChangePassword } from '../../API/UserAPI/PUT.tsx';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios"
@@ -62,6 +62,10 @@ import '../../css/ProfileUser.css';
 
 import ReportForm from "./UserForms/ReportForm.tsx"; // Import form bạn đã làm
 import { Report } from "../../Interfaces/ReportInterfaces.ts";
+
+import {Follow} from "../../Interfaces/FollowingInterface";
+import {DeleteFollowUser} from "../../API/UserAPI/DELETE.tsx";
+import  {CheckFollowStatus} from "../../API/UserAPI/GET.tsx";
 
 
 
@@ -259,6 +263,7 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
 
 
   const [isFollowing, setIsFollowing] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<Creator>()
   const [artworks, setArtworks] = useState<Artwork[]>([])
   const [previewProfile, setPreviewProfile] = useState<string>();
@@ -273,9 +278,7 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
   let { id } = useParams()
   const { theme } = useContext(ThemeContext)
 
-  const handleClick = () => {
-    setIsFollowing(!isFollowing)
-  }
+
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -504,6 +507,61 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
     // Thực hiện xử lý gửi báo cáo ở đây
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Lấy profile user
+        const userProfile = await GetCreatorByAccountID(id ? id : "0");
+        console.log("User profile:", userProfile);
+        setUser(userProfile);
+
+        // Kiểm tra trạng thái follow
+        if (
+            userInSession.userId &&
+            userProfile?.userId &&
+            userInSession.userId !== userProfile.userId
+        ) {
+          const response = await axios.get(
+                `http://localhost:7233/api/Follow/checkFollow?followerID=${userInSession.userId}&followingID=${userProfile.userId}`
+          );
+          setIsFollowing(response.data.isFollowing);
+        }
+      } catch (error) {
+        console.error('Error in fetchData:', error);
+      }
+    };
+
+    fetchData();
+  }, [id, userInSession.userId]);
+
+// Sửa hàm handleClick
+  const handleClick = async () => {
+    if (!userInSession.userId || !user?.userId) return;
+    setLoading(true);
+    try {
+      if (isFollowing) {
+        // Unfollow
+        await DeleteFollowUser(userInSession.userId, user.userId);
+        setIsFollowing(false);
+        setUser(prev => (prev ? { ...prev, followerCount: prev.followerCount - 1} : prev));
+      } else {
+        // Follow
+        const followData: Follow = {
+          followerId: userInSession.userId,
+          followingId: user.userId,
+          dateFollow: new Date().toISOString().split('T')[0]
+        };
+        await PostFollowUser(followData);
+        setIsFollowing(true);
+        setUser(prev => (prev ? { ...prev, followerCount: prev.followerCount + 1 } : prev));
+      }
+    } catch (error) {
+      console.error('Error toggling follow:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
       <div className=''>
 
@@ -607,22 +665,28 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
                   <div className='headername'>{user?.firstName} {user?.lastName}</div>
                 </Typography>
                 <Typography variant="body2" style={{ fontWeight: 500, fontSize: '18px' }} >
-                  Followers: {user?.followCounts}
+                  Followers: {user?.followerCount}
                 </Typography>
               </div> </div>
 
-              {userInSession.accountId !== user?.accountId ?
-                  <div className='buttonheaderuser'  >
-                    {isFollowing == true && (
-                        <Button className='follow' style={{ width: '120px', height: '40px' }} variant="contained" href="#contained-buttons" onClick={() => handleClick()}>
-                          + Follow
-                        </Button>)}
-                    {isFollowing == false && (
-                        <Button className='following' style={{ width: '120px', height: '40px' }} variant="contained" href="#contained-buttons" onClick={() => handleClick()}>
-                          Following
-                        </Button>)}
-                  </div> : ""
-              }
+              {userInSession.userId !== user?.userId && (
+              <div className='buttonheaderuser'>
+                <Button
+                    className={isFollowing ? 'following' : 'follow'}
+                    style={{ width: '120px', height: '40px' }}
+                    variant="contained"
+                    onClick={handleClick}
+                    disabled={loading}
+                >
+                  {loading ? (
+                      <CircularProgress size={24} color="inherit" />
+                  ) : (
+                      isFollowing ? 'Unfollow' : 'Follow'
+                  )}
+                </Button>
+              </div>
+              )}
+
             </CardContent>
           </Card>
 

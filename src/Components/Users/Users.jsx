@@ -40,7 +40,7 @@ export default function Users() {
           <Route path={`profile/:id`} element={<ProfileUser />} />
           <Route path={`artwork/:id`} element={<ArtPost />} />
           <Route path={`artwork/update/:id`} element={<UpdateArtwork />} />
-          <Route path={`SearchHome/`} element={<SearchHome />} />
+          <Route path={`/SearchHome/Tags/:tagName`} element={<SearchHome />} />
 
           <Route element={<ProtectedRoute allowedRoles={["AT", "AD"]} />}>
             <Route path={`artwork/:id/payment`} element={<Payment />} />

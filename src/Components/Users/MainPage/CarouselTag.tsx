@@ -4,6 +4,8 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { GetTagList } from "../../../API/TagAPI/GET.tsx";
 import { Tag } from "../../../Interfaces/TagInterface";
+import {GetArtworkByTagname } from "../../../API/ArtworkAPI/GET.tsx";
+import { useNavigate } from 'react-router-dom';
 
 export default function CarouselTag() {
   const settings = {
@@ -18,6 +20,7 @@ export default function CarouselTag() {
     autoplaySpeed: 8000,
     draggable: true,
   };
+  const navigate = useNavigate();
   const colors = ["#82c87e", "#c07ec8", "#c89c7e", "#7E8DC8", "#C07EC8", "#C87E8A", "#ff2d00"];
   const [tagList, SetTagList] = useState<Tag[]>([]);
   useEffect(() => {
@@ -28,13 +31,18 @@ export default function CarouselTag() {
     fetchTags();
   }, []);
 
+  const handleClickTagToFindArtwork = (value) => {
+      navigate(`SearchHome/Tags/${value}`);
+  };
+
   function TagList() {
     return (
       <>
         <Slider {...settings}>
           {tagList.map((tag, index) => (
             <div key={tag.tagID}>
-              <button className="itemtag" style={{ backgroundColor: colors[index % colors.length] }}>
+              <button className="itemtag" style={{ backgroundColor: colors[index % colors.length] }}
+              onClick={() => {handleClickTagToFindArtwork(tag.tagName)}}>
                 {tag.tagName}
               </button>
             </div>

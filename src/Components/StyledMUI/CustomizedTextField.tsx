@@ -26,7 +26,7 @@ function CustomizedTextField({ label, ...props })  {
         borderBottomColor: '#FF5722', // Dark Red for coherence
       },
       '& .MuiInputLabel-root': {
-        color: 'white', // Custom label color in dark mode
+        color: '#FF7F3E', // Custom label color in dark mode
       },
       '& .MuiOutlinedInput-root': {
         '& fieldset': {
