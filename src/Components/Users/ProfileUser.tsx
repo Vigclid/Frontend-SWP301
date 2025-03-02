@@ -661,32 +661,7 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
                   open={open}
                   onClose={handleClose}          
                 >
-                  <DialogTitle>Report Information</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText>
-                      If this user violates community standards, please report the reason to us,
-                      ArtHub's moderators will review and handle this as soon as possible.
-                    </DialogContentText>
-                    <TextField
-                      autoFocus
-                      required
-                      margin="dense"
-                      id="reportID"
-                      label="Reason for being reported"
-                      fullWidth
-                      multiline
-                      rows={4}
-                      variant="outlined"
-                      style={{ marginTop: '25px' }}
-                      value={reportReason}
-                      onChange={(e) => setReportReason(e.target.value)}
-
-                    />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleClose} variant="outlined" color="error">Cancel</Button>
-                    <Button type="submit" variant="outlined" onClick={handleSubmitReport} >Submit</Button>
-                  </DialogActions>
+                  
                    <ReportForm
                     reporterId={Number(userInSession.userId)}
                     reportedId={Number(user?.userId)}
@@ -920,7 +895,7 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
                   
                   <Grid item xs={6}>
                     <CustomizedTextField
-                      label="Date (dd/MM/yyyy) "
+                      label="Date (yyyy/MM/dd) "
                       name="date"
                       autoComplete="date"
                       fullWidth

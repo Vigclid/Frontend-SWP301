@@ -43,9 +43,10 @@ export default function Users() {
           <Route path={`SearchHome/`} element={<SearchHome />} />
 
           <Route element={<ProtectedRoute allowedRoles={["AT", "AD"]} />}>
-            <Route path={`artwork/:id/payment`} element={<Payment />} />
           </Route>
 
+          
+          <Route path={`artwork/:id/payment`} element={<Payment />} />
           <Route path={`Depositecoin`} element={<DepositeCoin  />} />
           <Route path={`yourcommision`} element={<YourCommission />} />
           <Route path={`yourrequest`} element={<YourRequest />} />

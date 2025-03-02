@@ -158,7 +158,7 @@ export default function CustomizedDropdown({ user, handleClickAsGuest,pack }: Cu
       <IconButton
         onClick={handleClickDropdown}
         size="small"
-        sx={{ ml: 2 }}
+        sx={{  }}
         aria-controls={open ? 'account-menu' : ''}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : 'false'}

@@ -59,7 +59,7 @@ export default function SeeMoreForYou() {
               <img
                 style={{ cursor: "pointer" }}
                 // onClick={() => handleClick(work.artworkID)}
-                src={`data:image/jpeg;base64,${work.imageFile}`}
+                src={`${work.imageFile}`}
                 alt={work.artworkName}
                 loading="lazy"
               />

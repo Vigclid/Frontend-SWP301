@@ -20,6 +20,8 @@ import PremiumTypography from '../StyledMUI/PremiumTypography.tsx';
 import {  } from '../../API/PackageAPI/GET.tsx';
 import { CurrentPackage } from '../../Interfaces/Package.ts';
 import ChipDepositeCoin from '../StyledMUI/ChipDepositeCoin.tsx';
+import CustomizedNotificationDropDown from '../StyledMUI/CustomizedNotificationDropDown.tsx';
+
 
 export default function Menu() {
   const { theme } = useContext(ThemeContext);
@@ -91,11 +93,18 @@ export default function Menu() {
                   </h3>
                 </Link>
               </Button>
+
+              <CustomizedNotificationDropDown  
+                user={ user}
+                handleClickAsGuest={handleClick}
+                />
+
               <Link to={`depositecoin`}>
                 <Button>
                   <ChipDepositeCoin user={ user}  />
                 </Button>
               </Link>
+              
               <CustomizedDropdown
                 handleClickAsGuest={handleClick}
                 user={ user} 

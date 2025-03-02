@@ -1,19 +1,40 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCrown } from '@fortawesome/free-solid-svg-icons';
+import { faCoins } from '@fortawesome/free-solid-svg-icons';
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 import '../../css/Package.css';
-import React, { useContext } from 'react';
+import React, { useContext , useEffect, useState } from 'react';
 import {ThemeContext} from '../Themes/ThemeProvider.tsx'
+import axios from 'axios'
+
+
 function ChipDepositeCoin({user}) {
   const {theme} = useContext(ThemeContext)
+  const [creator, setCreator] = useState(null);
+
+  useEffect(() => {
+    const fetchCreatorCoins = async () => {
+      try {
+        const response = await axios.get("http://localhost:7233/api/Creator/" + user.accountId);
+        setCreator(response.data);
+      } catch (error) {
+        console.error("Error fetching creator data:", error);
+      }
+    };
+
+    if (user?.accountId) fetchCreatorCoins();
+  }, [user]); // Chạy lại khi `user` thay đổi
   return (
-    <div className="premium-typography">
+    <div className="premium-typography">  
       <Chip
         avatar={<Avatar alt="Coins" src="/icons/coin.gif" 
-            sx={{ bgcolor: 'transparent' }}
+            sx={{ bgcolor: 'transparent' ,
+              
+
+            }}
         />}
-        label="10.32$"
+        label={(creator?.coins ?? 0) + "$"}
+
         variant = "outlined"
         
         sx={{
@@ -24,8 +45,21 @@ function ChipDepositeCoin({user}) {
             color: theme.color5,       // Thay đổi màu chữ
             fontWeight: 'normal',  // Đổi kiểu chữ in đậm
             fontSize: '1rem', 
-            transition: theme.transition, // Thay đổi kích thước chữ
-
+            transition: theme.transition,
+            },
+            transition: 'padding 0.3s ease', // chuyển đổi mượt khi padding thay đổi
+            '&:hover': {
+              paddingRight: '15px', 
+            },
+            '&:hover::after': {
+              content: '"💸"',
+              position: 'absolute',
+              right: '10px', 
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: theme.color5,
+              fontWeight: 'bold',
+              fontSize: '1rem',
             },
         }}
         color = "secondary"
