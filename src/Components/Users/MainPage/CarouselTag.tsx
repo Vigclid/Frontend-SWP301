@@ -19,17 +19,24 @@ export default function CarouselTag() {
     arrows: true,
     autoplay: true,
     autoplaySpeed: 0, // Set to 0 for continuous scrolling
-    draggable: true,
+    draggable: true, // Enable dragging with the mouse
     cssEase: "linear", // Use a linear easing function for smooth transitions
     pauseOnHover: false, // Disable pause on hover for continuous scrolling
   };
   const navigate = useNavigate();
   const colors = ["#82c87e", "#c07ec8", "#c89c7e", "#7E8DC8", "#C07EC8", "#C87E8A", "#ff2d00"];
   const [tagList, SetTagList] = useState<Tag[]>([]);
+
   useEffect(() => {
     const fetchTags = async () => {
       const tagList = await GetTagList();
-      SetTagList(tagList ? tagList : []);
+      if (tagList) {
+        console.log("Tag List:", tagList); // Kiểm tra dữ liệu
+        const uniqueTags = Array.from(new Map(tagList.map((tag) => [tag.tagId, tag])).values()); // Loại bỏ trùng lặp
+        SetTagList(uniqueTags);
+      } else {
+        SetTagList([]);
+      }
     };
     fetchTags();
   }, []);

@@ -23,22 +23,12 @@ export async function GetAllCurrentPackage() {
   }
 }
 
-// export async function GetCurrentPackageByAccountID(id: string) {
-//   try {
-//     let pack: CurrentPackage = await axios.get(currentPackage + `${id}`).then((response) => response.data);
-//     return pack;
-//   } catch (error) {
-//     console.error("Lỗi khi lấy gói hiện tại:", error);
-//     return null;
-//   }
-// }
 
 export async function GetCurrentPackageByAccountID(id: number | undefined) {
   if (!id) {
     console.error("⚠️ Error: AccountID is undefined or null");
     return null; // Tránh gọi API nếu id không hợp lệ
   }
-
   try {
     console.log(`🔍 Fetching CurrentPackage for AccountID: ${id}`);
     let response = await axios.get(currentPackage + `${id}`);
