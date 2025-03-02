@@ -1,395 +1,230 @@
-import { Box, Card, Divider } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
+import { Box, Card, Divider, Stack, Typography, Button } from "@mui/material";
 import "../../css/Package.css";
 import { ThemeContext } from "../Themes/ThemeProvider.tsx";
 import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import { Button, CardActionArea, CardActions } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import HomePage from "./MainPage/HomePage";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import DiscountIcon from "@mui/icons-material/Discount";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { CurrentPackage, Package } from "../../Interfaces/Package.ts";
 import { GetCurrentPackageByAccountID, GetPackage } from "../../API/PackageAPI/GET.tsx";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Creator } from "../../Interfaces/UserInterface.ts";
 import PackagePaymentConfirm from "./PackagePaymentConfirm.tsx";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import DiscountIcon from "@mui/icons-material/Discount";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import { Stack } from "@mui/material";
 
-export default function PackagePage() {
+export default function PackagePage({ onCurrentPackageChange }) {
   const { theme, dark } = useContext(ThemeContext);
-  const [packageService, SetPackgeService] = useState<Package[]>();
+  const [packageService, setPackageService] = useState<Package[]>([]);
   const [currentPackage, setCurrentPackage] = useState<CurrentPackage | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const savedAuth = sessionStorage.getItem("auth");
-  // Check if there's any auth data saved and parse it
-  const user: Creator = savedAuth ? JSON.parse(savedAuth) : null;
-  // Now 'auth' contains your authentication state or null if there's nothing saved
   const [open, setOpen] = useState(false);
   const [selectPackage, setSelectPackage] = useState<Package>();
+
+  const savedAuth = sessionStorage.getItem("auth");
+  const user = savedAuth ? JSON.parse(savedAuth) : null;
+
   useEffect(() => {
     const getPackage = async () => {
       setLoading(true);
-      let packageList: Package[] | undefined = await GetPackage();
-      console.log("Fetched package list:", packageList); // Debug log for package list
-      SetPackgeService(packageList ?? []);
-
-      let servicePackage: CurrentPackage | null | undefined = await GetCurrentPackageByAccountID(
-        Number(user.accountId)
-      );
-
-      if (!user?.accountId) {
-        console.error("⚠️ Error: No AccountID found in user data");
-        return;
+      const packageList = await GetPackage();
+      if (packageList) {
+        console.log("Package List:", packageList);
+        setPackageService(packageList);
+      } else {
+        setPackageService([]);
       }
-
-      console.log("Current package:", servicePackage); // Debug log for current package
+      const servicePackage = await GetCurrentPackageByAccountID(Number(user?.accountId));
       setCurrentPackage(servicePackage ?? null);
+      if (onCurrentPackageChange) onCurrentPackageChange(servicePackage); // Gửi lên cha
       setLoading(false);
     };
     getPackage();
-  }, []);
-  const handleOpen = (currentPackage) => {
-    setSelectPackage(currentPackage);
+  }, [user?.accountId, onCurrentPackageChange]);
+
+  const handleOpen = (pkg) => {
+    setSelectPackage(pkg);
     setOpen(!open);
   };
 
-  const currentPack = () => {
-    return (
-      <Typography sx={{ textAlign: "center", fontFamily: "UniSpace" }} variant="h5" color={theme.color3}>
-        Your Current Package
-      </Typography>
-    );
+  // Define benefits for each package typeId
+  const benefitsMap = {
+    2: [
+      { icon: <CloudUploadIcon />, text: "Upload 50 Art on Month" },
+      { icon: <DiscountIcon />, text: "Get 95% off on all Art" },
+    ],
+    3: [
+      { icon: <CloudUploadIcon />, text: "Upload 100 Art on Month" },
+      { icon: <DiscountIcon />, text: "Get 90% off on all Art" },
+      { icon: <AccountBalanceWalletIcon />, text: "Cash out coin with Withdrawal feature" },
+    ],
+    4: [
+      { icon: <CloudUploadIcon />, text: "Upload Unlimited Art" },
+      { icon: <DiscountIcon />, text: "Get 85% off on all Art" },
+      { icon: <AccountBalanceWalletIcon />, text: "Cash out coin with Withdrawal feature" },
+      { icon: <DiscountIcon />, text: "Exclusive access to premium content" },
+    ],
+    // Add more packages as needed
   };
 
-  const Card1Style = (packageService: Package) => {
-    return (
-      <Card className="cardRank" sx={{ backgroundImage: 'url("/images/RankCard.png")', borderRadius: "20px" }}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "10px",
-            left: "150px",
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            width: "auto",
-          }}>
-          <img src="/images/RankElement1.png" alt="premium" />
-        </Box>
-        <CardContent>
-          <Box sx={{ display: "flex", flexDirection: "column", margin: "20px" }}>
-            <Typography
-              gutterBottom
-              variant="h4"
-              color="white"
-              component="div"
-              className="package-title"
-              sx={{ fontFamily: "UniSpace" }}>
-              {packageService.typeRankName}
-            </Typography>
+  const renderPackageCard = (service: Package, rankImage: string, isCurrent: boolean) => {
+    const benefits = benefitsMap[service.typeId] || [];
 
-            <Typography variant="body1" color="white" sx={{ marginTop: "-10px" }}>
-              {packageService.price === 0 ? "Free" : packageService.price + "$ / month"}
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "white", margin: "40px 20px 20px 20px" }}>
-            <Stack spacing={1}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <CloudUploadIcon sx={{ color: "white" }} />
-                <Typography> Upload 50 Art on Month</Typography>
-              </Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <DiscountIcon sx={{ color: "white" }} />
-                <Typography> Get 95% off on all Art</Typography>
-              </Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <AccountBalanceWalletIcon sx={{ color: "white" }} />
-                <Typography> Cash out coin with Withdrawal feature</Typography>
-              </Box>
-            </Stack>
-          </Box>
-        </CardContent>
-
-        <Button
-          disabled={currentPackage?.typeID === 2}
-          sx={{
-            backgroundColor: "none",
-            color: "white",
-            border: "solid 1.5px",
-            borderLeft: "none",
-            borderRight: "none",
-            borderRadius: "10px",
-            width: "50%",
-            margin: "auto",
-            display: "center",
-            ":hover": {
-              backgroundColor: "none",
-              color: "#FFCF50",
-              border: "solid 1px #FFCF50",
-              borderLeft: "none",
-              borderRight: "none",
-              width: "50%",
-            },
-          }}
-          className="buyBtn"
-          onClick={() => handleOpen(packageService)}
-          size="small">
-          {currentPackage?.typeID === 2 ? "You're Using This Package" : "Purchase"}
-        </Button>
-        {currentPackage?.typeID === 2 && currentPack()}
-      </Card>
-    );
-  };
-
-  const Card2Style = (packageService: Package) => {
-    return (
-      <Card className="cardRank" sx={{ backgroundImage: 'url("/images/RankCard.png")', borderRadius: "20px" }}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "10px",
-            left: "150px",
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            width: "auto",
-          }}>
-          <img src="/images/RankElement2.png" alt="premium" />
-        </Box>
-        <CardContent>
-          <Box sx={{ display: "flex", flexDirection: "column", margin: "20px" }}>
-            <Typography
-              gutterBottom
-              variant="h4"
-              color="white"
-              component="div"
-              className="package-title"
-              sx={{ fontFamily: "UniSpace" }}>
-              {packageService.typeRankName}
-            </Typography>
-
-            <Typography variant="body1" color="white" sx={{ marginTop: "-10px" }}>
-              {packageService.price === 0 ? "Free" : packageService.price + "$ / month"}
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "white", margin: "40px 20px 20px 20px" }}>
-            <Stack spacing={1}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <CloudUploadIcon sx={{ color: "white" }} />
-                <Typography> Upload 50 Art on Month</Typography>
-              </Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <DiscountIcon sx={{ color: "white" }} />
-                <Typography> Get 95% off on all Art</Typography>
-              </Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <AccountBalanceWalletIcon sx={{ color: "white" }} />
-                <Typography> Cash out coin with Withdrawal feature</Typography>
-              </Box>
-            </Stack>
-          </Box>
-        </CardContent>
-
-        <Button
-          disabled={currentPackage?.typeID === 3}
-          sx={{
-            backgroundColor: "none",
-            color: "white",
-            border: "solid 1.5px",
-            borderLeft: "none",
-            borderRight: "none",
-            borderRadius: "10px",
-            width: "50%",
-            margin: "auto",
-            display: "center",
-            ":hover": {
-              backgroundColor: "none",
-              color: "#FFCF50",
-              border: "solid 1px #FFCF50",
-              borderLeft: "none",
-              borderRight: "none",
-              width: "50%",
-            },
-          }}
-          className="buyBtn"
-          onClick={() => handleOpen(packageService)}
-          size="small">
-          {currentPackage?.typeID === 3 ? "You're Using This Package" : "Purchase"}
-        </Button>
-        {currentPackage?.typeID === 3 && currentPack()}
-      </Card>
-    );
-  };
-
-  const Card3Style = (packageService: Package) => {
-    return (
-      <Card className="cardRank" sx={{ backgroundImage: 'url("/images/RankCard.png")', borderRadius: "20px" }}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "10px",
-            left: "150px",
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            width: "auto",
-          }}>
-          <img src="/images/RankElement3.png" alt="premium" />
-        </Box>
-        <CardContent>
-          <Box sx={{ display: "flex", flexDirection: "column", margin: "20px" }}>
-            <Typography
-              gutterBottom
-              variant="h4"
-              color="white"
-              component="div"
-              className="package-title"
-              sx={{ fontFamily: "UniSpace" }}>
-              {packageService.typeRankName}
-            </Typography>
-
-            <Typography variant="body1" color="white" sx={{ marginTop: "-10px" }}>
-              {packageService.price === 0 ? "Free" : packageService.price + "$ / month"}
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "white", margin: "40px 20px 20px 20px" }}>
-            <Stack spacing={1}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <CloudUploadIcon sx={{ color: "white" }} />
-                <Typography> Upload 50 Art on Month</Typography>
-              </Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <DiscountIcon sx={{ color: "white" }} />
-                <Typography> Get 95% off on all Art</Typography>
-              </Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <AccountBalanceWalletIcon sx={{ color: "white" }} />
-                <Typography> Cash out coin with Withdrawal feature</Typography>
-              </Box>
-            </Stack>
-          </Box>
-        </CardContent>
-
-        <Button
-          disabled={currentPackage?.typeID === 4}
-          sx={{
-            backgroundColor: "none",
-            color: "white",
-            border: "solid 1.5px",
-            borderLeft: "none",
-            borderRight: "none",
-            borderRadius: "10px",
-            width: "50%",
-            margin: "auto",
-            display: "center",
-            ":hover": {
-              backgroundColor: "none",
-              color: "#FFCF50",
-              border: "solid 1px #FFCF50",
-              borderLeft: "none",
-              borderRight: "none",
-              width: "50%",
-            },
-          }}
-          className="buyBtn"
-          onClick={() => handleOpen(packageService)}
-          size="small">
-          {currentPackage?.typeID === 4 ? "You're Using This Package" : "Purchase"}
-        </Button>
-        {currentPackage?.typeID === 4 && currentPack()}
-      </Card>
-    );
-  };
-
-  const ArtistCard = ({ packageService, handleOpen }) => {
     return (
       <Card
-        className="artist-card"
-        sx={{
-          backgroundImage: 'url("/images/ArtistCard.png")',
-          borderRadius: "30px",
-          display: "flex",
-          flexDirection: "row",
-          overflow: "hidden",
-        }}>
-        {/* Left Column: Image */}
-        <Box
-          className="artist-card-img"
-          sx={{
-            width: { xs: "35%", md: "30%" },
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            p: 1,
-          }}>
-          <img
-            src="/images/RankElement4.png" // update with your desired image path
-            alt="package image"
-            style={{
-              width: "100%",
-              height: "auto",
-              objectFit: "contain",
-            }}
-          />
+        className="cardRank"
+        sx={{ backgroundImage: 'url("/images/RankCard.png")', borderRadius: "20px", position: "relative" }}>
+        <Box sx={{ position: "absolute", top: "-15px", right: "35px" }}>
+          <img src={rankImage} alt="rank" style={{ marginLeft: "190px", opacity: "0.8" }} />
         </Box>
-
-        {/* Right Column: Content */}
-        <Box
-          className="artist-card-content"
-          sx={{
-            width: { xs: "65%", md: "70%" },
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            pl: 2,
-          }}>
-          {/* Rank Name */}
-          <Typography variant="h4" color="white" sx={{ fontFamily: "UniSpace", mb: 1 }}>
-            {packageService.typeRankName}
-          </Typography>
-
-          {/* Additional content below rank name */}
-          <Typography variant="body1" color="white" sx={{ mb: 2 }}>
-            Here is some additional detail or offer description related to the package.
-          </Typography>
-
-          {/* Button below additional content */}
-          <Button
-            className="artist-card-button"
-            variant="outlined"
+        <CardContent>
+          <Box
+            sx={{ display: "flex", flexDirection: "column", margin: "40px 20px 20px 20px", alignItems: "flex-start" }}>
+            {" "}
+            {/* Tăng margin-top từ 20px lên 40px */}
+            <Typography
+              gutterBottom
+              variant="h4"
+              color="white"
+              className="package-title"
+              sx={{ fontFamily: "UniSpace" }}>
+              {service.typeRankName}
+            </Typography>
+            <Typography variant="body1" color="white" sx={{ marginTop: "-10px" }}>
+              {service.price === 0 ? "Free" : `${service.price}$ / month`}
+            </Typography>
+          </Box>
+          <Box
             sx={{
               color: "white",
-              border: "solid 1.5px white",
-              borderRadius: "5px",
-              alignSelf: "flex-start",
-              transition: "all 0.3s ease",
+              margin: "20px 20px 20px 20px" /* Giữ margin-top nhỏ hơn để không đẩy quá xa */,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              minHeight: "180px" /* Giữ chiều cao tối thiểu */,
+            }}>
+            <Stack spacing={1}>
+              {benefits.map((benefit, index) => (
+                <Box key={index} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  {benefit.icon}
+                  <Typography>{benefit.text}</Typography>
+                </Box>
+              ))}
+            </Stack>
+          </Box>
+        </CardContent>
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: "20px",
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}>
+          {" "}
+          {/* Bọc Button và Typography để định vị cố định từ đáy */}
+          <Button
+            disabled={currentPackage?.typeID === service.typeId}
+            sx={{
+              backgroundColor: "transparent",
+              color: "white",
+              border: "solid 1.5px",
+              borderLeft: "none",
+              borderRight: "none",
+              borderRadius: "10px",
+              width: "180px",
+              margin: "0 auto",
               ":hover": {
-                border: "solid 1px #FFCF50",
+                backgroundColor: "transparent",
                 color: "#FFCF50",
+                border: "solid 1px #FFCF50",
+                borderLeft: "none",
+                borderRight: "none",
               },
             }}
-            onClick={() => handleOpen(packageService)}>
-            Send Us
+            onClick={() => handleOpen(service)}
+            size="small">
+            {currentPackage?.typeID === service.typeId ? "You're Using This Package" : "Purchase"}
           </Button>
+          {currentPackage?.typeID === service.typeId && (
+            <Typography
+              sx={{
+                textAlign: "center",
+                fontFamily: "UniSpace",
+                color: theme.color3,
+                marginTop: "100px" /* Khoảng cách trên giữa Button và Typography */,
+                display: "block",
+                margin: "0 auto",
+              }}
+              variant="h5">
+              Your Current Package
+            </Typography>
+          )}
         </Box>
       </Card>
     );
   };
 
+  const renderArtistCard = (service: Package) => (
+    <Card
+      className="artist-card"
+      sx={{
+        backgroundImage: 'url("/images/ArtistCard.png")',
+        borderRadius: "30px",
+        display: "flex",
+        flexDirection: "row",
+        overflow: "hidden",
+      }}>
+      <Box
+        sx={{
+          width: { xs: "35%", md: "30%" },
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          p: 1,
+        }}>
+        <img
+          src="/images/RankElement4.png"
+          alt="premium"
+          style={{ width: "100%", height: "auto", objectFit: "contain" }}
+        />
+      </Box>
+      <Box
+        sx={{
+          width: { xs: "65%", md: "70%" },
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          pl: 2,
+        }}>
+        <Typography variant="h4" color="white" sx={{ fontFamily: "UniSpace", mb: 1 }}>
+          {service.typeRankName}
+        </Typography>
+        <Typography variant="body1" color="white" sx={{ mb: 2 }}>
+          Here is some additional detail or offer description related to the package.
+        </Typography>
+        <Button
+          variant="outlined"
+          sx={{
+            color: "white",
+            border: "solid 1.5px white",
+            borderRadius: "5px",
+            alignSelf: "flex-start",
+            ":hover": { border: "solid 1px #FFCF50", color: "#FFCF50" },
+          }}
+          onClick={() => handleOpen(service)}>
+          Send Us
+        </Button>
+      </Box>
+    </Card>
+  );
+
   return (
-    <div className="packagePage"> 
+    <div className="packagePage">
       <Box
         sx={{
           color: theme.color,
-          backgroundColor: `rgba(${theme.rgbBackgroundColor},0.97)`,
+          backgroundColor: `rgba(${theme.rgbBackgroundColor}, 0.97)`,
           backgroundImage: dark ? 'url("/images/darkPackage.jpg")' : 'url("/images/lightPackage.jpg")',
           transition: theme.transition,
           width: "95%",
@@ -400,43 +235,42 @@ export default function PackagePage() {
         <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 100 }} open={loading}>
           <CircularProgress color="inherit" />
         </Backdrop>
-        {error && (
-          <Typography color="error" sx={{ padding: "1rem" }}>
-            {error}
-          </Typography>
-        )}
         <Box sx={{ padding: "2% 2% 0% 2%" }}>
           <Typography variant="h4" color={theme.color}>
             Account Packages
           </Typography>
           <Divider sx={{ borderColor: theme.color }} />
         </Box>
-        <Box className="packageContainer">
-          {!packageService ? (
-            <Typography>Loading packages...</Typography>
-          ) : packageService.length === 0 ? (
-            <Typography>No packages found</Typography>
-          ) : (
-            packageService.map((service, index) => {
-              return index === 1
-                ? Card1Style(service)
-                : index === 2
-                ? Card2Style(service)
-                : index === 3
-                ? Card3Style(service)
-                : "";
-            })
-          )}
-        </Box>
 
-        <Box sx={{ padding: "0% 2% 2% 2%" }}>
-          {packageService?.map((service, index) =>
-            index === 4 ? <ArtistCard packageService={service} handleOpen={handleOpen} key={index} /> : null
+        <Box className="packageContainer">
+          {!packageService.length ? (
+            <Typography>{loading ? "Loading packages..." : "No packages found"}</Typography>
+          ) : (
+            <>
+              {packageService[1] &&
+                renderPackageCard(
+                  packageService[1],
+                  "/images/RankElement1.png",
+                  currentPackage?.typeID === packageService[1].typeId
+                )}
+              {packageService[2] &&
+                renderPackageCard(
+                  packageService[2],
+                  "/images/RankElement2.png",
+                  currentPackage?.typeID === packageService[2].typeId
+                )}
+              {packageService[3] &&
+                renderPackageCard(
+                  packageService[3],
+                  "/images/RankElement3.png",
+                  currentPackage?.typeID === packageService[3].typeId
+                )}
+            </>
           )}
         </Box>
+        <Box sx={{ padding: "0% 2% 2% 2%" }}>{packageService[4] && renderArtistCard(packageService[4])}</Box>
       </Box>
       <PackagePaymentConfirm open={open} handleClose={handleOpen} item={selectPackage} />
     </div>
   );
 }
-

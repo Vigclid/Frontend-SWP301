@@ -23,7 +23,7 @@ type ReportFormProps = {
 
 const ReportForm: React.FC<ReportFormProps> = ({ reporterId, reportedId, artworkId, onClose }) => {
   const { theme, dark } = useContext(ThemeContext);
-  const [selectedType, setSelectedType] = useState<string | null>(artworkId ? "Artwork" : null);
+  const [selectedType, setSelectedType] = useState<string>(artworkId ? "Artwork" : "User");
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
   const [otherDescription, setOtherDescription] = useState("");
   const [confirm, setConfirm] = useState(false);
@@ -48,6 +48,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ reporterId, reportedId, artwork
     }
 
     const description = selectedReasons.includes("Other") ? otherDescription : selectedReasons.join(", ");
+
     const reportData: Report = {
       reporterId,
       reportedId,

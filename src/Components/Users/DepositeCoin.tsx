@@ -1,17 +1,27 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { ThemeContext } from "../Themes/ThemeProvider.tsx";
-import { Box } from "@mui/material";
+import { Box, Fade, Popper } from "@mui/material";
 import "../../css/ArtShop.css";
 import PaymentArea from "./../StyledMUI/PaymentArea.tsx"
 import Customized3DModel from "../StyledMUI/Customized3DModel.tsx";
+import CustomizedPopperPayment from "../StyledMUI/CustomizedPopperPayment.tsx";
 
 export default function DepositeCoin() {
   const { theme, dark } = useContext(ThemeContext);
-
-
-  return (
+  const [showPayment,setShowPayment] = useState<boolean>(false);
+  const [amount, setAmount] = useState<number>(0);
+  return (  
     <>
+    <Popper open={showPayment ? true : false} transition>
+       {({ TransitionProps, placement }) => (
+                <Fade {...TransitionProps} >
+                  <Box>
+                    <CustomizedPopperPayment amount = {amount} />
+                  </Box>
+                </Fade>
+              )}
+    </Popper>
     <div
         className="formup"
         style={{
@@ -21,7 +31,7 @@ export default function DepositeCoin() {
           position: "relative",
         }}
       >
-      <PaymentArea />
+      <PaymentArea  setShowPayment ={setShowPayment} setAmount = {setAmount}/>
       <Customized3DModel />
     </div>
     </>

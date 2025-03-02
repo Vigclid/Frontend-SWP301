@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
-import TextField from '@mui/material/TextField';
-import { makeStyles } from '@mui/styles';
-import {ThemeContext} from "../Themes/ThemeProvider.tsx"
+import React, { useContext } from "react";
+import TextField from "@mui/material/TextField";
+import { makeStyles } from "@mui/styles";
+import { ThemeContext } from "../Themes/ThemeProvider.tsx";
 
 function CustomizedTextField({ label, ...props })  {
     const {dark} = useContext(ThemeContext);
@@ -67,4 +67,4 @@ function CustomizedTextField({ label, ...props })  {
     },
   }))
 
-  export default CustomizedTextField;
+export default CustomizedTextField;

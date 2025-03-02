@@ -59,7 +59,7 @@ export default function SeeMoreForYou() {
               <img
                 style={{ cursor: "pointer" }}
                 // onClick={() => handleClick(work.artworkID)}
-                src={`data:image/jpeg;base64,${work.imageFile}`}
+                src={`${work.imageFile}`}
                 alt={work.artworkName}
                 loading="lazy"
               />
@@ -91,19 +91,14 @@ export default function SeeMoreForYou() {
           margin: "auto",
           borderRadius: "5px",
           marginBottom: "15px",
-        }}
-      >
+        }}>
         <div className="content-recomment">
           <Typography variant="h5">Random Works:</Typography>
 
           <div className="listimage">
             <Box className="boxlistimage">
               <ImageList variant="masonry" cols={4} gap={7}>
-                {artworkList.length !== 0 ? (
-                  <ArtworkList />
-                ) : (
-                  <PlaceHoldersImageCard />
-                )}
+                {artworkList.length !== 0 ? <ArtworkList /> : <PlaceHoldersImageCard />}
               </ImageList>
             </Box>
           </div>
