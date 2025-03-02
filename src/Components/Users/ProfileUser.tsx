@@ -61,6 +61,8 @@ import "../../css/ProfileUser.css";
 
 import ReportForm from "./UserForms/ReportForm.tsx"; // Import form bạn đã làm
 import { Report } from "../../Interfaces/ReportInterfaces.ts";
+import { Favorite } from "@mui/icons-material";
+import FavouritesArtwork from "./FavouritesArtwork.tsx";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -636,7 +638,15 @@ export default function ProfileUser() {
                 )}
 
                 {/* Popup Report */}
-                <Dialog open={open} onClose={handleClose}>
+                <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  className="dialog-custom"
+                  BackdropProps={{
+                    sx: {
+                      backgroundColor: "rgba(0, 0, 0, 0.5)", // Lớp phủ mờ
+                    },
+                  }}>
                   <ReportForm
                     reporterId={Number(userInSession.userId)}
                     reportedId={Number(user?.userId)}
@@ -704,7 +714,8 @@ export default function ProfileUser() {
             </CustomTabPanel>
 
             <CustomTabPanel value={value} index={2}>
-              {artworks.length !== 0 ? <AllImage /> : <PlaceHoldersImageCard />}
+              {/* {artworks.length !== 0 ? <AllImage /> : <PlaceHoldersImageCard />} */}
+              <FavouritesArtwork userId={id ? id : user?.userId} /> {/* Truyền userId của người dùng đang xem */}
             </CustomTabPanel>
 
             {/* THIS IS TABPANEL TO EDIT PROFILE */}
