@@ -154,7 +154,7 @@ export default function CustomizedDropdown({ user, handleClickAsGuest,pack }: Cu
   }
   return (
     <div>
-      {pack?.packageID=== 2? premiumText() : ""}
+      {pack?.typeID=== 2? premiumText() : ""}
       <IconButton
         onClick={handleClickDropdown}
         size="small"

@@ -36,6 +36,8 @@ export default function Menu() {
   const [pack,setPack] = useState<CurrentPackage>()
   
 
+  // Bọc handlePackageChange trong useCallback để tránh thay đổi không cần thiết
+  
   useEffect(() => {
     const getAvatar = async () => {
       // const avatar = await GetCreatorByID(user ? user.CreatorId : '0')
