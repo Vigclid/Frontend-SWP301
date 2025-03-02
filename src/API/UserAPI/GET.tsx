@@ -9,7 +9,7 @@ const countcreatorurl = "http://localhost:7233/api/Creator/CountCreators";
 const creatorvipstatusurl = `http://localhost:7233/api/Creator/GetID/UserName/Vip`;
 const gettotalartworklikesbycreatorurl = `http://localhost:7233/api/artworks/total-likes/`;
 const top10UsersUrl = "http://localhost:7233/api/Creator/top-popular";
-
+const checkFollow = "http://localhost:7233/api/Follow/checkFollow";
 
 export async function GetTop10Users() {
   try {
@@ -108,3 +108,22 @@ export async function GetAccountByEmail(email: string) {
     console.log(err);
   }
 }
+
+export async function CheckFollowStatus(followerId: number, followingId: number) {
+  try {
+    const response = await axios.get(
+        checkFollow,
+        {
+          params: {
+            followerId,
+            followingId
+          },
+          headers: { 'Content-Type': 'application/json' }
+        }
+    );
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+}
+

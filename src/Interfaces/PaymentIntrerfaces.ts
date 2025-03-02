@@ -1,5 +1,13 @@
 export interface Payment{
-    paymentID:number,
-    qrCode:String,
-    accountID:number,
+    amount : number,
+    transCode : string,
+    accountId : number,
+
+    // private int paymentId;
+    // private double amount;
+    // private Date createdAt;
+    // private int userId;
+    // private byte status;
+    // private String transCode;
+
 }

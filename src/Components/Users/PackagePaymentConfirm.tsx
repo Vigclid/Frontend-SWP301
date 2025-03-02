@@ -1,4 +1,4 @@
-import * as React from "react";
+  import * as React from "react";
 import Dialog from "@mui/material/Dialog";
 import "../../css/ArtConfirm.css";
 import { useNavigate } from "react-router-dom";
@@ -27,14 +27,13 @@ export default function PackagePaymentConfirm(props) {
       e.preventDefault();
       //const data = convertData(dataItem);
       console.log(dataItem);
-      const data = await VnpayPackagePayment(convertData(dataItem));
-      window.location.href = data?.data;
       setLoading(false);
     } catch (error) {}
   };
   React.useEffect(() => {
     setDataItem(item);
   });
+
   return (
     <Dialog
       open={open}

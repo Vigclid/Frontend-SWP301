@@ -1,143 +1,108 @@
-import React, { useState, useEffect } from "react";
-
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { Link, useParams } from "react-router-dom";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
-import CardMedia from "@mui/material/CardMedia";
-import { CardActionArea } from "@mui/material";
-import { Typography } from "@mui/material";
+import { CardActionArea, Typography, Box } from "@mui/material"; // Loại bỏ Pagination
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import { Artwork } from "../../../Interfaces/ArtworkInterfaces";
+import { GetArtworkByTagName } from "../../../API/ArtworkAPI/GET.tsx";
 import { PlaceHoldersImageCard } from "../PlaceHolders.jsx";
-import axios from "axios";
+import { Artwork } from "../../../Interfaces/ArtworkInterfaces"; // Giả sử bạn có interface này
+import { ThemeContext } from "../../Themes/ThemeProvider.tsx"; // Giả sử bạn có ThemeProvider
 
-export default function SearchHome({ artworkList, user }) {
-  const [hoveredID, setHoveredID] = useState(null); // State to track the hovered artwork ID
-  const [creators, setCreators] = useState([]); // State to store creator data as an array
+export default function SearchHome({ user }) {
+    const { theme } = useContext(ThemeContext); // Lấy theme từ ThemeContext
+    const [hoveredID, setHoveredID] = useState(null);
+    const [art, setArtwork] = useState([]);
+    const { tagName } = useParams();
+    const [loading, setLoading] = useState(true);
 
-  // Hàm gọi API lấy thông tin tác giả
-  useEffect(() => {
-    const fetchCreators = async () => {
-      try {
-        const response = await axios.get("http://localhost:7233/api/Creator");
-        setCreators(response.data);
-      } catch (error) {
-        console.error("Error fetching creators:", error);
-      }
-    };
+    useEffect(() => {
+        const fetchArt = async () => {
+            setLoading(true);
+            try {
+                const response = await GetArtworkByTagName(tagName);
+                setArtwork(Array.isArray(response) ? response : []);
+            } catch (error) {
+                console.error("Error fetching artworks:", error);
+                setArtwork([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        if (tagName) {
+            fetchArt();
+        }
+    }, [tagName]);
 
-    fetchCreators();
-  }, []); // Gọi API khi component mount
+    function ArtWorkList() {
+        return (
+            <ImageList variant="masonry" cols={4} className="artwork-grid">
+                {art.map((work: Artwork) => (
+                    <Link key={work.artworkID} to={`http://localhost:3000/characters/artwork/${work.artworkID}`}>
+                        <ImageListItem key={work.artworkID}>
+                            {work.purchasable && (
+                                <AttachMoneyIcon
+                                    style={{
+                                        position: "absolute",
+                                        backgroundColor: "green",
+                                        color: "white",
+                                        borderRadius: "50%",
+                                        margin: "5px",
+                                        fontSize: "40px",
+                                        bottom: 0,
+                                        right: 0,
+                                        zIndex: 2,
+                                    }}
+                                    fontSize="large"
+                                />
+                            )}
+                            <img
+                                style={{ cursor: "pointer" }}
+                                src={work.imageFile}
+                                alt={work.artworkName}
+                                loading="lazy"
+                            />
+                        </ImageListItem>
+                    </Link>
+                ))}
+            </ImageList>
+        );
+    }
 
-  // Hàm lấy tên tác giả từ creators state
-  const getCreatorName = (userID) => {
-    // Tìm tác giả tương ứng với userID từ creators
-    const creator = creators.find((creator) => creator.userId === userID);
-    console.log("Creator:", creator); // Kiểm tra thông tin creator
-    return creator
-        ? `${creator.firstName} ${creator.lastName}`
-        : "Unknown Author";
-  };
-
-  function ReccomendedArts() {
     return (
-        <>
-          <ImageList className="recommendedImages" cols={5}>
-            {artworkList.map((work) => (
-                <Link key={work.artworkID} to={`artwork/${work.artworkID}`}>
-                  <CardActionArea
-                      onMouseEnter={() => setHoveredID(work.artworkID)} // Set hovered ID to the current artwork ID
-                      onMouseLeave={() => setHoveredID(null)} // Reset hovered ID when mouse leaves
-                  >
-                    <ImageListItem style={{ position: "relative" }}>
-                      {work.purchasable && (
-                          <AttachMoneyIcon
-                              style={{
-                                position: "absolute",
-                                backgroundColor: "green",
-                                color: "white",
-                                borderRadius: "50%",
-                                padding: "auto",
-                                margin: "5px",
-                                fontSize: "40px",
-                                bottom: 0,
-                                right: 0,
-                                zIndex: 0,
-                              }}
-                              fontSize="large"
-                          />
-                      )}
+        <div className="art-hub-container">
+            {/* Main Content */}
+            <main className="art-hub-main">
 
-                      <CardMedia
-                          component="img"
-                          style={{
-                            pointerEvents: "none",
-                            objectFit: "cover",
-                            width: "15vw",
-                            height: "15vw",
+                <div className="seemorecommentwork" style={{ paddingTop: "2%", paddingBottom: "5%" }}>
+                    <Box
+                        className="box"
+                        sx={{
+                            color: theme.color,
+                            backgroundColor: `rgba(${theme.rgbBackgroundColor}, 0.97)`,
+                            transition: theme.transition,
+                            width: "95%",
+                            margin: "auto",
                             borderRadius: "5px",
-                            minWidth: "182px",
-                            minHeight: "182px",
-                          }}
-                          image={
-                            work.imageFile && work.imageFile.length > 0
-                                ? work.imageFile
-                                : "/images/loadingImages.gif"
-                          }
-                          alt={work.artworkName}
-                          loading="lazy"
-                      />
-
-                      {hoveredID === work.artworkID && (
-                          <div
-                              style={{
-                                position: "absolute",
-                                top: "50%",
-                                left: "50%",
-                                transform: "translate(-50%, -50%)",
-                                fontSize: "24px",
-                                fontWeight: "bold",
-                                color: "white",
-                                textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
-                                zIndex: 1,
-                                opacity: 1, // Make text visible when hovered
-                                transition: "opacity 0.3s ease-in-out", // Add smooth transition
-                              }}
-                          >
-                            {work.artworkName}
-                            <div>{getCreatorName(work.userID)}</div>{" "}
-                            {/* Hiển thị tên tác giả */}
-                          </div>
-                      )}
-                    </ImageListItem>
-                  </CardActionArea>
-                </Link>
-            ))}
-          </ImageList>
-        </>
+                        }}
+                    >
+                        <div className="content-recomment">
+                            <Typography variant="h5">The Artwork By Tag : {tagName}</Typography>
+                            <div className="listimage">
+                                <Box className="boxlistimage">
+                                    {loading ? (
+                                        <Typography>Loading...</Typography>
+                                    ) : Array.isArray(art) && art.length > 0 ? (
+                                        <ArtWorkList />
+                                    ) : (
+                                        <PlaceHoldersImageCard />
+                                    )}
+                                </Box>
+                            </div>
+                        </div>
+                    </Box>
+                </div>
+            </main>
+        </div>
     );
-  }
-
-  return (
-      <>
-        <div className="headrecommended">
-          <Typography key={user?.accountID} variant="h5">
-            Recommended Artworks{" "}
-            {user
-                ? `For You, ${user?.firstName} ${user?.lastName}`
-                : "From The Community"}
-          </Typography>
-          <Link to={`artwordrecomment`}>
-            <div className="seemore">See More</div>
-          </Link>
-        </div>
-        <div className="recommendedimg">
-          {artworkList.length !== 0 ? (
-              <ReccomendedArts />
-          ) : (
-              <PlaceHoldersImageCard />
-          )}
-        </div>
-      </>
-  );
 }

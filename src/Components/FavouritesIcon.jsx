@@ -1,25 +1,23 @@
-import React, { useEffect, useRef, useState, useContext } from 'react';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { ThemeContext } from './Themes/ThemeProvider.tsx';
+import React, { useEffect, useRef, useState, useContext } from "react";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { ThemeContext } from "./Themes/ThemeProvider.tsx";
 import { ToggleFavourite } from "../API/ArtworkAPI/POST.tsx";
-import { CheckFavouriteStatus } from "../API/ArtworkAPI/GET.tsx"; 
-import { Sync } from '@mui/icons-material';
+import { CheckFavouriteStatus } from "../API/ArtworkAPI/GET.tsx";
+import { Sync } from "@mui/icons-material";
 
-
-export default function TestIcon({ userID, artworkID }) {
-  const { theme } = useContext(ThemeContext); 
+export default function FavouritesIcon({ userID, artworkID }) {
+  const { theme } = useContext(ThemeContext);
   const [isClicked, setIsClicked] = useState(false);
   const spansRef = useRef([]);
-
 
   useEffect(() => {
     // Cái này để handle cho Click
     const handleClick = async () => {
       const result = await ToggleFavourite(userID, artworkID);
       if (result) {
-      setIsClicked(prev => !prev);
-    }
+        setIsClicked((prev) => !prev);
+      }
     };
 
     const btn = document.getElementById("btn");
@@ -31,14 +29,14 @@ export default function TestIcon({ userID, artworkID }) {
   }, []); // Dependency trống để chỉ chạy một lần sau khi render
 
   useEffect(() => {
-      const fetchFavouriteStatus = async () => {
-        if (userID && artworkID) {
-          const status = await CheckFavouriteStatus(userID, artworkID);
-          setIsClicked(status);
-        }
-      };
-      fetchFavouriteStatus();
-    }, []);
+    const fetchFavouriteStatus = async () => {
+      if (userID && artworkID) {
+        const status = await CheckFavouriteStatus(userID, artworkID);
+        setIsClicked(status);
+      }
+    };
+    fetchFavouriteStatus();
+  }, []);
 
   useEffect(() => {
     // Cái này để xử lý animation khi isClicked thay đổi
@@ -54,17 +52,12 @@ export default function TestIcon({ userID, artworkID }) {
     }
   }, [isClicked]);
 
-
   return (
-
-    <div className='hero'>
-
-      <div className='button-favourite'>
-        <button 
-        style={{display: 'flex'}}
-        className={`btn ${isClicked ? 'active' : ''}`} id="btn">
+    <div className="hero">
+      <div className="button-favourite">
+        <button style={{ display: "flex" }} className={`btn ${isClicked ? "active" : ""}`} id="btn">
           {isClicked ? (
-            <FavoriteIcon sx={{ fontSize: 35 }} style={{ color: '#ff1876' }} />
+            <FavoriteIcon sx={{ fontSize: 35 }} style={{ color: "#ff1876" }} />
           ) : (
             <FavoriteBorderIcon sx={{ color: theme.color, backgroundColor: "none", fontSize: 35 }} />
           )}
@@ -72,19 +65,12 @@ export default function TestIcon({ userID, artworkID }) {
           {Array.from({ length: 16 }).map((_, index) => (
             <span key={index} ref={(el) => (spansRef.current[index] = el)}></span>
           ))}
-       
-        <h4 className='addfavourite' style={{paddingTop:"5px",color:isClicked?"#ff1876" : theme.color}}>
-          {isClicked ? "Thanks For The Like!" : "Add To Favourites"}
-        </h4>
+
+          <h4 className="addfavourite" style={{ paddingTop: "5px", color: isClicked ? "#ff1876" : theme.color }}>
+            {isClicked ? "Thanks For The Like!" : "Add To Favourites"}
+          </h4>
         </button>
       </div>
     </div>
-
-
-
-
-
-
-
   );
 }
