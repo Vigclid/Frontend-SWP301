@@ -657,12 +657,8 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
                   }
 
                 {/* Popup Report */}
-                <Dialog
-                  open={open}
-                  onClose={handleClose}          
-                >
-                  
-                   <ReportForm
+                <Dialog open={open} onClose={handleClose}>
+                  <ReportForm
                     reporterId={Number(userInSession.userId)}
                     reportedId={Number(user?.userId)}
                     // Nếu có artworkId thì truyền vào đây, ví dụ: artworkId={someArtworkId}
@@ -895,7 +891,7 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
                   
                   <Grid item xs={6}>
                     <CustomizedTextField
-                      label="Date (yyyy/MM/dd) "
+                      label="Date (dd/MM/yyyy) "
                       name="date"
                       autoComplete="date"
                       fullWidth

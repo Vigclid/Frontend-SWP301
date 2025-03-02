@@ -27,6 +27,7 @@ import UpdateArtwork from "./UpdateArtwork.tsx";
 import SearchHome from "./MainPage/SearchHome.tsx";
 import DepositeCoin from "./DepositeCoin.tsx";
 import zIndex from "@mui/material/styles/zIndex";
+import FavouritesArtwork from "./FavouritesArtwork.tsx";
 
 export default function Users() {
   return (
@@ -45,7 +46,7 @@ export default function Users() {
           <Route element={<ProtectedRoute allowedRoles={["AT", "AD"]} />}>
           </Route>
 
-          
+
           <Route path={`artwork/:id/payment`} element={<Payment />} />
           <Route path={`Depositecoin`} element={<DepositeCoin  />} />
           <Route path={`yourcommision`} element={<YourCommission />} />
@@ -57,7 +58,8 @@ export default function Users() {
           <Route path={`transaction`} element={<TransactionHistory />} />
           <Route path={`artworkform`} element={<UploadArtwork />} />
           <Route path={`profile/:id/commission`} element={<CommissionForm />} />
-          
+          <Route path={`favourite`} element={<FavouritesArtwork />} />
+
           <Route path={`artwordrecomment`} element={<SeeMoreOfArt1 />} />
           <Route path={`userrecomment`} element={<SeeMoreUser />} />
           <Route path={`randomword`} element={<SeeMoreForYou />} />

@@ -1,7 +1,4 @@
-import {
-  Artwork,
-  ArtworkPaymentStatus,
-} from "../../Interfaces/ArtworkInterfaces";
+import { Artwork, ArtworkPaymentStatus } from "../../Interfaces/ArtworkInterfaces";
 import axios from "axios";
 
 const arturl = "http://localhost:7233/api/artworks/";
@@ -17,10 +14,7 @@ const artworkPAymentStatus = "http://localhost:7233/api/artworks/";
 const artworkByTagname = "http://localhost:7233/api/artworks/Tag";
 const API_URL = "http://localhost:7233/api/interact";
 
-export async function GetArtsPaymentStatus(
-  creatorId: string,
-  artworkId: string
-) {
+export async function GetArtsPaymentStatus(creatorId: string, artworkId: string) {
   try {
     let artwork: ArtworkPaymentStatus = await axios
       .get(artworkPAymentStatus + `/${creatorId}` + `/${artworkId}`)
@@ -33,9 +27,7 @@ export async function GetArtsPaymentStatus(
 
 export async function GetArtsNoImageByCreatorId(id: string) {
   try {
-    let artwork: Artwork[] = await axios
-      .get(artworkbycreatornoimageurl + id)
-      .then((response) => response.data);
+    let artwork: Artwork[] = await axios.get(artworkbycreatornoimageurl + id).then((response) => response.data);
     return artwork;
   } catch (err) {
     console.log(err);
@@ -44,9 +36,7 @@ export async function GetArtsNoImageByCreatorId(id: string) {
 
 export async function GetRecentArtListLikeCount() {
   try {
-    let artList: Artwork[] = await axios
-      .get(recentartworks)
-      .then((response) => response.data);
+    let artList: Artwork[] = await axios.get(recentartworks).then((response) => response.data);
     return artList;
   } catch (err) {
     console.log(err);
@@ -55,9 +45,7 @@ export async function GetRecentArtListLikeCount() {
 
 export async function GetArtListCount() {
   try {
-    let artList: number = await axios
-      .get(numberartworkurl)
-      .then((response) => response.data);
+    let artList: number = await axios.get(numberartworkurl).then((response) => response.data);
     return artList;
   } catch (err) {
     console.log(err);
@@ -66,9 +54,7 @@ export async function GetArtListCount() {
 
 export async function GetRecent7ArtList() {
   try {
-    let artList: Artwork[] = await axios
-      .get(nearest7artworkurl)
-      .then((response) => response.data);
+    let artList: Artwork[] = await axios.get(nearest7artworkurl).then((response) => response.data);
     return artList;
   } catch (err) {
     console.log(err);
@@ -89,9 +75,7 @@ export async function GetArtList() {
 
 export async function GetTop10Arts() {
   try {
-    let artList: Artwork[] = await axios
-      .get(top10arturl)
-      .then((response) => response.data);
+    let artList: Artwork[] = await axios.get(top10arturl).then((response) => response.data);
     return artList;
   } catch (err) {
     console.log(err);
@@ -100,9 +84,7 @@ export async function GetTop10Arts() {
 
 export async function GetRandom10Arts() {
   try {
-    let artList: Artwork[] = await axios
-      .get(random10arturl)
-      .then((response) => response.data);
+    let artList: Artwork[] = await axios.get(random10arturl).then((response) => response.data);
     return artList;
   } catch (err) {
     console.log(err);
@@ -111,9 +93,7 @@ export async function GetRandom10Arts() {
 
 export async function GetArtsByCreatorId(id: string) {
   try {
-    let artwork: Artwork[] = await axios
-      .get(artworkbycreatorurl + id)
-      .then((response) => response.data);
+    let artwork: Artwork[] = await axios.get(artworkbycreatorurl + id).then((response) => response.data);
     return artwork;
   } catch (err) {
     console.log(err);
@@ -122,9 +102,7 @@ export async function GetArtsByCreatorId(id: string) {
 
 export async function GetArtsByAccountId(id: string) {
   try {
-    let artwork: Artwork[] = await axios
-      .get(artworkbycreatorurl + id)
-      .then((response) => response.data);
+    let artwork: Artwork[] = await axios.get(artworkbycreatorurl + id).then((response) => response.data);
     return artwork;
   } catch (err) {
     console.log(err);
@@ -133,9 +111,7 @@ export async function GetArtsByAccountId(id: string) {
 
 export async function GetArtById(id: string) {
   try {
-    let artwork: Artwork = await axios
-      .get(arturl + id)
-      .then((response) => response.data);
+    let artwork: Artwork = await axios.get(arturl + id).then((response) => response.data);
     console.log("artwork result: ", artwork);
     return artwork;
   } catch (err) {
@@ -145,18 +121,14 @@ export async function GetArtById(id: string) {
 
 export async function GetArtByIdNoImage(id: string) {
   try {
-    let artwork: Artwork = await axios
-      .get(artworkyidnoimageurl + id)
-      .then((response) => response.data);
+    let artwork: Artwork = await axios.get(artworkyidnoimageurl + id).then((response) => response.data);
     return artwork;
   } catch (err) {
     console.log(err);
   }
 }
 
-export async function GetArtworkByTagname(
-  tagName: string
-): Promise<Artwork[] | undefined> {
+export async function GetArtworkByTagname(tagName: string): Promise<Artwork[] | undefined> {
   try {
     const response = await axios.get(artworkByTagname, {
       params: { TagName: tagName },
@@ -165,6 +137,16 @@ export async function GetArtworkByTagname(
   } catch (err) {
     console.error("Error fetching artwork by tag name:", err);
     return undefined;
+  }
+}
+
+export async function GetFavouritesArtworks(userID: number) {
+  try {
+    const response = await axios.get(`${API_URL}/favourite/${userID}`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách Artwork yêu thích:", error);
+    return [];
   }
 }
 
@@ -183,8 +165,8 @@ export async function CheckLikeStatus(userID: number, artworkID: number) {
     const response = await axios.get(`${API_URL}/like/status/${userID}/${artworkID}`);
     return response.data; // Trả về true/false
   } catch (error) {
-      return false;
-    }
+    return false;
+  }
 }
 
 export const GetLikeCount = async (artworkID: number) => {
