@@ -291,14 +291,28 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
   useEffect(() => {
     const getUserProfile = async () => {
       const userProfile = await GetCreatorByAccountID(id ? id : "0")
+      //CHECK FOLLOW
+          if (
+            userInSession.userId &&
+            userProfile?.userId &&
+            userInSession.userId !== userProfile.userId
+        ) {
+          const response = await axios.get(
+                `http://localhost:7233/api/Follow/checkFollow?followerID=${userInSession.userId}&followingID=${userProfile.userId}`
+          );
+          setIsFollowing(response.data.isFollowing);
+        }
       setUser(userProfile)
     }
     const getUserArtworks = async () => {
       const userArtworks = await GetArtsByAccountId(id ? id : "0")
       setArtworks(userArtworks ? userArtworks : [])
     }
+
     getUserProfile()
     getUserArtworks()
+    
+      
   }, [id])
 
 
@@ -483,6 +497,37 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
     // Thực hiện xử lý gửi báo cáo ở đây
   };
 
+
+
+
+  // Sửa hàm handleClick cho follow
+  const handleClick = async () => {
+    if (!userInSession.userId || !user?.userId) return;
+    setLoading(true);
+    try {
+      if (isFollowing) {
+        // Unfollow
+        await DeleteFollowUser(userInSession.userId, user.userId);
+        setIsFollowing(false);
+        setUser(prev => (prev ? { ...prev, followerCount: prev.followerCount - 1} : prev));
+      } else {
+        // Follow
+        const followData: Follow = {
+          followerId: userInSession.userId,
+          followingId: user.userId,
+          dateFollow: new Date().toISOString().split('T')[0]
+        };
+        await PostFollowUser(followData);
+        setIsFollowing(true);
+        setUser(prev => (prev ? { ...prev, followerCount: prev.followerCount + 1 } : prev));
+      }
+    } catch (error) {
+      console.error('Error toggling follow:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="">
       <div className="headeruser">
@@ -585,7 +630,7 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
                   </div>
                 </Typography>
                 <Typography variant="body2" style={{ fontWeight: 500, fontSize: "18px" }}>
-                  Followers: {user?.followCounts}
+                  Followers: {user?.followerCount}
                 </Typography>
               </div>{" "}
             </div>
@@ -599,7 +644,7 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
                     variant="contained"
                     href="#contained-buttons"
                     onClick={() => handleClick()}>
-                    + Follow
+                    Following
                   </Button>
                 )}
                 {isFollowing == false && (
@@ -609,7 +654,7 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
                     variant="contained"
                     href="#contained-buttons"
                     onClick={() => handleClick()}>
-                    Following
+                    Follow
                   </Button>
                 )}
               </div>
