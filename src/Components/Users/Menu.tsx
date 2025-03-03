@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useCallback } from 'react'
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -15,86 +15,85 @@ import LoginForm from '../Forms/LoginForm.jsx';
 import { useHandleClick } from '../../CustomHooks/HandleClick.jsx';
 import { GetCreatorByID } from '../../API/UserAPI/GET.tsx';
 import { Creator } from '../../Interfaces/UserInterface';
+import {GetCurrentPackageByAccountID} from '../../API/PackageAPI/GET.tsx'
 import "../../css/Package.css"
 import PremiumTypography from '../StyledMUI/PremiumTypography.tsx';
-import {  } from '../../API/PackageAPI/GET.tsx';
 import { CurrentPackage } from '../../Interfaces/Package.ts';
 import ChipDepositeCoin from '../StyledMUI/ChipDepositeCoin.tsx';
 import CustomizedNotificationDropDown from '../StyledMUI/CustomizedNotificationDropDown.tsx';
 
 
-export default function Menu() {
+export default function Menu({ onCurrentPackageChange }) {
+  // Thêm prop callback
   const { theme } = useContext(ThemeContext);
-  // Attempt to retrieve the auth state from sessionStorage
-  const savedAuth = sessionStorage.getItem('auth');
-  // Check if there's any auth data saved and parse it
+  const savedAuth = sessionStorage.getItem("auth");
   const user: Creator = savedAuth ? JSON.parse(savedAuth) : null;
-  // Now 'auth' contains your authentication state or null if there's nothing saved
+  const [isOpen, handleClick] = useHandleClick();
+  const [pack, setPack] = useState<CurrentPackage | null>(null);
 
-  const [isOpen, handleClick] = useHandleClick()
-  const [avatar, setAvatar] = useState<Creator>()
-  const [pack,setPack] = useState<CurrentPackage>()
-  
+  // Bọc handlePackageChange trong useCallback để tránh thay đổi không cần thiết
+  const handlePackageChange = useCallback(
+    (currentPackage: CurrentPackage | null) => {
+      setPack(currentPackage);
+      if (onCurrentPackageChange) onCurrentPackageChange(currentPackage); // Gửi lên cha
+    },
+    [onCurrentPackageChange]
+  );
+
+  // Bọc handlePackageChange trong useCallback để tránh thay đổi không cần thiết
 
   useEffect(() => {
-    const getAvatar = async () => {
-      // const avatar = await GetCreatorByID(user ? user.CreatorId : '0')
-      // setAvatar(avatar)
-    }
     const getPackage = async () => {
-      // const pack = await GetCurrentPackageByCreatorID(user ? user.CreatorId : '0')
-      // setPack(pack)
-    }
-    if (user !== null) {
-      getAvatar();
-      getPackage()
-    }
+      if (user?.accountId) {
+        const servicePackage = await GetCurrentPackageByAccountID(Number(user.accountId));
+        console.log("Fetched Pack in Menu:", servicePackage);
+        handlePackageChange(servicePackage ?? null);
+      }
+    };
+    getPackage();
+  }, [user?.accountId, handlePackageChange]);
 
-  }, [])
-  const disabledButtons = () => {
-
-  }
-
-  function LoginButton() {
-    return (
-      <Link to={"/"}> <h3 style={{ fontWeight: 'normal' }}>Login</h3></Link>
-    )
-  }
   return (
     <div>
-      <Popper open={isOpen ? true : false} transition>
-        {({ TransitionProps, placement }) => (
-          <Fade {...TransitionProps} >
+      <Popper open={isOpen} transition>
+        {({ TransitionProps }) => (
+          <Fade {...TransitionProps}>
             <Box>
-              <LoginForm handleClick={handleClick} backdrop={"backdrop"} disableOutsideClick={undefined} alternative={undefined} />
+              <LoginForm handleClick={handleClick} backdrop="backdrop" />
             </Box>
           </Fade>
         )}
       </Popper>
-      <Box sx={{ flexGrow: 1, boxShadow: '50px', width: '100vw' }}>
-        <AppBar sx={{ transition: theme.transition, color: theme.color, backgroundColor: theme.backgroundColor }} position="static">
-          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ flexGrow: 1, boxShadow: "50px", width: "100vw", position: "fixed", zIndex: 1000 }}>
+        <AppBar
+          sx={{ transition: theme.transition, color: theme.color, backgroundColor: theme.backgroundColor }}
+          position="static">
+          <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
               <CustomizedDrawer />
               <AppLogo />
               <ExpandingSearchBar />
             </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
               <Link to={`package`}>
                 <Button>
                   <PremiumTypography pack={pack} />
                 </Button>
               </Link>
-              {user === null ? <LoginButton /> : ""}
-              <Button onClick={user === null ? () => handleClick : () => disabledButtons()}
-                color="inherit"><Link to={user !== null ? "artworkform" : ""}>
-                  <h3 style={{ fontWeight: 'normal' }}>
-                    Publish Your Works
-                  </h3>
+              {user === null ? (
+                <Link to={"/"}>
+                  <h3 style={{ fontWeight: "normal" }}>Login</h3>
+                </Link>
+              ) : (
+                ""
+              )}
+              <Button onClick={user === null ? handleClick : undefined} color="inherit">
+                <Link to={user !== null ? "artworkform" : ""}>
+                  <h3 style={{ fontWeight: "normal" }}>Publish Your Works</h3>
                 </Link>
               </Button>
 
-              <CustomizedNotificationDropDown  
+              <CustomizedNotificationDropDown
                 user={ user}
                 handleClickAsGuest={handleClick}
                 />
@@ -104,16 +103,12 @@ export default function Menu() {
                   <ChipDepositeCoin user={ user}  />
                 </Button>
               </Link>
-              
-              <CustomizedDropdown
-                handleClickAsGuest={handleClick}
-                user={ user} 
-                pack = {pack??null}
-                />
+              <CustomizedDropdown handleClickAsGuest={handleClick} user={user} pack={pack} />
             </Box>
           </Toolbar>
         </AppBar>
       </Box>
+      <Box sx={{ paddingTop: "64px" }}>{/* Main content goes here */}</Box>
     </div>
-  )
+  );
 }

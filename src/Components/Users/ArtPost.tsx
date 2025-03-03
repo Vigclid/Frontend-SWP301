@@ -35,6 +35,7 @@ import ArtShopDialog from "./ArtShopDialog.jsx";
 import axios from "axios";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import LikeIcon from "../LikeIcon.jsx";
+import "../../css/ArtPost.css";
 
 import Dialog from "@mui/material/Dialog";
 import ReportForm from "./UserForms/ReportForm.tsx";
@@ -410,7 +411,15 @@ export default function PostWork() {
             )} */}
 
             {/* Popup Report */}
-            <Dialog open={openReport} onClose={handleClose}>
+            <Dialog
+              open={openReport}
+              onClose={handleClose}
+              className="dialog-custom" // Áp dụng class từ ArtPost.css
+              BackdropProps={{
+                sx: {
+                  backgroundColor: "rgba(0, 0, 0, 0.5)", // Lớp phủ mờ
+                },
+              }}>
               <ReportForm
                 reporterId={Number(userInSession.userId)}
                 reportedId={Number(creator?.userId)}
