@@ -449,6 +449,34 @@ export default function ProfileUser() {
     // Thực hiện xử lý gửi báo cáo ở đây
   };
 
+  // Sửa hàm handleClick cho follow
+  const handleClick = async () => {
+    if (!userInSession.userId || !user?.userId) return;
+    setLoading(true);
+    try {
+      if (isFollowing) {
+        // Unfollow
+        await DeleteFollowUser(userInSession.userId, user.userId);
+        setIsFollowing(false);
+        setUser((prev) => (prev ? { ...prev, followerCount: prev.followerCount - 1 } : prev));
+      } else {
+        // Follow
+        const followData: Follow = {
+          followerId: userInSession.userId,
+          followingId: user.userId,
+          dateFollow: new Date().toISOString().split("T")[0],
+        };
+        await PostFollowUser(followData);
+        setIsFollowing(true);
+        setUser((prev) => (prev ? { ...prev, followerCount: prev.followerCount + 1 } : prev));
+      }
+    } catch (error) {
+      console.error("Error toggling follow:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="">
       <div className="headeruser">
@@ -551,7 +579,7 @@ export default function ProfileUser() {
                   </div>
                 </Typography>
                 <Typography variant="body2" style={{ fontWeight: 500, fontSize: "18px" }}>
-                  Followers: {user?.followCounts}
+                  Followers: {user?.followerCount}
                 </Typography>
               </div>{" "}
             </div>
@@ -565,7 +593,7 @@ export default function ProfileUser() {
                     variant="contained"
                     href="#contained-buttons"
                     onClick={() => handleClick()}>
-                    + Follow
+                    Following
                   </Button>
                 )}
                 {isFollowing == false && (
@@ -575,7 +603,7 @@ export default function ProfileUser() {
                     variant="contained"
                     href="#contained-buttons"
                     onClick={() => handleClick()}>
-                    Following
+                    Follow
                   </Button>
                 )}
               </div>
