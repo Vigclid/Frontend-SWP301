@@ -1,93 +1,88 @@
-
-import React, { useContext, useEffect } from 'react'
-import { Work } from '../../share/ListofWork.js';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
-import { useState } from 'react';
-import { ListofUsers } from '../../share/ListofUsers.js';
-import { Link, useParams } from 'react-router-dom';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import ChatIcon from '@mui/icons-material/Chat';
-import PropTypes from 'prop-types';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
-import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
-import CakeIcon from '@mui/icons-material/Cake';
-import RoomIcon from '@mui/icons-material/Room';
-import RssFeedIcon from '@mui/icons-material/RssFeed';
-import PhoneIcon from '@mui/icons-material/Phone';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import Avatar from '@mui/material/Avatar';
-import ImageListItemBar from '@mui/material/ImageListItemBar';
-import { SnackbarCloseReason } from '@mui/material/Snackbar';
-import IconButton from '@mui/material/IconButton';
-import InfoIcon from '@mui/icons-material/Info';
-import CustomizedImageButton from '../StyledMUI/CustomizedImageButton.jsx'
-import { ThemeContext } from '../Themes/ThemeProvider.tsx';
-import { GetCreatorByID, GetCreatorByAccountID } from '../../API/UserAPI/GET.tsx';
-import { Creator } from '../../Interfaces/UserInterface.ts';
-import { PutCreatorBackgroundPicture, PutCreatorProfilePicture, PutProfile } from '../../API/UserAPI/PUT.tsx';
-import { GetArtsByCreatorId, GetArtsByAccountId } from '../../API/ArtworkAPI/GET.tsx';
-import { Artwork } from '../../Interfaces/ArtworkInterfaces.ts';
-import { PlaceHoldersImageCard } from './PlaceHolders.jsx'
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import Background from '../Themes/Background.jsx';
-import Grid from '@mui/material/Grid';
-import { useFormik } from 'formik';
+import React, { useContext, useEffect } from "react";
+import { Work } from "../../share/ListofWork.js";
+import ImageList from "@mui/material/ImageList";
+import ImageListItem from "@mui/material/ImageListItem";
+import { useState } from "react";
+import { ListofUsers } from "../../share/ListofUsers.js";
+import { Link, useParams } from "react-router-dom";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import ChatIcon from "@mui/icons-material/Chat";
+import PropTypes from "prop-types";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Box from "@mui/material/Box";
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+import CakeIcon from "@mui/icons-material/Cake";
+import RoomIcon from "@mui/icons-material/Room";
+import RssFeedIcon from "@mui/icons-material/RssFeed";
+import PhoneIcon from "@mui/icons-material/Phone";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import Avatar from "@mui/material/Avatar";
+import ImageListItemBar from "@mui/material/ImageListItemBar";
+import { SnackbarCloseReason } from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
+import InfoIcon from "@mui/icons-material/Info";
+import CustomizedImageButton from "../StyledMUI/CustomizedImageButton.jsx";
+import { ThemeContext } from "../Themes/ThemeProvider.tsx";
+import { GetCreatorByID, GetCreatorByAccountID } from "../../API/UserAPI/GET.tsx";
+import { Creator } from "../../Interfaces/UserInterface.ts";
+import { PutCreatorBackgroundPicture, PutCreatorProfilePicture, PutProfile } from "../../API/UserAPI/PUT.tsx";
+import { GetArtsByCreatorId, GetArtsByAccountId } from "../../API/ArtworkAPI/GET.tsx";
+import { Artwork } from "../../Interfaces/ArtworkInterfaces.ts";
+import { PlaceHoldersImageCard } from "./PlaceHolders.jsx";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+import Background from "../Themes/Background.jsx";
+import Grid from "@mui/material/Grid";
+import { useFormik } from "formik";
 import * as Yup from "yup";
-import CustomizedTextField from '../StyledMUI/CustomizedTextField.tsx';
-import Snackbar from '@mui/material/Snackbar';
-import LoadingScreen from '../LoadingScreens/LoadingScreenSpokes.jsx';
-import { PostCreator, PostUserAccount,PostFollowUser } from '../../API/UserAPI/POST.tsx';
-import { PutChangePassword } from '../../API/UserAPI/PUT.tsx';
-import { useNavigate } from 'react-router-dom';
-import axios from "axios"
-import CircularProgress from '@mui/material/CircularProgress';
-import CheckIcon from '@mui/icons-material/Check';
-import {parse} from "date-fns/parse";
-import '../../css/ArtPost.css';
-import '../../css/ProfileUser.css';
+import CustomizedTextField from "../StyledMUI/CustomizedTextField.tsx";
+import Snackbar from "@mui/material/Snackbar";
+import LoadingScreen from "../LoadingScreens/LoadingScreenSpokes.jsx";
+import { PostCreator, PostUserAccount, PostFollowUser } from "../../API/UserAPI/POST.tsx";
+import { PutChangePassword } from "../../API/UserAPI/PUT.tsx";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import CircularProgress from "@mui/material/CircularProgress";
+import CheckIcon from "@mui/icons-material/Check";
+import { parse } from "date-fns/parse";
+import "../../css/ArtPost.css";
+import "../../css/ProfileUser.css";
 
 import ReportForm from "./UserForms/ReportForm.tsx"; // Import form bạn đã làm
 import { Report } from "../../Interfaces/ReportInterfaces.ts";
 import { Favorite } from "@mui/icons-material";
 import FavouritesArtwork from "./FavouritesArtwork.tsx";
 
-import {Follow} from "../../Interfaces/FollowingInterface";
-import {DeleteFollowUser} from "../../API/UserAPI/DELETE.tsx";
-import  {CheckFollowStatus} from "../../API/UserAPI/GET.tsx";
-
-
+import { Follow } from "../../Interfaces/FollowingInterface";
+import { DeleteFollowUser } from "../../API/UserAPI/DELETE.tsx";
+import { CheckFollowStatus } from "../../API/UserAPI/GET.tsx";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
-      <div
-          role="tabpanel"
-          hidden={value !== index}
-          id={`simple-tabpanel-${index}`}
-          aria-labelledby={`simple-tab-${index}`}
-          {...other}
-      >
-        {value === index && (
-            <Box sx={{ p: 3 }}>
-              <Typography component="div">{children}</Typography>
-
-            </Box>
-        )}
-      </div>
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}>
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography component="div">{children}</Typography>
+        </Box>
+      )}
+    </div>
   );
 }
 
@@ -100,35 +95,29 @@ CustomTabPanel.propTypes = {
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
   };
 }
 
 export default function ProfileUser() {
-
-
-// Attempt to retrieve the auth state from sessionStorage
-const savedAuth = sessionStorage.getItem('auth');
-// Check if there's any auth data saved and parse it
-const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
-// Now 'auth' contains your authentication state or null if there's nothing saved
+  // Attempt to retrieve the auth state from sessionStorage
+  const savedAuth = sessionStorage.getItem("auth");
+  // Check if there's any auth data saved and parse it
+  const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
+  // Now 'auth' contains your authentication state or null if there's nothing saved
   // HANDLE CHANGE PASSWORD
 
-  const [snackbarChangePassword, setSnackbarChangePassword] = useState(false)
-  const [snackbarChangePasswordError, setSnackbarChangePasswordError] = useState(false)
+  const [snackbarChangePassword, setSnackbarChangePassword] = useState(false);
+  const [snackbarChangePasswordError, setSnackbarChangePasswordError] = useState(false);
 
-  const snackbarChangePasswordAutoClose = (
-      event?: React.SyntheticEvent | Event,
-      reason?: SnackbarCloseReason,
-  ) => {
-    if (reason === 'clickaway') {
+  const snackbarChangePasswordAutoClose = (event?: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
+    if (reason === "clickaway") {
       return;
     }
 
     setSnackbarChangePassword(false);
     setSnackbarChangePasswordError(false);
   };
-
 
   // Account Change Password Started Here!
   const formik = useFormik({
@@ -142,48 +131,43 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
 
     validationSchema: Yup.object({
       OldPassword: Yup.string().required("What? Don't remember the password?").min(5, "Must be 5 characters or more"),
-      NewPassword: Yup.string().required("Password! Or we're gonna steal your account.").min(5, "Must be 5 characters or more"),
-      ConfirmPassword: Yup.string().required("Goldfish? Type a new password again.").min(5, "Must be 5 characters or more"),
-
+      NewPassword: Yup.string()
+        .required("Password! Or we're gonna steal your account.")
+        .min(5, "Must be 5 characters or more"),
+      ConfirmPassword: Yup.string()
+        .required("Goldfish? Type a new password again.")
+        .min(5, "Must be 5 characters or more"),
     }),
 
     onSubmit: (values) => {
       if (values.ConfirmPassword !== values.NewPassword) {
-        alert("New Password and Submit Password are not the same!")
+        alert("New Password and Submit Password are not the same!");
       } else {
-        let checkChangePassword
+        let checkChangePassword;
         const ChangePass = async () => {
           try {
             checkChangePassword = await PutChangePassword({
               email: userInSession?.email,
               oldPassword: values.OldPassword,
-              newPassword: values.NewPassword
-            },)
-
+              newPassword: values.NewPassword,
+            });
 
             if (String(checkChangePassword) === "1") {
               setSnackbarChangePassword(true);
             } else {
               setSnackbarChangePasswordError(true);
             }
-
           } catch (err) {
-            if (checkChangePassword === "2")
-              setSnackbarChangePasswordError(true);
-            console.log(err)
-
+            if (checkChangePassword === "2") setSnackbarChangePasswordError(true);
+            console.log(err);
           }
-        }
-        ChangePass()
+        };
+        ChangePass();
       }
     },
-
-  })
+  });
 
   // |||||||||----END-CHANGE-PASSWORD----||||||||
-
-
-
 
   // EDIT PROFILE
 
@@ -197,34 +181,32 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
       lastName: userInSession?.lastName,
       date: userInSession?.dateOfBirth,
       phoneNumber: userInSession?.phoneNumber,
-
     },
-
-
 
     validationSchema: Yup.object({
       firstName: Yup.string().required("We need your first name"),
       lastName: Yup.string().required("Yo!!! we need to know you"),
       date: Yup.date()
-          .transform(function (value, originalValue) {
-            if (this.isType(value)) {
-              return value;
-            }
-            const result = parse(originalValue, "dd/MM/yyyy", new Date());
-            return result;
-          })
-          .typeError("please enter a valid date")
-          .required()
-          .max(new Date().getFullYear(), "You can not born in the future!!"),
+        .transform(function (value, originalValue) {
+          if (this.isType(value)) {
+            return value;
+          }
+          const result = parse(originalValue, "dd/MM/yyyy", new Date());
+          return result;
+        })
+        .typeError("please enter a valid date")
+        .required()
+        .max(new Date().getFullYear(), "You can not born in the future!!"),
 
       address: Yup.string().required("Where are you from?"),
-      biography: Yup.string().required("Tell the community something about yourself").max(250,"Too much! We don't have enough money to handle that much!"),
-      phoneNumber: Yup.string().required("How should we contract you, genius? ")
+      biography: Yup.string()
+        .required("Tell the community something about yourself")
+        .max(250, "Too much! We don't have enough money to handle that much!"),
+      phoneNumber: Yup.string().required("How should we contract you, genius? "),
     }),
 
     onSubmit: (values) => {
-
-      let checkChangeProfile
+      let checkChangeProfile;
       const EditProfile = async () => {
         try {
           checkChangeProfile = await PutProfile({
@@ -233,39 +215,29 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
             lastName: values.lastName,
             address: values.address,
             biography: values.biography,
-            dateOfBirth : values.date,
-            phoneNumber : values.phoneNumber
-          },)
-
-
+            dateOfBirth: values.date,
+            phoneNumber: values.phoneNumber,
+          });
 
           if (String(checkChangeProfile) === "1") {
             setSnackbarChangePassword(true);
           } else {
             setSnackbarChangePasswordError(true);
           }
-
         } catch (err) {
-          if (checkChangeProfile === "2")
-            setSnackbarChangePasswordError(true);
-          console.log(err)
-
+          if (checkChangeProfile === "2") setSnackbarChangePasswordError(true);
+          console.log(err);
         }
-      }
-      EditProfile()
-
+      };
+      EditProfile();
     },
-
-  })
+  });
   // |||||||||----END-EDIT-PROFILE----|||||||||
 
-
-
-
-  const [isFollowing, setIsFollowing] = useState(false)
+  const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<Creator>()
-  const [artworks, setArtworks] = useState<Artwork[]>([])
+  const [user, setUser] = useState<Creator>();
+  const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [previewProfile, setPreviewProfile] = useState<string>();
   const [previewBackground, setPreviewBackground] = useState<string>();
   //Popup Report
@@ -275,48 +247,28 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
   const handleClickOpen = () => {
     setOpen(true);
   };
-  let { id } = useParams()
-  const { theme } = useContext(ThemeContext)
-
+  let { id } = useParams();
+  const { theme } = useContext(ThemeContext);
 
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue)
+    setValue(newValue);
   };
-
-
 
   // Cái này để chuyển tab profile từ profile người khác sang profile mình.
   useEffect(() => {
     const getUserProfile = async () => {
-      const userProfile = await GetCreatorByAccountID(id ? id : "0")
-      //CHECK FOLLOW
-          if (
-            userInSession.userId &&
-            userProfile?.userId &&
-            userInSession.userId !== userProfile.userId
-        ) {
-          const response = await axios.get(
-                `http://localhost:7233/api/Follow/checkFollow?followerID=${userInSession.userId}&followingID=${userProfile.userId}`
-          );
-          setIsFollowing(response.data.isFollowing);
-        }
-      setUser(userProfile)
-    }
+      const userProfile = await GetCreatorByAccountID(id ? id : "0");
+      setUser(userProfile);
+    };
     const getUserArtworks = async () => {
-      const userArtworks = await GetArtsByAccountId(id ? id : "0")
-      setArtworks(userArtworks ? userArtworks : [])
-    }
-
-    getUserProfile()
-    getUserArtworks()
-    
-      
-  }, [id])
-
-
-
+      const userArtworks = await GetArtsByAccountId(id ? id : "0");
+      setArtworks(userArtworks ? userArtworks : []);
+    };
+    getUserProfile();
+    getUserArtworks();
+  }, [id]);
 
   //Covert Blob to Base64 string to easily view the image
   function blobToBase64(blob: Blob): Promise<string> {
@@ -497,9 +449,6 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
     // Thực hiện xử lý gửi báo cáo ở đây
   };
 
-
-
-
   // Sửa hàm handleClick cho follow
   const handleClick = async () => {
     if (!userInSession.userId || !user?.userId) return;
@@ -509,20 +458,20 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
         // Unfollow
         await DeleteFollowUser(userInSession.userId, user.userId);
         setIsFollowing(false);
-        setUser(prev => (prev ? { ...prev, followerCount: prev.followerCount - 1} : prev));
+        setUser((prev) => (prev ? { ...prev, followerCount: prev.followerCount - 1 } : prev));
       } else {
         // Follow
         const followData: Follow = {
           followerId: userInSession.userId,
           followingId: user.userId,
-          dateFollow: new Date().toISOString().split('T')[0]
+          dateFollow: new Date().toISOString().split("T")[0],
         };
         await PostFollowUser(followData);
         setIsFollowing(true);
-        setUser(prev => (prev ? { ...prev, followerCount: prev.followerCount + 1 } : prev));
+        setUser((prev) => (prev ? { ...prev, followerCount: prev.followerCount + 1 } : prev));
       }
     } catch (error) {
-      console.error('Error toggling follow:', error);
+      console.error("Error toggling follow:", error);
     } finally {
       setLoading(false);
     }
@@ -788,7 +737,7 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
 
             <CustomTabPanel value={value} index={2}>
               {/* {artworks.length !== 0 ? <AllImage /> : <PlaceHoldersImageCard />} */}
-              <FavouritesArtwork userId={id ? id : user?.userId} /> {/* Truyền userId của người dùng đang xem */}
+              {user && <FavouritesArtwork userId={user.userId} />} {/* Truyền userId của người dùng đang xem */}
             </CustomTabPanel>
 
             {/* THIS IS TABPANEL TO EDIT PROFILE */}
