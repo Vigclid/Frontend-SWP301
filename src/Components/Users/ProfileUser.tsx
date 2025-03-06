@@ -657,7 +657,7 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
                   <Button disabled={true} variant="contained">
                     {" "}
                     <ShoppingBagIcon color="inherit" style={{ marginRight: "5px" }} />
-                    This person cannot accept commission
+                    This person cannot receive commission
                   </Button>
                 )}
                 {userInSession.accountId !== user?.accountId ? (
