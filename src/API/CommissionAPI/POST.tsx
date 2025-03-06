@@ -9,16 +9,12 @@ const headers = {
     // Optionally, add additional headers such as Authorization if required
     // 'Authorization': 'Bearer your-token',
   };
-export async function GetCommissionID() {
-    try{
-        const value = {commissionID:"0"}
-        let id:ICommissionID = await axios.post(commissionIdurl,value,{headers}).then(response => response.data)
-        return id
-        
-    }catch(err){
-      console.log(err)
-    }
-}
+
+  export async function GetCommissionID() {
+    const response = await axios.post("https://localhost:7233/api/Commission/request");
+    return response.data;
+  }
+  
 
 export async function CreateCommissionForm(value) {
     try{
