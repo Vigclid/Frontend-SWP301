@@ -639,19 +639,19 @@ export default function ProfileUser() {
                 </Tabs>
               </div>
               <div className="buttonSubcribe">
-                {user?.allowCommission === true ? (
+                {user?.RankID == 2  ? (
                   <Link to={`commission`}>
                     <Button variant="contained" href="">
                       {" "}
                       <ShoppingBagIcon style={{ marginRight: "5px" }} />
-                      Open For Commission
+                      Request an Custom Art
                     </Button>
                   </Link>
                 ) : (
                   <Button disabled={true} variant="contained">
                     {" "}
                     <ShoppingBagIcon color="inherit" style={{ marginRight: "5px" }} />
-                    Commission Closed
+                    This person cannot receive commission
                   </Button>
                 )}
                 {userInSession.accountId !== user?.accountId ? (
