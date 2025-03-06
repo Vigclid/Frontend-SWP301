@@ -128,9 +128,7 @@ export async function GetArtByIdNoImage(id: string) {
   }
 }
 
-export async function GetArtworkByTagName(
-  tagName: string
-): Promise<Artwork[] | undefined> {
+export async function GetArtworkByTagName(tagName: string): Promise<Artwork[] | undefined> {
   try {
     const response = await axios.get(`${artworkByTagName}?tagName=${tagName}`);
     return response.data;
