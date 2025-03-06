@@ -17,6 +17,7 @@ import Box from '@mui/material/Box';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import CakeIcon from '@mui/icons-material/Cake';
 import RoomIcon from '@mui/icons-material/Room';
+import CommissionForm from './CommissionForm.tsx';
 import RssFeedIcon from '@mui/icons-material/RssFeed';
 import PhoneIcon from '@mui/icons-material/Phone';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
@@ -50,13 +51,13 @@ import * as Yup from "yup";
 import CustomizedTextField from '../StyledMUI/CustomizedTextField.tsx';
 import Snackbar from '@mui/material/Snackbar';
 import LoadingScreen from '../LoadingScreens/LoadingScreenSpokes.jsx';
-import { PostCreator, PostUserAccount,PostFollowUser } from '../../API/UserAPI/POST.tsx';
+import { PostCreator, PostUserAccount, PostFollowUser } from '../../API/UserAPI/POST.tsx';
 import { PutChangePassword } from '../../API/UserAPI/PUT.tsx';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios"
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
-import {parse} from "date-fns/parse";
+import { parse } from "date-fns/parse";
 import '../../css/ArtPost.css';
 import '../../css/ProfileUser.css';
 
@@ -65,29 +66,29 @@ import { Report } from "../../Interfaces/ReportInterfaces.ts";
 import { Favorite } from "@mui/icons-material";
 import FavouritesArtwork from "./FavouritesArtwork.tsx";
 
-import {Follow} from "../../Interfaces/FollowingInterface";
-import {DeleteFollowUser} from "../../API/UserAPI/DELETE.tsx";
-import  {CheckFollowStatus} from "../../API/UserAPI/GET.tsx";
+import { Follow } from "../../Interfaces/FollowingInterface";
+import { DeleteFollowUser } from "../../API/UserAPI/DELETE.tsx";
+import { CheckFollowStatus } from "../../API/UserAPI/GET.tsx";
 
 
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
-      <div
-          role="tabpanel"
-          hidden={value !== index}
-          id={`simple-tabpanel-${index}`}
-          aria-labelledby={`simple-tab-${index}`}
-          {...other}
-      >
-        {value === index && (
-            <Box sx={{ p: 3 }}>
-              <Typography component="div">{children}</Typography>
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography component="div">{children}</Typography>
 
-            </Box>
-        )}
-      </div>
+        </Box>
+      )}
+    </div>
   );
 }
 
@@ -105,21 +106,22 @@ function a11yProps(index) {
 }
 
 export default function ProfileUser() {
+  const [showCommissionForm, setShowCommissionForm] = useState(false);
 
 
-// Attempt to retrieve the auth state from sessionStorage
-const savedAuth = sessionStorage.getItem('auth');
-// Check if there's any auth data saved and parse it
-const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
-// Now 'auth' contains your authentication state or null if there's nothing saved
+  // Attempt to retrieve the auth state from sessionStorage
+  const savedAuth = sessionStorage.getItem('auth');
+  // Check if there's any auth data saved and parse it
+  const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
+  // Now 'auth' contains your authentication state or null if there's nothing saved
   // HANDLE CHANGE PASSWORD
 
   const [snackbarChangePassword, setSnackbarChangePassword] = useState(false)
   const [snackbarChangePasswordError, setSnackbarChangePasswordError] = useState(false)
 
   const snackbarChangePasswordAutoClose = (
-      event?: React.SyntheticEvent | Event,
-      reason?: SnackbarCloseReason,
+    event?: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason,
   ) => {
     if (reason === 'clickaway') {
       return;
@@ -206,19 +208,19 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
       firstName: Yup.string().required("We need your first name"),
       lastName: Yup.string().required("Yo!!! we need to know you"),
       date: Yup.date()
-          .transform(function (value, originalValue) {
-            if (this.isType(value)) {
-              return value;
-            }
-            const result = parse(originalValue, "dd/MM/yyyy", new Date());
-            return result;
-          })
-          .typeError("please enter a valid date")
-          .required()
-          .max(new Date().getFullYear(), "You can not born in the future!!"),
+        .transform(function (value, originalValue) {
+          if (this.isType(value)) {
+            return value;
+          }
+          const result = parse(originalValue, "dd/MM/yyyy", new Date());
+          return result;
+        })
+        .typeError("please enter a valid date")
+        .required()
+        .max(new Date().getFullYear(), "You can not born in the future!!"),
 
       address: Yup.string().required("Where are you from?"),
-      biography: Yup.string().required("Tell the community something about yourself").max(250,"Too much! We don't have enough money to handle that much!"),
+      biography: Yup.string().required("Tell the community something about yourself").max(250, "Too much! We don't have enough money to handle that much!"),
       phoneNumber: Yup.string().required("How should we contract you, genius? ")
     }),
 
@@ -233,8 +235,8 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
             lastName: values.lastName,
             address: values.address,
             biography: values.biography,
-            dateOfBirth : values.date,
-            phoneNumber : values.phoneNumber
+            dateOfBirth: values.date,
+            phoneNumber: values.phoneNumber
           },)
 
 
@@ -290,8 +292,11 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
   // Cái này để chuyển tab profile từ profile người khác sang profile mình.
   useEffect(() => {
     const getUserProfile = async () => {
-      const userProfile = await GetCreatorByAccountID(id ? id : "0")
-      setUser(userProfile)
+      const user = await GetCreatorByAccountID(id ? id : "0")
+
+      console.log("User Profile:", user);
+
+      setUser(user)
     }
     const getUserArtworks = async () => {
       const userArtworks = await GetArtsByAccountId(id ? id : "0")
@@ -645,21 +650,23 @@ const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
                 </Tabs>
               </div>
               <div className="buttonSubcribe">
-                {user?.RankID == 2  ? (
-                  <Link to={`commission`}>
-                    <Button variant="contained" href="">
-                      {" "}
-                      <ShoppingBagIcon style={{ marginRight: "5px" }} />
-                      Request an Custom Art
-                    </Button>
-                  </Link>
+                {/* Kiểm tra RankID chính xác dựa vào API trả về */}
+                {user?.rankId === 2 ? (
+                  <Button variant="contained" onClick={() => setShowCommissionForm(true)}>
+                    <ShoppingBagIcon style={{ marginRight: "5px" }} />
+                    Request an Custom Art
+                  </Button>
                 ) : (
                   <Button disabled={true} variant="contained">
-                    {" "}
                     <ShoppingBagIcon color="inherit" style={{ marginRight: "5px" }} />
                     This person cannot receive commission
                   </Button>
                 )}
+
+                {/* Hiển thị form request khi nhấn nút */}
+                {showCommissionForm && <CommissionForm onClose={() => setShowCommissionForm(false)} />}
+
+
                 {userInSession.accountId !== user?.accountId ? (
                   <Button
                     onClick={handleClickOpen}

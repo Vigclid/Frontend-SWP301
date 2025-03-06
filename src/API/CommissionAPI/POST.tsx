@@ -1,27 +1,29 @@
 import axios from 'axios'
 import { ICommissionForm, ICommissionID } from '../../Interfaces/CommissionForm'
 
-const commissionIdurl = "https://localhost:7233/api/Commission"
-const commissionFromCreate = "https://localhost:7233/api/CommissionForm"
-
+const commissionBaseUrl = "http://localhost:7233/api/Commission";
 const headers = {
     'Content-Type': 'application/json',
-    // Optionally, add additional headers such as Authorization if required
-    // 'Authorization': 'Bearer your-token',
-  };
+};
 
-  export async function GetCommissionID() {
-    const response = await axios.post("https://localhost:7233/api/Commission/request");
-    return response.data;
-  }
-  
+// 🟢 Hàm lấy `commissionID`
+export async function GetCommissionID() {
+    try {
+        const response = await axios.post(`${commissionBaseUrl}/request`);  // 🛠 Đảm bảo gọi đúng API lấy ID
+        return response.data;
+    } catch (error) {
+        console.error("🚨 Lỗi khi lấy CommissionID:", error);
+        return null;
+    }
+}
 
+// 🟢 Hàm tạo mới Commission
 export async function CreateCommissionForm(value) {
-    try{
-        let response = await axios.post(commissionFromCreate,value,{headers}).then(response => response.data)
-        return response
-        
-    }catch(err){
-      console.log(err)
+    try {
+        const response = await axios.post(`${commissionBaseUrl}/request`, value, { headers });  // 🛠 Gửi đúng API
+        return response.data;
+    } catch (error) {
+        console.error("🚨 Lỗi khi tạo Commission:", error);
+        return null;
     }
 }
