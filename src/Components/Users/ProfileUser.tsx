@@ -261,6 +261,14 @@ export default function ProfileUser() {
     const getUserProfile = async () => {
       const userProfile = await GetCreatorByAccountID(id ? id : "0");
       setUser(userProfile);
+      
+      if ( userInSession.userId &&  userProfile?.userId && userInSession.userId !== userProfile.userId) {
+        const response = await axios.get(
+          `http://localhost:7233/api/Follow/checkFollow?followerID=${userInSession.userId}&followingID=${userProfile.userId}`
+         );
+         setIsFollowing(response.data.isFollowing);
+      }
+
     };
     const getUserArtworks = async () => {
       const userArtworks = await GetArtsByAccountId(id ? id : "0");

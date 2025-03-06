@@ -10,15 +10,15 @@ export default function LikeIconComponent({ userID, artworkID }) {
   const [isLikeClicked, setIsLikeClicked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
-  // Lấy trạng thái like và số like ban đầu
+      // Lấy trạng thái like và số like ban đầu
   useEffect(() => {
     const fetchData = async () => {
       if (userID && artworkID) {
         const status = await CheckLikeStatus(userID, artworkID);
-        console.log("Initial like status:", status); // Kiểm tra trạng thái like ban đầu
+      // Kiểm tra trạng thái like ban đầu
         setIsLikeClicked(status);
         const count = await GetLikeCount(artworkID);
-        console.log("Initial like count:", count); // Kiểm tra số like ban đầu
+      // Kiểm tra số like ban đầu
         setLikeCount(count);
       }
     };

@@ -52,9 +52,13 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
     useEffect(() => {
       //khởi tạo Notificaitons history.
       const _getNotificationsByUserId = async () => {
-        const response = await axios.get(`${notificationsURL}${user.userId}`);
-        setNewNotiCount(response.data.filter(notification => notification.isRead === 0).length)
-        setNotifications(response.data)
+        try {
+          const response = await axios.get(`${notificationsURL}${user.userId}`);
+          setNewNotiCount(response.data.filter(notification => notification.isRead === 0).length)
+          setNotifications(response.data)
+        } catch (err) {
+          console.log("No notifications!")
+        }
       }
       _getNotificationsByUserId();
       // Tạo kết nối WebSocket
@@ -104,7 +108,10 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
       audioRef.current.play().catch(error => {
         console.log(error)
       })
-    },[notifications]);
+      
+
+      setNewNotiCount(prev => (prev ?? 0) + 1);
+    },[notifications.length]);
 
 
 
