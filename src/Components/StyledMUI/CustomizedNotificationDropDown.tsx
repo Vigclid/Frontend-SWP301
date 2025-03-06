@@ -1,43 +1,117 @@
-import React, { useContext,useState , useEffect } from 'react';
-import { Badge, Box, Button, IconButton } from '@mui/material';
+import React, { useContext,useState , useEffect ,useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { Badge, Box, Button, IconButton, List ,ListItemButton, ListItemAvatar , ListItemText 
+   , Avatar 
+} from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import {ThemeContext} from "../Themes/ThemeProvider.tsx"
 import MailIcon from '@mui/icons-material/Mail';
 import { Creator } from '../../Interfaces/UserInterface.ts';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import FolderIcon from '@mui/icons-material/Folder';
-import RestoreIcon from '@mui/icons-material/Restore';
+import AllInboxIcon from '@mui/icons-material/AllInbox';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import ChatIcon from '@mui/icons-material/Chat';
 import { styled } from '@mui/material/styles';
 import Menu from '@mui/material/Menu';
+import SockJS from 'sockjs-client';
+import { Stomp } from '@stomp/stompjs';
+import { Notification } from '../../Interfaces/NotificationInterfaces.ts';
+import axios from "axios";
+
+const notificationsURL = "http://localhost:7233/api/notification/"
+const followingUserByFollowId = "http://localhost:7233/api/Follow/user/"
 interface CustomizedDropdownProps {
   user: Creator;
   handleClickAsGuest: any;
 }
 function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedDropdownProps)  {
 
-    const { dark,theme } = useContext(ThemeContext);
+    const audioRef = useRef(new Audio('/audios/notification.mp3'));
+
+    const { theme } = useContext(ThemeContext);
     const [anchorEl, setAnchorEl] = useState(null)
     const [open, setOpen] = useState(false)
-    useEffect(() => {
-    }
-    )
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [profiles, setProfiles] = useState<Record<string, Creator>>({});
+    const [newNotiCount, setNewNotiCount] = useState<number>();
+
+
     const handleClickDropdown = (event) => {
         if (user === null) {
         handleClickAsGuest()
         }
         else {
+        axios.put(`${notificationsURL}${user.userId}`);
+        setNewNotiCount(0);
         setAnchorEl(event.currentTarget)
         setOpen(!open)
         }
     };
 
+    useEffect(() => {
+      //khởi tạo Notificaitons history.
+      const _getNotificationsByUserId = async () => {
+        const response = await axios.get(`${notificationsURL}${user.userId}`);
+        setNewNotiCount(response.data.filter(notification => notification.isRead === 0).length)
+        setNotifications(response.data)
+      }
+      _getNotificationsByUserId();
+      // Tạo kết nối WebSocket
+      const socket = new SockJS('http://localhost:7233/ws');
+      const stompClient = Stomp.over(socket);
+  
+      stompClient.connect({}, () => {
+        // Đăng ký nhận thông báo từ topic riêng của user
+        stompClient.subscribe(`/topic/notifications/${user.userId}`, message => {
+          const notification = JSON.parse(message.body);
+          // Cập nhật state với thông báo mới
+          setNotifications(prev => [notification, ...prev]);
+        });
+      });
+  
+      // Cleanup khi component unmount
+      return () => {
+        if (stompClient) stompClient.disconnect();
+      };
+    }, [user.userId]);
+
+
+    useEffect(() =>{
+      const fetchProfiles = async () => {
+        const profilePromises = notifications.map(async (notification) => {
+          if (notification.followID && !profiles[notification.followID]) { // Sử dụng followID làm key
+            const response = await axios.get(`${followingUserByFollowId}${notification.followID}`);
+            return { userId: notification.followID, profile: response.data };
+          }
+          return null;
+        });
+    
+        const profileResults = await Promise.all(profilePromises);
+        const newProfiles = profileResults.reduce((acc, item) => {
+          if (item) acc[item.userId] = item.profile;
+          return acc;
+        }, {});
+    
+        setProfiles((prev) => ({ ...prev, ...newProfiles }));
+      };
+    
+      if (notifications.length > 0) {
+        fetchProfiles();
+      }
+    
+
+      audioRef.current.play().catch(error => {
+        console.log(error)
+      })
+    },[notifications]);
+
+
+
     const CustomizedMenu = styled(Menu)(() => ({  
         '& .MuiPaper-root': {
           backgroundColor: theme.backgroundColor,
-          boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.5)',
+          boxShadow: '0px 4px 20px rgba(77, 77, 77, 0.5)',
           color: theme.color,
           border: theme.borderColor,
         },
@@ -54,24 +128,48 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
             setValue(newValue);
         };
         return (
-            <BottomNavigation sx={{ width: 500 }} value={value} onChange={handleChange}>
+          <>
+
+            <BottomNavigation sx={{ width: 500 , backgroundColor : theme.backgroundColor }} value={value} onChange={handleChange} showLabels>
             <BottomNavigationAction
-              label="Recents"
-              value="recents"
-              icon={<RestoreIcon />}
+              label="All"
+              value="All"
+              icon={<AllInboxIcon />}
+              sx={{ color: theme.color }} // Đổi màu chữ và icon
             />
             <BottomNavigationAction
-              label="Favorites"
-              value="favorites"
-              icon={<FavoriteIcon />}
+              label="Messages"
+              value="Messages"
+              icon={<ChatIcon />}
+              sx={{ color: theme.color }} // Đổi màu chữ và icon
             />
-            <BottomNavigationAction
-              label="Nearby"
-              value="nearby"
-              icon={<LocationOnIcon />}
-            />
-            <BottomNavigationAction label="Folder" value="folder" icon={<FolderIcon />} />
           </BottomNavigation>
+          {(value === "All") && (
+            <List>
+            {notifications.map((notification, index) => {
+            const profile = notification.followID ? profiles[notification.followID] : null;
+
+            return (
+              <Link to={`profile/${profile?.accountId}`}>
+                <ListItemButton key={index}>
+                  <ListItemAvatar>
+                    <Avatar alt="Profile Picture" src={profile?.profilePicture} />
+                  </ListItemAvatar>
+                  <ListItemText 
+                    primary={`Chào ${user.firstName} ${user.lastName}`} 
+                    secondary={`${notification.message} | ${profile?.firstName} ${profile?.lastName}`}
+                    primaryTypographyProps={{ sx: { color: theme.color } }}
+                    secondaryTypographyProps={{ sx: { color:  theme.color2 } }}
+                  />
+                </ListItemButton>
+              </Link>
+            );
+          })}
+
+          </List>
+          )}
+
+          </>
         )
       }  
     
@@ -107,7 +205,7 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : 'false'}
             >
-        <Badge color="secondary" badgeContent={10} >
+        <Badge color="secondary" badgeContent={newNotiCount} >
             
             <MailIcon sx={{ width: 30, height: 30 , color : theme.color}}/>
             
