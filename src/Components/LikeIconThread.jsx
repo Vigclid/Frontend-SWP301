@@ -2,32 +2,32 @@ import React, { useEffect, useState, useContext } from "react";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import { ThemeContext } from "./Themes/ThemeProvider.tsx";
-import { CheckLikeStatus, GetLikeCount } from "../API/ArtworkAPI/GET.tsx";
-import { ToggleLike } from "../API/ArtworkAPI/POST.tsx";
+import { CheckLikeStatus, GetLikeCount } from "../API/ForumAPI/GET.tsx";
+import { ToggleLike } from "../API/ForumAPI/POST.tsx";
 
-export default function LikeIconComponent({ userID, artworkID }) {
+export default function LikeIconComponent({ userID, threadID }) {
   const { theme } = useContext(ThemeContext);
   const [isLikeClicked, setIsLikeClicked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
-      // Lấy trạng thái like và số like ban đầu
+  // Lấy trạng thái like và số like ban đầu
   useEffect(() => {
     const fetchData = async () => {
-      if (userID && artworkID) {
-        const status = await CheckLikeStatus(userID, artworkID);
-      // Kiểm tra trạng thái like ban đầu
+      if (userID && threadID) {
+        const status = await CheckLikeStatus(userID, threadID);
+        console.log("Initial like status:", status); // Kiểm tra trạng thái like ban đầu
         setIsLikeClicked(status);
-        const count = await GetLikeCount(artworkID);
-      // Kiểm tra số like ban đầu
+        const count = await GetLikeCount(threadID);
+        console.log("Initial like count:", count); // Kiểm tra số like ban đầu
         setLikeCount(count);
       }
     };
     fetchData();
-  }, [userID, artworkID]);
+  }, [userID, threadID]);
 
   // Xử lý sự kiện click like
   const handleLikeClick = async () => {
-    const response = await ToggleLike(userID, artworkID);
+    const response = await ToggleLike(userID, threadID);
     console.log("ToggleLike response:", response); // Kiểm tra dữ liệu trả về từ API
     if (response) {
       setIsLikeClicked(response.isLike);

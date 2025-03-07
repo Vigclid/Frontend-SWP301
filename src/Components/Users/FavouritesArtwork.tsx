@@ -11,31 +11,35 @@ import { Artwork } from "../../Interfaces/ArtworkInterfaces";
 import { PlaceHoldersImageCard } from "./PlaceHolders.jsx";
 import { Link } from "react-router-dom";
 
-const savedAuth = sessionStorage.getItem("auth");
-const userInSession = savedAuth ? JSON.parse(savedAuth) : null;
-const userId = userInSession?.userId;
-console.log("userId is:" + userId);
+interface FavouritesArtworkProps {
+  userId?: number;
+}
 
-export default function FavouritesArtwork() {
+export default function FavouritesArtwork({ userId }: FavouritesArtworkProps) {
   const { theme } = useContext(ThemeContext);
   const [currentPage, setCurrentPage] = useState(1);
   const imagesPerPage = 30;
   const [artworkList, SetArtworkList] = useState<Artwork[]>([]);
 
-  const handleChangePage = (event, value) => {
-    setCurrentPage(value);
-  };
+  // Retrieve userId from session storage if not provided as a prop
+  const savedAuth = sessionStorage.getItem("auth");
+  const userInSession = savedAuth ? JSON.parse(savedAuth) : null;
+  const effectiveUserId = userId || userInSession?.userId;
 
   useEffect(() => {
     const getArtworks = async () => {
-      let artworkList = await GetFavouritesArtworks(userId);
-      const indexOfLastImage = currentPage * imagesPerPage;
-      const indexOfFirstImage = indexOfLastImage - imagesPerPage;
-      const currentImages = artworkList?.slice(indexOfFirstImage, indexOfLastImage);
-      SetArtworkList(currentImages ? currentImages : []);
+      if (effectiveUserId) {
+        console.log("Fetching favourites for userId:", effectiveUserId);
+        let artworkList = await GetFavouritesArtworks(effectiveUserId);
+        console.log("Artworks received:", artworkList);
+        const indexOfLastImage = currentPage * imagesPerPage;
+        const indexOfFirstImage = indexOfLastImage - imagesPerPage;
+        const currentImages = artworkList?.slice(indexOfFirstImage, indexOfLastImage);
+        SetArtworkList(currentImages ? currentImages : []);
+      }
     };
     getArtworks();
-  }, [currentPage]); // Thêm currentPage vào dependency để cập nhật khi đổi trang
+  }, [currentPage, effectiveUserId]);
 
   function ArtWorkList() {
     return (
@@ -88,7 +92,6 @@ export default function FavouritesArtwork() {
             <Box className="boxlistimage">{artworkList.length !== 0 ? <ArtWorkList /> : <PlaceHoldersImageCard />}</Box>
           </div>
         </div>
-        <div className="pagination"></div>
       </Box>
     </div>
   );
