@@ -7,6 +7,7 @@ import Unauthorized from "./ProtectedRoutes/Unauthorized.jsx";
 import ProtectedRoute from "./ProtectedRoutes/ProtectedRoute.tsx";
 import RouterAdmin from "./Components/Admin/RouterAdmin.jsx";
 import ForgotPassword from "./Components/Forms/ForgotPassword.tsx";
+import ChatButton from "./Components/ChatButton";
 
 function App() {
   const role = sessionStorage.getItem("userRole");
@@ -22,6 +23,7 @@ function App() {
         <Route path={`/forgotpassword`} element={<ForgotPassword />} />
         <Route path="/characters/*" element={<Users />}></Route>
       </Routes>
+      <ChatButton />
     </div>
   );
 }
