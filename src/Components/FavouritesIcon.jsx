@@ -67,7 +67,7 @@ export default function FavouritesIcon({ userID, artworkID }) {
           ))}
 
           <h4 className="addfavourite" style={{ paddingTop: "5px", color: isClicked ? "#ff1876" : theme.color }}>
-            {isClicked ? "Thanks For The Like!" : "Add To Favourites"}
+            {isClicked ? "Thanks For Your Love!" : "Add To Favourites"}
           </h4>
         </button>
       </div>

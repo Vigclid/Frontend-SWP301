@@ -1,27 +1,26 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react'
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Button from '@mui/material/Button';
-import { Link } from 'react-router-dom';
-import { ThemeContext } from '../Themes/ThemeProvider.tsx';
-import CustomizedDrawer from '../StyledMUI/CustomizedDrawer.tsx';
-import AppLogo from '../StyledMUI/AppLogo.jsx';
-import ExpandingSearchBar from '../StyledMUI/CustomizedSearchBar.jsx'
-import CustomizedDropdown from '../StyledMUI/CustomizedDropdown.tsx';
-import Popper from '@mui/material/Popper';
-import Fade from '@mui/material/Fade';
-import LoginForm from '../Forms/LoginForm.jsx';
-import { useHandleClick } from '../../CustomHooks/HandleClick.jsx';
-import { GetCreatorByID } from '../../API/UserAPI/GET.tsx';
-import { Creator } from '../../Interfaces/UserInterface';
-import {GetCurrentPackageByAccountID} from '../../API/PackageAPI/GET.tsx'
-import "../../css/Package.css"
-import PremiumTypography from '../StyledMUI/PremiumTypography.tsx';
-import { CurrentPackage } from '../../Interfaces/Package.ts';
-import ChipDepositeCoin from '../StyledMUI/ChipDepositeCoin.tsx';
-import CustomizedNotificationDropDown from '../StyledMUI/CustomizedNotificationDropDown.tsx';
-
+import React, { useContext, useEffect, useState, useCallback } from "react";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
+import { ThemeContext } from "../Themes/ThemeProvider.tsx";
+import CustomizedDrawer from "../StyledMUI/CustomizedDrawer.tsx";
+import AppLogo from "../StyledMUI/AppLogo.jsx";
+import ExpandingSearchBar from "../StyledMUI/CustomizedSearchBar.jsx";
+import CustomizedDropdown from "../StyledMUI/CustomizedDropdown.tsx";
+import Popper from "@mui/material/Popper";
+import Fade from "@mui/material/Fade";
+import LoginForm from "../Forms/LoginForm.jsx";
+import { useHandleClick } from "../../CustomHooks/HandleClick.jsx";
+import { GetCreatorByID } from "../../API/UserAPI/GET.tsx";
+import { Creator } from "../../Interfaces/UserInterface";
+import { GetCurrentPackageByAccountID } from "../../API/PackageAPI/GET.tsx";
+import "../../css/Package.css";
+import PremiumTypography from "../StyledMUI/PremiumTypography.tsx";
+import { CurrentPackage } from "../../Interfaces/Package.ts";
+import ChipDepositeCoin from "../StyledMUI/ChipDepositeCoin.tsx";
+import CustomizedNotificationDropDown from "../StyledMUI/CustomizedNotificationDropDown.tsx";
 
 export default function Menu({ onCurrentPackageChange }) {
   // Thêm prop callback
@@ -93,14 +92,11 @@ export default function Menu({ onCurrentPackageChange }) {
                 </Link>
               </Button>
 
-              <CustomizedNotificationDropDown
-                user={ user}
-                handleClickAsGuest={handleClick}
-                />
+              <CustomizedNotificationDropDown user={user} handleClickAsGuest={handleClick} />
 
               <Link to={`depositecoin`}>
                 <Button>
-                  <ChipDepositeCoin user={ user}  />
+                  <ChipDepositeCoin user={user} />
                 </Button>
               </Link>
               <CustomizedDropdown handleClickAsGuest={handleClick} user={user} pack={pack} />

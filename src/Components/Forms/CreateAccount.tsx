@@ -75,14 +75,17 @@ export default function CreateAccount() {
   };
 
   const randomPicture = () => {
-    let p1 = "https://res.cloudinary.com/djprssm3o/image/upload/v1740558383/avatar/ffa0b63b-fbc8-4e46-8757-145c6ee80161.jpg";
-    let p2 = "https://res.cloudinary.com/djprssm3o/image/upload/v1740508426/avatar/09ea05ea-a9c6-42f2-9c54-6c39d71967ba.jpg";
-    let p3 = "https://res.cloudinary.com/djprssm3o/image/upload/v1740508431/background/4b6225fc-1c56-4fec-80ef-54d29e32fd9b.jpg";
+    let p1 =
+      "https://res.cloudinary.com/djprssm3o/image/upload/v1740558383/avatar/ffa0b63b-fbc8-4e46-8757-145c6ee80161.jpg";
+    let p2 =
+      "https://res.cloudinary.com/djprssm3o/image/upload/v1740508426/avatar/09ea05ea-a9c6-42f2-9c54-6c39d71967ba.jpg";
+    let p3 =
+      "https://res.cloudinary.com/djprssm3o/image/upload/v1740508431/background/4b6225fc-1c56-4fec-80ef-54d29e32fd9b.jpg";
 
     const pictures = [p1, p2, p3];
     const randomIndex = Math.floor(Math.random() * pictures.length);
     return pictures[randomIndex];
-  }
+  };
   // Account Creation Started Here!
   const { theme } = useContext(ThemeContext);
   const formik = useFormik({
@@ -358,7 +361,7 @@ export default function CreateAccount() {
                 <Grid item xs={12}>
                   <CustomizedTextField
                     id="phone"
-                    label="Your Phone (Optional)"
+                    label="Your Phone"
                     name="phone"
                     autoComplete="phone"
                     fullWidth

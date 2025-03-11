@@ -1,4 +1,4 @@
-  import * as React from "react";
+import * as React from "react";
 import Dialog from "@mui/material/Dialog";
 import "../../css/ArtConfirm.css";
 import { useNavigate } from "react-router-dom";

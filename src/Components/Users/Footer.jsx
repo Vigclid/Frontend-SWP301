@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { Container, Grid, Typography, IconButton, Button } from "@mui/material";
 import { ThemeContext } from "../Themes/ThemeProvider.tsx";
 import EmailIcon from "@mui/icons-material/Email";
@@ -8,19 +8,10 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import SendIcon from "@mui/icons-material/Send";
 import "../../css/Footer.css";
 
 export default function Footer() {
   const { theme } = useContext(ThemeContext);
-  const [email, setEmail] = useState("");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle newsletter subscription
-    console.log("Newsletter subscription:", email);
-    setEmail("");
-  };
 
   return (
     <footer className="footer" style={{ backgroundColor: theme.backgroundColor, color: theme.color }}>
@@ -56,66 +47,38 @@ export default function Footer() {
                 <div className="social-links">
                   <IconButton
                     className="social-icon"
-                    href="https://facebook.com"
+                    href="https://facebook.com/namson03"
                     target="_blank"
                     style={{ color: theme.color }}>
                     <FacebookIcon />
                   </IconButton>
                   <IconButton
                     className="social-icon"
-                    href="https://twitter.com"
-                    target="_blank"
-                    style={{ color: theme.color }}>
-                    <TwitterIcon />
-                  </IconButton>
-                  <IconButton
-                    className="social-icon"
-                    href="https://instagram.com"
+                    href="https://instagram.com/namson.10"
                     target="_blank"
                     style={{ color: theme.color }}>
                     <InstagramIcon />
-                  </IconButton>
-                  <IconButton
-                    className="social-icon"
-                    href="https://linkedin.com"
-                    target="_blank"
-                    style={{ color: theme.color }}>
-                    <LinkedInIcon />
                   </IconButton>
                 </div>
               </div>
             </div>
           </Grid>
 
-          {/* Newsletter Section */}
+          {/* Contact Button Section */}
           <Grid item xs={12} md={4}>
             <div className="footer-section">
-              <Typography className="footer-heading">Newsletter</Typography>
+              <Typography className="footer-heading">Contact Us</Typography>
               <div className="footer-content">
-                <Typography style={{ marginBottom: "16px" }}>Subscribe to our newsletter for updates</Typography>
-                <form onSubmit={handleSubmit} className="newsletter-form">
-                  <input
-                    type="email"
-                    className="newsletter-input"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    style={{
-                      backgroundColor: `rgba(${theme.rgbBackgroundColor}, 0.3)`,
-                      color: theme.color,
-                    }}
-                    required
-                  />
-                  <IconButton
-                    type="submit"
-                    className="newsletter-button"
-                    style={{
-                      color: theme.color,
-                      backgroundColor: `rgba(${theme.rgbBackgroundColor}, 0.5)`,
-                    }}>
-                    <SendIcon />
-                  </IconButton>
-                </form>
+                <Typography style={{ marginBottom: "16px" }}>Click below to send us an email</Typography>
+                <Button
+                  variant="contained"
+                  href="mailto:namson1821@gmail.com"
+                  style={{
+                    backgroundColor: `rgba(${theme.rgbBackgroundColor}, 0.5)`,
+                    color: theme.color,
+                  }}>
+                  Contact Us
+                </Button>
               </div>
             </div>
           </Grid>
