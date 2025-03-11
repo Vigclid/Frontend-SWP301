@@ -7,6 +7,7 @@ import { GetCreatorByID } from "../../API/UserAPI/GET.tsx";
 import { Creator } from "../../Interfaces/UserInterface.ts";
 import "../../css/Thread.css";
 import LikeIconThread from "../LikeIconThread.jsx";
+import CommentsThread from "../CommentsThread.jsx";
 
 const getTimeDifference = (dateCreated: string) => {
   try {
@@ -140,13 +141,14 @@ const ThreadPage = () => {
 
         <div className="thread-stats">
           <div className="thread-stat-item">
-            <Typography className="thread-stat-label" sx={{ color: theme.color }}>
+            {/* <Typography className="thread-stat-label" sx={{ color: theme.color }}>
               Likes
             </Typography>
             <Typography className="thread-stat-value" sx={{ color: theme.color }}>
               {thread.likes}
-            </Typography>
-            <LikeIconThread userID={creator?.CreatorId} threadID={threadId} />
+            </Typography> */}
+
+            <LikeIconThread userID={creator?.userId} threadID={thread.threadID} />
           </div>
           <div className="thread-stat-item">
             <Typography className="thread-stat-label" sx={{ color: theme.color }}>
@@ -161,6 +163,9 @@ const ThreadPage = () => {
         {/* Comments section placeholder */}
         <Box sx={{ mt: 4, textAlign: "center" }}>
           <Typography sx={{ color: theme.color, opacity: 0.7 }}>Comments functionality coming soon...</Typography>
+        </Box>
+        <Box sx={{ mt: 4 }}>
+          <CommentsThread />
         </Box>
       </Box>
     </Box>

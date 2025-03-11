@@ -32,6 +32,7 @@ import Forum from "./Forum.tsx";
 import ThreadList from "./ThreadList.tsx";
 import ThreadPage from "./ThreadPage.tsx";
 import ThreadUpload from "./ThreadUpload.tsx";
+import ChatButton from "../ChatButton.jsx";
 
 export default function Users() {
   return (
@@ -77,6 +78,7 @@ export default function Users() {
         <Outlet />
         {/* Outlet is use to render child components */}
         {/* </div> */}
+        <ChatButton />
         <Footer />
       </Background>
     </div>

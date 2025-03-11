@@ -5,6 +5,7 @@ import { ThemeContext } from "../Themes/ThemeProvider.tsx";
 import CardContent from "@mui/material/CardContent";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DiscountIcon from "@mui/icons-material/Discount";
+import LoyaltyIcon from "@mui/icons-material/Loyalty";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { CurrentPackage, Package } from "../../Interfaces/Package.ts";
 import { GetCurrentPackageByAccountID, GetPackage } from "../../API/PackageAPI/GET.tsx";
@@ -50,18 +51,18 @@ export default function PackagePage({ onCurrentPackageChange }) {
   const benefitsMap = {
     2: [
       { icon: <CloudUploadIcon />, text: "Upload 50 Art on Month" },
-      { icon: <DiscountIcon />, text: "Get 95% off on all Art" },
+      { icon: <DiscountIcon />, text: "Receive 85% on art sales" },
+      { icon: <LoyaltyIcon />, text: "Get exclusive tag Artisan" },
     ],
     3: [
       { icon: <CloudUploadIcon />, text: "Upload 100 Art on Month" },
-      { icon: <DiscountIcon />, text: "Get 90% off on all Art" },
-      { icon: <AccountBalanceWalletIcon />, text: "Cash out coin with Withdrawal feature" },
+      { icon: <DiscountIcon />, text: "Receive 90% on art sales" },
+      { icon: <LoyaltyIcon />, text: "Get exclusive tag Artovator" },
     ],
     4: [
       { icon: <CloudUploadIcon />, text: "Upload Unlimited Art" },
-      { icon: <DiscountIcon />, text: "Get 85% off on all Art" },
-      { icon: <AccountBalanceWalletIcon />, text: "Cash out coin with Withdrawal feature" },
-      { icon: <DiscountIcon />, text: "Exclusive access to premium content" },
+      { icon: <DiscountIcon />, text: "Receive 95% on art sales" },
+      { icon: <LoyaltyIcon />, text: "Get exclusive tag ArtMaster" },
     ],
     // Add more packages as needed
   };
@@ -196,12 +197,17 @@ export default function PackagePage({ onCurrentPackageChange }) {
           flexDirection: "column",
           justifyContent: "center",
           pl: 2,
+          marginRight: "220px",
         }}>
         <Typography variant="h4" color="white" sx={{ fontFamily: "UniSpace", mb: 1 }}>
           {service.typeRankName}
         </Typography>
-        <Typography variant="body1" color="white" sx={{ mb: 2 }}>
-          Here is some additional detail or offer description related to the package.
+        <Typography variant="body1" color="white" sx={{ mb: 2, fontSize: "1.2rem" }}>
+          Own the Artist rank with full privileges like the Artmaster, along with the Commission feature to receive
+          custom artwork requests from clients.
+          <Typography variant="body1" color="white" sx={{ mb: 2, fontSize: "1.2rem" }}>
+            If you’re confident in your artistic creativity, let us know!
+          </Typography>
         </Typography>
         <Button
           variant="outlined"
