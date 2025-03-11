@@ -87,12 +87,14 @@ export default function Menu({ onCurrentPackageChange }) {
               ) : (
                 ""
               )}
+
               <Button onClick={user === null ? handleClick : undefined} color="inherit">
                 <Link to={user !== null ? "artworkform" : ""}>
                   <h3 style={{ fontWeight: "normal" }}>Publish Your Works</h3>
                 </Link>
               </Button>
-
+              
+              
               <CustomizedNotificationDropDown
                 user={ user}
                 handleClickAsGuest={handleClick}

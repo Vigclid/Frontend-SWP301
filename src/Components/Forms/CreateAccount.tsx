@@ -55,10 +55,6 @@ const switchCustomText = (
 export default function CreateAccount() {
   const [isLoading, setIsLoading] = useState(false);
   const [commission, setCommission] = useState(false);
-  const handleChange = (event) => {
-    const { name, value, checked, type } = event.target;
-    setCommission(type === "checkbox" ? checked : value);
-  };
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   // Call this function when the form is submitted successfully
@@ -154,12 +150,20 @@ export default function CreateAccount() {
     },
 
     validationSchema: Yup.object({
-      userName: Yup.string().required("Must be 6 characters or more.").min(6, "Must be 6 characters or more"),
-      email: Yup.string().required("We need something to authorize you").min(10, "Must be 10 characters or more"),
+      userName: Yup.string().required("Must be 6 characters or more.").min(6, "Must be 6 characters or more").max(255,"255 characters please!"),
+      email: Yup.string().email('Are you sure this is a REAL email address?').required("Hey! Where's the email, pal?").max(255,"No no, there are no email longer than 255 characters")
+                ,
       password: Yup.string()
         .required("Password! Or we gonna steal your account.")
-        .min(5, "Must be 5 characters or more"),
-      biography: Yup.string().required("Tell the community something about yourself"),
+        .min(6, "Must be 6 characters or more").max(255,"It's stronger than everything I known, my system also, max is 255 characters."),
+      biography: Yup.string().required("Tell the community something about yourself").max(255,"Too much! How famous are you? We only support 255 characters."),
+      phone : Yup.string().required("Please contains your REAL phone to support all feature!")
+      .min(8, "Must be at least 8 and no more than 20 numbers")
+      .max(20,"Must be at least 8 and no more than 20 numbers")
+      .matches(/^\d+$/, "That doesn't look like a phone number"),
+      address: Yup.string().max(255,"@.@ Shipper will really pissed off by this, 255 characters please!"),
+      firstName : Yup.string().max(255,"255 characters only, please!"),
+      lastName : Yup.string().max(255,"255 characters only, please!"),
     }),
   });
 
@@ -349,16 +353,9 @@ export default function CreateAccount() {
                   )}
                 </Grid>
                 <Grid item xs={12}>
-                  <FormControlLabel
-                    control={<CustomizedSwitch checked={commission} onChange={handleChange} name="openToCommissions" />}
-                    label={commission ? switchCustomText : "Open to Commissions?"}
-                    style={{ color: theme.color }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
                   <CustomizedTextField
                     id="phone"
-                    label="Your Phone (Optional)"
+                    label="Your Phone"
                     name="phone"
                     autoComplete="phone"
                     fullWidth
