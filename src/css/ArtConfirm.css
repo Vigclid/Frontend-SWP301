@@ -108,3 +108,51 @@
 .dialog-custom .MuiPaper-root {
     background: none !important;
 }
+
+@media (max-width: 768px) {
+    .form {
+        width: 90vw;
+        height: auto;
+        padding: 15px;
+    }
+
+    .form .title {
+        font-size: 20px;
+    }
+
+    .form .input-field {
+        font-size: 18px;
+        height: 45px;
+    }
+
+    .form .checkout-btn {
+        font-size: 18px;
+        padding: 15px 0;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .form {
+        width: 95vw;
+        padding: 10px;
+    }
+
+    .form .title {
+        font-size: 18px;
+    }
+
+    .form .input-field {
+        font-size: 16px;
+        height: 40px;
+    }
+
+    .form .checkout-btn {
+        font-size: 16px;
+        padding: 12px 0;
+    }
+}

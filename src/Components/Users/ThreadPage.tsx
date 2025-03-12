@@ -146,7 +146,7 @@ const ThreadPage = () => {
             <Typography className="thread-stat-value" sx={{ color: theme.color }}>
               {thread.likes}
             </Typography>
-            <LikeIconThread userID={creator?.CreatorId} threadID={threadId} />
+            <LikeIconThread userID={creator?.userId} threadID={threadId} />
           </div>
           <div className="thread-stat-item">
             <Typography className="thread-stat-label" sx={{ color: theme.color }}>

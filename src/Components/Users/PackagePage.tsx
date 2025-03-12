@@ -13,7 +13,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import PackagePaymentConfirm from "./PackagePaymentConfirm.tsx";
 
 export default function PackagePage({ onCurrentPackageChange }) {
-    const { theme, dark } = useContext(ThemeContext);
+    const {theme, dark} = useContext(ThemeContext);
     const [packageService, setPackageService] = useState<Package[]>([]);
     const [currentPackage, setCurrentPackage] = useState<CurrentPackage | null>(null);
     const [loading, setLoading] = useState(false);
@@ -60,19 +60,19 @@ export default function PackagePage({ onCurrentPackageChange }) {
 
     const benefitsMap = {
         2: [
-            { icon: <CloudUploadIcon />, text: "Upload 50 Art on Month" },
-            { icon: <DiscountIcon />, text: "Get 95% off on all Art" },
+            {icon: <CloudUploadIcon/>, text: "Upload 50 Art on Month"},
+            {icon: <DiscountIcon/>, text: "Get 95% off on all Art"},
         ],
         3: [
-            { icon: <CloudUploadIcon />, text: "Upload 100 Art on Month" },
-            { icon: <DiscountIcon />, text: "Get 90% off on all Art" },
-            { icon: <AccountBalanceWalletIcon />, text: "Cash out coin with Withdrawal feature" },
+            {icon: <CloudUploadIcon/>, text: "Upload 100 Art on Month"},
+            {icon: <DiscountIcon/>, text: "Get 90% off on all Art"},
+            {icon: <AccountBalanceWalletIcon/>, text: "Cash out coin with Withdrawal feature"},
         ],
         4: [
-            { icon: <CloudUploadIcon />, text: "Upload Unlimited Art" },
-            { icon: <DiscountIcon />, text: "Get 85% off on all Art" },
-            { icon: <AccountBalanceWalletIcon />, text: "Cash out coin with Withdrawal feature" },
-            { icon: <DiscountIcon />, text: "Exclusive access to premium content" },
+            {icon: <CloudUploadIcon/>, text: "Upload Unlimited Art"},
+            {icon: <DiscountIcon/>, text: "Get 85% off on all Art"},
+            {icon: <AccountBalanceWalletIcon/>, text: "Cash out coin with Withdrawal feature"},
+            {icon: <DiscountIcon/>, text: "Exclusive access to premium content"},
         ],
     };
 
@@ -82,25 +82,30 @@ export default function PackagePage({ onCurrentPackageChange }) {
         return (
             <Card
                 className="cardRank"
-                sx={{ backgroundImage: 'url("/images/RankCard.png")', borderRadius: "20px", position: "relative" }}
+                sx={{backgroundImage: 'url("/images/RankCard.png")', borderRadius: "20px", position: "relative"}}
             >
-                <Box sx={{ position: "absolute", top: "-15px", right: "35px" }}>
-                    <img src={rankImage} alt="rank" style={{ marginLeft: "190px", opacity: "0.8" }} />
+                <Box sx={{position: "absolute", top: "-15px", right: "35px"}}>
+                    <img src={rankImage} alt="rank" style={{marginLeft: "190px", opacity: "0.8"}}/>
                 </Box>
                 <CardContent>
                     <Box
-                        sx={{ display: "flex", flexDirection: "column", margin: "40px 20px 20px 20px", alignItems: "flex-start" }}
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            margin: "40px 20px 20px 20px",
+                            alignItems: "flex-start"
+                        }}
                     >
                         <Typography
                             gutterBottom
                             variant="h4"
                             color="white"
                             className="package-title"
-                            sx={{ fontFamily: "UniSpace" }}
+                            sx={{fontFamily: "UniSpace"}}
                         >
                             {service.typeRankName}
                         </Typography>
-                        <Typography variant="body1" color="white" sx={{ marginTop: "-10px" }}>
+                        <Typography variant="body1" color="white" sx={{marginTop: "-10px"}}>
                             {service.price === 0 ? "Free" : `${service.price}$ / month`}
                         </Typography>
                     </Box>
@@ -116,7 +121,7 @@ export default function PackagePage({ onCurrentPackageChange }) {
                     >
                         <Stack spacing={1}>
                             {benefits.map((benefit, index) => (
-                                <Box key={index} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                <Box key={index} sx={{display: "flex", alignItems: "center", gap: 1}}>
                                     {benefit.icon}
                                     <Typography>{benefit.text}</Typography>
                                 </Box>
@@ -191,7 +196,7 @@ export default function PackagePage({ onCurrentPackageChange }) {
         >
             <Box
                 sx={{
-                    width: { xs: "35%", md: "30%" },
+                    width: {xs: "35%", md: "30%"},
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
@@ -201,22 +206,22 @@ export default function PackagePage({ onCurrentPackageChange }) {
                 <img
                     src="/images/RankElement4.png"
                     alt="premium"
-                    style={{ width: "100%", height: "auto", objectFit: "contain" }}
+                    style={{width: "100%", height: "auto", objectFit: "contain"}}
                 />
             </Box>
             <Box
                 sx={{
-                    width: { xs: "65%", md: "70%" },
+                    width: {xs: "65%", md: "70%"},
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
                     pl: 2,
                 }}
             >
-                <Typography variant="h4" color="white" sx={{ fontFamily: "UniSpace", mb: 1 }}>
+                <Typography variant="h4" color="white" sx={{fontFamily: "UniSpace", mb: 1}}>
                     {service.typeRankName}
                 </Typography>
-                <Typography variant="body1" color="white" sx={{ mb: 2 }}>
+                <Typography variant="body1" color="white" sx={{mb: 2}}>
                     Here is some additional detail or offer description related to the package.
                 </Typography>
                 <Button
@@ -226,7 +231,7 @@ export default function PackagePage({ onCurrentPackageChange }) {
                         border: "solid 1.5px white",
                         borderRadius: "5px",
                         alignSelf: "flex-start",
-                        ":hover": { border: "solid 1px #FFCF50", color: "#FFCF50" },
+                        ":hover": {border: "solid 1px #FFCF50", color: "#FFCF50"},
                     }}
                     onClick={() => handleOpen(service)}
                 >
@@ -250,14 +255,14 @@ export default function PackagePage({ onCurrentPackageChange }) {
                     marginBottom: "15px",
                 }}
             >
-                <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 100 }} open={loading}>
-                    <CircularProgress color="inherit" />
+                <Backdrop sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 100}} open={loading}>
+                    <CircularProgress color="inherit"/>
                 </Backdrop>
-                <Box sx={{ padding: "2% 2% 0% 2%" }}>
+                <Box sx={{padding: "2% 2% 0% 2%"}}>
                     <Typography variant="h4" color={theme.color}>
                         Account Packages
                     </Typography>
-                    <Divider sx={{ borderColor: theme.color }} />
+                    <Divider sx={{borderColor: theme.color}}/>
                 </Box>
 
                 <Box className="packageContainer">
@@ -286,7 +291,7 @@ export default function PackagePage({ onCurrentPackageChange }) {
                         </>
                     )}
                 </Box>
-                <Box sx={{ padding: "0% 2% 2% 2%" }}>{packageService[4] && renderArtistCard(packageService[4])}</Box>
+                <Box sx={{padding: "0% 2% 2% 2%"}}>{packageService[4] && renderArtistCard(packageService[4])}</Box>
             </Box>
             <PackagePaymentConfirm
                 open={open}
