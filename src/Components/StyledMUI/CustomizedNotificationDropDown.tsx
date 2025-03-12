@@ -78,7 +78,7 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
       return () => {
         if (stompClient) stompClient.disconnect();
       };
-    }, [user.userId]);
+    }, [user]);
 
 
     useEffect(() =>{
@@ -163,7 +163,7 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
                     <Avatar alt="Profile Picture" src={profile?.profilePicture} />
                   </ListItemAvatar>
                   <ListItemText 
-                    primary={`Chào ${user.firstName} ${user.lastName}`} 
+                    primary={`Hello ${user.firstName} ${user.lastName}`} 
                     secondary={`${notification.message} | ${profile?.firstName} ${profile?.lastName}`}
                     primaryTypographyProps={{ sx: { color: theme.color } }}
                     secondaryTypographyProps={{ sx: { color:  theme.color2 } }}

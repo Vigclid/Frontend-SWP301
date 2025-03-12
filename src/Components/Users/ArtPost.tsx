@@ -331,7 +331,7 @@ export default function PostWork() {
               width: "60%",
             }}>
             <LikeIcon userID={savedUser?.userId} artworkID={id} />
-            <FavouritesIcon userID={savedUser?.userId} artworkID={id} />
+            <FavouritesIcon userID={userInSession?.userId} artworkID={id} />
             <div className="button-comment">
               <a href="#comment" style={{ display: "flex" }}>
                 <CommentIcon sx={{ color: theme.color, fontSize: 35, marginRight: "5px" }} />

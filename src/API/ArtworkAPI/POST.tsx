@@ -15,7 +15,6 @@ export async function ToggleFavourite(userID: number, artworkID: string) {
   }
 }
 
-
 export async function ToggleLike(userID: number, artworkID: number) {
   try {
     const response = await axios.post(`${API_URL}/like/toggle`, {

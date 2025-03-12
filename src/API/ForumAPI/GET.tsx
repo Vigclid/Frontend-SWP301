@@ -101,7 +101,7 @@ export async function GetThreadByID(threadID: string) {
 
 export async function CheckLikeStatus(userID: number, threadID: number) {
   try {
-    const response = await axios.get(`${threadurl}/like/status/${userID}/${threadID}`);
+    const response = await axios.get(`${threadurl}like/${userID}/${threadID}`);
     return response.data; // Trả về true/false
   } catch (error) {
     return false;
@@ -110,7 +110,7 @@ export async function CheckLikeStatus(userID: number, threadID: number) {
 
 export const GetLikeCount = async (threadID: number) => {
   try {
-    const response = await fetch(`${threadurl}/likecount/${threadID}`);
+    const response = await fetch(`${threadurl}likecount/${threadID}`);
     if (response.ok) {
       return await response.json(); // số lượng like
     }

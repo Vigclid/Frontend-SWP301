@@ -187,8 +187,8 @@ export default function ProfileUser() {
     },
 
     validationSchema: Yup.object({
-      firstName: Yup.string().required("We need your first name"),
-      lastName: Yup.string().required("Yo!!! we need to know you"),
+      firstName: Yup.string().max(255,"255 characters only, please!"),
+      lastName: Yup.string().max(255,"255 characters only, please!"),
       date: Yup.date()
           .transform(function (value, originalValue) {
             if (this.isType(value)) {
@@ -198,14 +198,17 @@ export default function ProfileUser() {
             return result;
           })
           .typeError("please enter a valid date")
-          .required()
           .max(new Date().getFullYear(), "You can not born in the future!!"),
 
-      address: Yup.string().required("Where are you from?"),
+      address: Yup.string()
+      .max(255,"@.@ Shipper will really pissed off by this, 255 characters please!"),
       biography: Yup.string()
-          .required("Tell the community something about yourself")
-          .max(250, "Too much! We don't have enough money to handle that much!"),
-      phoneNumber: Yup.string().required("How should we contract you, genius? "),
+      .required("Tell the community something about yourself").
+      max(255,"Too much! How famous are you? We only support 255 characters."),
+      phoneNumber: Yup.string().required("Please contains your REAL phone to support all feature!")
+      .min(8, "Must be at least 8 and no more than 20 numbers")
+      .max(20,"Must be at least 8 and no more than 20 numbers")
+      .matches(/^\d+$/, "That doesn't look like a phone number"),
     }),
 
     onSubmit: (values) => {
