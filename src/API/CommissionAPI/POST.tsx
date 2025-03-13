@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { ICommissionForm, ICommissionID } from '../../Interfaces/CommissionForm'
 
-const commissionBaseUrl = "http://localhost:7233/api/Commission";
+const commissionBaseUrl = "http://localhost:7233/api/commissions";
 const headers = {
     'Content-Type': 'application/json',
 };
