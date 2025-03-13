@@ -95,7 +95,7 @@ const AppScirpt = "https://script.googleusercontent.com/macros/echo?user_content
     <Box>
       <Box className={success  ? "successed-box" : "failed-box"}>
         <Typography variant="h5" className={success  ? "gradient-text-successed" : "gradient-text-failed"} sx={{mb : 5}}>
-          DEPOSITE COIN
+          DEPOSIT COIN
         </Typography>
         <Card sx={{ position: "relative", width: 250, height: 250, mb: 5 ,overflow: "visible" }}>
           <CardMedia
@@ -112,7 +112,7 @@ const AppScirpt = "https://script.googleusercontent.com/macros/echo?user_content
           <span className="corner BR"></span>
         </Card>
         <Typography variant="h5">Scan QR 
-                    to deposite coins</Typography>
+                    to deposit coins</Typography>
         <Typography variant="h6" className="VND-COIN">25.000 VND = 1 COIN </Typography>
 
       </Box> 

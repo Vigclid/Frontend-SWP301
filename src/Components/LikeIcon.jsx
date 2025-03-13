@@ -15,10 +15,10 @@ export default function LikeIconComponent({ userID, artworkID }) {
     const fetchData = async () => {
       if (userID && artworkID) {
         const status = await CheckLikeStatus(userID, artworkID);
-        console.log("Initial like status:", status); // Kiểm tra trạng thái like ban đầu
+        // Kiểm tra trạng thái like ban đầu
         setIsLikeClicked(status);
         const count = await GetLikeCount(artworkID);
-        console.log("Initial like count:", count); // Kiểm tra số like ban đầu
+        // Kiểm tra số like ban đầu
         setLikeCount(count);
       }
     };
@@ -65,7 +65,7 @@ export default function LikeIconComponent({ userID, artworkID }) {
         </button>
         {/* Hiển thị số like */}
         <h4 style={{ paddingTop: "13px", color: theme.color, marginLeft: "10px", fontSize: "18px" }}>
-          {likeCount} likes
+          {likeCount} Likes
         </h4>
       </div>
     </div>

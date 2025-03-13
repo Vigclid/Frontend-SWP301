@@ -16,7 +16,7 @@ import { GetCreatorByID } from '../../API/UserAPI/GET.tsx';
 import { GetCreatorByAccountID } from '../../API/UserAPI/GET.tsx';
 import { Creator } from '../../Interfaces/UserInterface';
 import { CreateCommissionForm, GetCommissionID } from '../../API/CommissionAPI/POST.tsx';
-import { ICommissionID } from '../../Interfaces/CommissionForm.ts';
+import { ICommissionForm, ICommissionID } from '../../Interfaces/CommissionForm.ts';
 
 
 export default function CommissionForm({ onClose }) {
@@ -66,22 +66,22 @@ export default function CommissionForm({ onClose }) {
   //   getUserArtworks()
   // }, [id])
 
-  
+
   useEffect(() => {
       const getReciever = async () => {
         try {
           const fetchedReciever = await GetCreatorByAccountID(id ?? "0");
           console.log("🟢 Người nhận request (Full Data):", fetchedReciever);
-          
+
           if (fetchedReciever) {
             setReciever(fetchedReciever);
-            formik.setFieldValue("receiver", fetchedReciever.userId); 
+            formik.setFieldValue("receiver", fetchedReciever.userId);
           }
         } catch (error) {
           console.error("❌ Lỗi khi lấy dữ liệu người nhận:", error);
         }
       };
-  
+
     const fetchCommissionID = async () => {
       try {
         let fetchedCommissionID: ICommissionID | undefined = await GetCommissionID();
@@ -90,7 +90,7 @@ export default function CommissionForm({ onClose }) {
         console.error("Error fetching commission ID:", error);
       }
     };
-  
+
     getReciever();
     fetchCommissionID();
   }, [id]);
@@ -111,12 +111,12 @@ export default function CommissionForm({ onClose }) {
     }),
     onSubmit: async (values) => {
       console.log("🔍 Dữ liệu gửi lên API:", values); // Kiểm tra dữ liệu trước khi gửi API
-    
+
       if (!values.requestor || !values.receiver) {
         console.error("❌ requestor hoặc receiver bị rỗng! Kiểm tra lại dữ liệu.");
         return;
       }
-    
+
       try {
         setLoading(true);
         const response = await CreateCommissionForm(values);
@@ -135,7 +135,7 @@ export default function CommissionForm({ onClose }) {
         setLoading(false);
       }
     }
-    
+
   });
 
 
@@ -201,7 +201,7 @@ export default function CommissionForm({ onClose }) {
                   autoComplete="description"
                   fullWidth
                   multiline // Thêm thuộc tính multiline
-                  rows={5} // Đặt số hàng mong muốn    
+                  rows={5} // Đặt số hàng mong muốn
                   value={formik.values.description}
                   onChange={formik.handleChange}
                 />

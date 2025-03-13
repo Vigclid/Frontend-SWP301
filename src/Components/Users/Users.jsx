@@ -28,6 +28,11 @@ import SearchHome from "./MainPage/SearchHome.tsx";
 import DepositeCoin from "./DepositeCoin.tsx";
 import zIndex from "@mui/material/styles/zIndex";
 import FavouritesArtwork from "./FavouritesArtwork.tsx";
+import Forum from "./Forum.tsx";
+import ThreadList from "./ThreadList.tsx";
+import ThreadPage from "./ThreadPage.tsx";
+import ThreadUpload from "./ThreadUpload.tsx";
+import ChatButton from "../ChatButton.jsx";
 
 export default function Users() {
   return (
@@ -43,12 +48,10 @@ export default function Users() {
           <Route path={`artwork/update/:id`} element={<UpdateArtwork />} />
           <Route path={`/SearchHome/Tags/:tagName`} element={<SearchHome />} />
 
-          <Route element={<ProtectedRoute allowedRoles={["AT", "AD"]} />}>
-          </Route>
-
+          <Route element={<ProtectedRoute allowedRoles={["AT", "AD"]} />}></Route>
 
           <Route path={`artwork/:id/payment`} element={<Payment />} />
-          <Route path={`Depositecoin`} element={<DepositeCoin  />} />
+          <Route path={`Depositecoin`} element={<DepositeCoin />} />
           <Route path={`yourcommision`} element={<YourCommission />} />
           <Route path={`yourrequest`} element={<YourRequest />} />
           <Route path={`dashboarduser`} element={<DashboardUser />} />
@@ -59,6 +62,9 @@ export default function Users() {
           <Route path={`artworkform`} element={<UploadArtwork />} />
           <Route path={`profile/:id/commission`} element={<CommissionForm />} />
           <Route path={`favourite`} element={<FavouritesArtwork />} />
+          <Route path={`forum`} element={<Forum />} />
+          <Route path={`forum/:topicID`} element={<ThreadList />} />
+          <Route path={`forum/:topicID/:threadId`} element={<ThreadPage />} />
 
           <Route path={`artwordrecomment`} element={<SeeMoreOfArt1 />} />
           <Route path={`userrecomment`} element={<SeeMoreUser />} />
@@ -72,6 +78,7 @@ export default function Users() {
         <Outlet />
         {/* Outlet is use to render child components */}
         {/* </div> */}
+        <ChatButton />
         <Footer />
       </Background>
     </div>

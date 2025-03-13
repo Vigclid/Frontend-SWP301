@@ -11,7 +11,7 @@ import Divider from '@mui/material/Divider';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { Link, useNavigate } from 'react-router-dom';
-import { useFormik } from 'formik';
+import { useFormik, validateYupSchema } from 'formik';
 import * as Yup from "yup";
 import axios from "axios"
 import Background from '../Themes/Background.jsx';
@@ -111,8 +111,14 @@ export default function ForgotPassword() {
     },
 
     validationSchema: Yup.object({
-      email: Yup.string().required("We need something to authorize you").min(10, "Must be 10 characters or more"),
-      password: Yup.string().required("Password! Or we gonna steal your account.").min(5, "Must be 5 characters or more"),
+      email: Yup.string().email('Are you sure this is a REAL email address?').required("Hey! Where's the email, pal?").max(255,"No no, there are no email longer than 255 characters"),
+      password: Yup.string()
+              .required("Password! Or we gonna steal your account.")
+              .min(6, "Must be 6 characters or more").max(255,"It's stronger than everything I known, my system also, max is 255 characters."),
+      firstName: Yup.string()
+      .required("Password! Or we gonna steal your account.")
+      .min(6, "Must be 6 characters or more").max(255,"It's stronger than everything I known, my system also, max is 255 characters."),
+   
     }),
   })
 
@@ -136,46 +142,46 @@ export default function ForgotPassword() {
   const [load,setLoad] = useState<boolean>(false);
   
   const handleSendCode = async() => {
-    const emailValue = formik.values.email;
-    if (emailValue) {
-      // Thực hiện xử lý với mã OTP 6 số đã nhập
 
-        const headers = {
-          'Content-Type': 'application/json',
-        };
-        
-        
-        if (otpButton) {
-          setLoad(true);
-          response = await axios.post(`${getOTPURL}`, {'email':emailValue}, { headers }); //GET OTP FROM SERVER
+    const emailSchema = Yup.string()
+    .email("Are you sure this is a REAL email address?")
+    .required("Hey! Where's the email, pal?")
+    .max(250, "No no, there are no email longer than 250 characters");
 
-          setOtpButton(false);
-          setLoad(false);
+  try {
+      await emailSchema.validate(formik.values.email);
+      
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      
+      if (otpButton) {
+        setLoad(true);
+        response = await axios.post(`${getOTPURL}`, {'email':formik.values.email}, { headers }); //GET OTP FROM SERVER
+
+        setOtpButton(false);
+        setLoad(false);
+      } else {
+
+        if (String(response.data) === String(otp)) {
+          setActiveOTP(true);
         } else {
-
-          if (String(response.data) === String(otp)) {
-            setActiveOTP(true);
-          } else {
-            formik.setErrors({ email: 'Wrong OTP!' });
-            // Xóa lỗi sau 5 giây
-            setTimeout(() => {
-              formik.setErrors({ email: '' });
-            }, 2000);
-          }
+          formik.setErrors({ email: 'Wrong OTP!' });
+          setTimeout(() => {
+            formik.setErrors({ email: '' });
+          }, 2000);
         }
-        
-        
-
-      // Gọi các hàm khác hoặc thực hiện các thao tác cần thiết
-    } else {
-      formik.setErrors({ email: 'Email is required' });
+      }
+  } catch (err) {
+      formik.setErrors({ email: err.errors });
         // Xóa lỗi sau 5 giây
         setTimeout(() => {
           formik.setErrors({ email: '' });
         }, 2000);
+  }
 
-    }
-  };
+};
 
 
 
