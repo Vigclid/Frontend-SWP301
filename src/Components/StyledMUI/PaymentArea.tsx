@@ -8,7 +8,8 @@ import axios from "axios";
 import {PostPayment} from "../../API/PaymentAPI/POST.tsx"
 import LoadingScreen from '../LoadingScreens/LoadingScreenSpokes.jsx';
 import CustomizedPopperPayment from "./CustomizedPopperPayment.tsx";
-
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
+import { grey } from "@mui/material/colors";
 
 const MY_BANK = {
 
@@ -114,7 +115,8 @@ const AppScirpt = "https://script.googleusercontent.com/macros/echo?user_content
         <Typography variant="h5">Scan QR 
                     to deposit coins</Typography>
         <Typography variant="h6" className="VND-COIN">25.000 VND = 1 COIN </Typography>
-
+        <Typography variant="h6" className="gradient-text-successed"><ReportGmailerrorredIcon style={{ transform: 'translateY(5px)', color: 'red' }}/>Content to transfer: {userInSession.accountId+userInSession.phoneNumber}</Typography>
+        <Typography variant="body2" >NOTE: If the you already bank but NOTHING happens, please get the transaction code from the bill, check it on page "Trasaction History" to get the coin!</Typography>
       </Box> 
     </Box>
   );

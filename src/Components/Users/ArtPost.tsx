@@ -41,11 +41,6 @@ import Dialog from "@mui/material/Dialog";
 import ReportForm from "./UserForms/ReportForm.tsx";
 import FavouritesIcon from "../FavouritesIcon.jsx";
 
-// Attempt to retrieve the auth state from sessionStorage
-const savedAuth = sessionStorage.getItem("auth");
-// Check if there's any auth data saved and parse it
-const userInSession: Creator = savedAuth ? JSON.parse(savedAuth) : "";
-// Now 'auth' contains your authentication state or null if there's nothing saved
 
 export default function PostWork() {
   const colors = ["#82c87e", "#c07ec8", "#c89c7e", "#7E8DC8", "#C07EC8", "#C87E8A"];
@@ -331,7 +326,7 @@ export default function PostWork() {
               width: "60%",
             }}>
             <LikeIcon userID={savedUser?.userId} artworkID={id} />
-            <FavouritesIcon userID={userInSession?.userId} artworkID={id} />
+            <FavouritesIcon userID={savedUser?.userId} artworkID={id} />
             <div className="button-comment">
               <a href="#comment" style={{ display: "flex" }}>
                 <CommentIcon sx={{ color: theme.color, fontSize: 35, marginRight: "5px" }} />
@@ -421,7 +416,7 @@ export default function PostWork() {
                 },
               }}>
               <ReportForm
-                reporterId={Number(userInSession.userId)}
+                reporterId={Number(savedUser.userId)}
                 reportedId={Number(creator?.userId)}
                 artworkId={Number(artwork?.artworkID)}
                 onClose={() => setOpenReport(false)}

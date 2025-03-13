@@ -175,7 +175,7 @@ export default function ProfileUser() {
   // EDIT PROFILE
 
   const F4k = useFormik({
-    validateOnChange: false,
+    validateOnChange: true,
     validateOnBlur: false,
     initialValues: {
       firstName: userInSession?.firstName,
@@ -921,7 +921,7 @@ export default function ProfileUser() {
 
                     <Grid item xs={6}>
                       <CustomizedTextField
-                          label="Date (dd/MM/yyyy) "
+                          label="Date (yyyy/MM/dd) "
                           name="date"
                           autoComplete="date"
                           fullWidth

@@ -19,6 +19,7 @@ export interface Account {
 }
 
 export interface Creator {
+  userId : number | undefined,
   accountId: number | "0",
   CreatorId: number | "0",
   coins: string | number,
