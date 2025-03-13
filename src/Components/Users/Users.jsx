@@ -33,6 +33,7 @@ import ThreadList from "./ThreadList.tsx";
 import ThreadPage from "./ThreadPage.tsx";
 import ThreadUpload from "./ThreadUpload.tsx";
 import ChatButton from "../ChatButton.jsx";
+import ArtShopConfirm from "./ArtShopConfirm.jsx";
 
 export default function Users() {
   return (

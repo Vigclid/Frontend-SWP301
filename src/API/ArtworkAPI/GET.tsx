@@ -13,15 +13,17 @@ const artworkyidnoimageurl = "http://localhost:7233/api/artworks/";
 const artworkPAymentStatus = "http://localhost:7233/api/artworks/";
 const artworkByTagName = "http://localhost:7233/api/artworks/Tag";
 const API_URL = "http://localhost:7233/api/interact";
+const transactionurl = "http://localhost:7233/api/transaction";
 
-export async function GetArtsPaymentStatus(creatorId: string, artworkId: string) {
+export async function GetArtsPaymentStatus(creatorId: string, artworkId: string): Promise<ArtworkPaymentStatus | null> {
   try {
-    let artwork: ArtworkPaymentStatus = await axios
-      .get(artworkPAymentStatus + `/${creatorId}` + `/${artworkId}`)
-      .then((response) => response.data);
-    return artwork;
+    const response = await axios.get<ArtworkPaymentStatus>(
+      `${transactionurl}/TransactionsChecking/${creatorId}/${artworkId}`
+    );
+    return response.data; // { status: true } hoặc { status: false }
   } catch (err) {
-    console.log(err);
+    console.error("Error fetching payment status:", err);
+    return null;
   }
 }
 
