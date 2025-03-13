@@ -89,14 +89,18 @@ export default function PostWork() {
         return;
       }
       setArtwork({ ...artworkbyid, idDowLoad: "" });
-      // const paystatus = await GetArtsPaymentStatus(
-      //     savedUser?.userId,
-      //     artworkbyid.artworkID
-      // );
-      // setStatus(paystatus);
+
+      const paystatus = await GetArtsPaymentStatus(savedUser?.userId, artworkbyid.artworkID);
+      setStatus(paystatus);
+
+      console.log("Pay status:", paystatus);
+
+      console.log("status", status);
+
       const creator = await GetCreatorByID(artworkbyid ? artworkbyid.creatorID : "1");
       // console.log('Creator ID:', artworkbyid.creatorID);
       // console.log('test'+creator);
+
       setCreator(creator);
       setLoading(false);
     };
@@ -178,7 +182,7 @@ export default function PostWork() {
     }
   };
   function formatMoney(amount) {
-    amount *= 1000;
+    amount += "";
     return amount.toLocaleString("vi-VN", {
       style: "currency",
       currency: "VND",
@@ -368,7 +372,7 @@ export default function PostWork() {
               </>
             ) : (
               <div style={{ margin: "auto 5px" }}>
-                {artwork?.purchasable === true && status?.status === false ? (
+                {artwork?.purchasable === true && status === false ? (
                   <Chip
                     label={formatMoney(artwork?.price)}
                     onClick={handleOpenArtShopConfirm}
@@ -390,18 +394,17 @@ export default function PostWork() {
                       endIcon={<Download />}>
                       Download Artwork
                     </Button>
-
-                    <Button
-                      sx={{ minWidth: "20%", marginBottom: "5px", height: "40px" }}
-                      onClick={handleOpenReport}
-                      variant="contained"
-                      color="error"
-                      href=""
-                      style={{ marginLeft: "20px" }}>
-                      Report
-                    </Button>
                   </>
                 )}
+                <Button
+                  sx={{ minWidth: "20%", marginBottom: "5px", height: "40px" }}
+                  onClick={handleOpenReport}
+                  variant="contained"
+                  color="error"
+                  href=""
+                  style={{ marginLeft: "20px" }}>
+                  Report
+                </Button>
               </div>
             )}
             {/* {userInSession.accountId !== creator?.userId ? (
