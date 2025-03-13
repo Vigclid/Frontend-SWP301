@@ -367,6 +367,7 @@ export default function PostWork() {
               </>
             ) : (
               <div style={{ margin: "auto 5px" }}>
+                {/* check status of art */}
                 {artwork?.purchasable === true && status === false ? (
                   <Chip
                     label={formatMoney(artwork?.price)}
