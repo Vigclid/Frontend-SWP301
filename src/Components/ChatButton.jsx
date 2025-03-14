@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Chat from "./Chat";
 import ChatIcon from "@mui/icons-material/Chat";
 import "../css/ChatButton.css";
+import { Badge } from "@mui/material";
 
 const ChatButton = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +14,9 @@ const ChatButton = () => {
   return (
     <>
       <div className="chat-button" onClick={toggleChat}>
-        <ChatIcon className="chat-icon" />
+        <Badge color="secondary" badgeContent={1}>
+          <ChatIcon className="chat-icon" />
+        </Badge>
       </div>
 
       {isOpen && (

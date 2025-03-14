@@ -392,22 +392,34 @@ export default function TransactionHistory() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                  {payments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((payment) => (
+                  {
+                    payments && payments.length > 0 ? (
+                      payments
+                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        .map((payment, index) => (
+                          <StyledTableRow key={index}>
+                            {/* userNamereceiver là của người mua */}
+                            <StyledTableCell align="left">{payment.transCode}</StyledTableCell>
+                            <StyledTableCell align="left">{payment.amount}</StyledTableCell>
+                            <StyledTableCell align="left">{payment.createdAt.split("T")[0]}</StyledTableCell>
+                            <StyledTableCell align="left">
+                              <Chip
+                                label={String(payment.status) === '1' ? 'Success' : 'Failed'}
+                                color={String(payment.status) === '1' ? 'success' : 'error'}
+                                variant="outlined"
+                                sx={{ fontWeight: 'bold' }}
+                              />
+                            </StyledTableCell>
+                          </StyledTableRow>
+                        ))
+                    ) : (
                       <StyledTableRow>
-                        {/* userNamereceiver là của người mua */}
-                        <StyledTableCell align="left">{payment.transCode}</StyledTableCell>
-                        <StyledTableCell align="left">{payment.amount}</StyledTableCell>
-                        <StyledTableCell align="left">{payment.createdAt.split("T")[0]}</StyledTableCell>
-                        <StyledTableCell align="left">
-                        <Chip
-                          label={String(payment.status) === '1' ? 'Success' : 'Failed'}
-                          color={String(payment.status) === '1' ? 'success' : 'error'}
-                          variant="outlined"
-                          sx={{ fontWeight: 'bold' }}
-                        />
-                      </StyledTableCell>
+                        <StyledTableCell align="center" colSpan={4}>
+                          Không có giao dịch nào
+                        </StyledTableCell>
                       </StyledTableRow>
-                    ))}
+                    )
+                  }
                   </TableBody>
                 </Table>
                 <Box display="flex" justifyContent="space-between" alignItems="center" my={1}>
@@ -439,7 +451,7 @@ export default function TransactionHistory() {
                   <TablePagination
                     rowsPerPageOptions={[5, 10, 25, 50, 100]}
                     component="div"
-                    count={payments.length}
+                    count={payments ? payments.length : 0}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
