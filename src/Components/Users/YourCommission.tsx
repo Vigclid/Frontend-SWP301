@@ -11,7 +11,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField'; // Sử dụng TextField của MUI
+import TextField from '@mui/material/TextField';
 import { commission } from '../../share/Commission.js';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import Dialog from '@mui/material/Dialog';
@@ -38,58 +38,64 @@ function CommissionStepper({ currentCommission }: { currentCommission: IExtraCom
   const steps = ['Confirm Commission', 'Drawing', 'Submit Confirmation', 'Commission Completed!'];
   const [activeStep, setActiveStep] = useState(currentCommission.progress);
   const [loading, setLoading] = useState(false);
+  const [artworkURL, setArtworkURL] = useState(currentCommission.artworkURL || "");
 
-  const updateProgress = async (commissionId: number, progress: number) => {
+
+  const updateProgress = async (commissionId, progress, artworkURL = null) => {
     try {
       const response = await axios.put(
         `http://localhost:7233/api/commissions/${commissionId}/progress`,
         null,
         {
           params: {
-            progress: progress,
+            progress,
+            ...(artworkURL && { artworkURL }) // Gửi artworkURL nếu có
           },
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
         }
       );
-      console.log('Progress update response:', response.data);
-      console.log('Progress update status:', response.status);
+
+      console.log("✅ Progress updated:", response.data);
       return response.data;
     } catch (err) {
-      console.error('Error updating progress:', err);
-      if (err.response) {
-        console.error('Response data:', err.response.data);
-        console.error('Response status:', err.response.status);
-        console.error('Response headers:', err.response.headers);
-        throw new Error(`Failed to update progress: ${err.response.data.message || 'Unknown error'}`);
-      } else if (err.request) {
-        console.error('No response received:', err.request);
-        throw new Error('No response from server. Please check the connection.');
-      } else {
-        console.error('Error setting up request:', err.message);
-        throw new Error('Error setting up request. Please try again.');
-      }
+      console.error("❌ Error updating progress:", err);
+      throw new Error("Failed to update progress.");
     }
   };
 
+
+  const [showArtworkInput, setShowArtworkInput] = useState(false);
   const handleNext = async () => {
     try {
       setLoading(true);
       const newProgress = activeStep + 1;
-      if (newProgress > 4) {
-        throw new Error('Progress cannot exceed 4 (Commission Completed)');
+
+      // Nếu chuyển sang progress = 3, bật ô nhập Artwork URL
+      if (newProgress === 3) {
+        setShowArtworkInput(true);
       }
+
+      // Nếu đang ở progress = 3 mà Artwork URL trống, cảnh báo lỗi
+      if (activeStep === 3 && !artworkURL) {
+        alert("Please enter the Artwork URL before proceeding.");
+        setLoading(false);
+        return;
+      }
+
+      await updateProgress(currentCommission.commissionID, newProgress, artworkURL);
       setActiveStep(newProgress);
-      await updateProgress(currentCommission.commissionID, newProgress);
-      console.log("Forward 1 step: Progress updated to " + newProgress);
+
     } catch (err) {
       console.error(err.message);
-      setActiveStep(currentCommission.progress); // Rollback nếu có lỗi
+      setActiveStep(currentCommission.progress);
     } finally {
       setLoading(false);
     }
   };
+
+
 
   const handleBack = async () => {
     try {
@@ -127,6 +133,21 @@ function CommissionStepper({ currentCommission }: { currentCommission: IExtraCom
       ) : (
         <React.Fragment>
           <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>
+
+          {/* ✅ Hiển thị ô nhập Artwork URL khi progress = 3 */}
+          {showArtworkInput && (
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="body1">Enter Artwork URL</Typography>
+              <TextField
+                fullWidth
+                variant="outlined"
+                placeholder="Paste Google Drive link here"
+                value={artworkURL}
+                onChange={(e) => setArtworkURL(e.target.value)}
+              />
+            </Box>
+          )}
+
           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
             <Button
               color="inherit"
@@ -180,6 +201,22 @@ export default function YourCommission() {
     }
   }, [rejectDialogOpen]);
 
+  const formatDateTime = (dateString: string | null) => {
+    if (!dateString) return 'Not set';
+
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // Hiển thị AM/PM
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      timeZone: 'Asia/Ho_Chi_Minh' // Đảm bảo múi giờ Việt Nam
+    });
+  };
+
+
   // Gọi API để lấy tất cả commission và lọc theo receiverID của người dùng hiện tại
   useEffect(() => {
     const getCommissionForm = async () => {
@@ -202,6 +239,7 @@ export default function YourCommission() {
             acceptanceDate: commission.acceptanceDate,
             completionDate: commission.completionDate,
             message: commission.message || '', // Thêm message từ API nếu có
+            artworkURL: commission.artworkURL || '', // Thêm artworkURL từ API nếu có
           }))
           .filter((commission: IExtraCommissionForm) => commission.receiverID === savedUser.userId); // Lọc theo receiverID
         setCommissionList(commissions);
@@ -324,9 +362,29 @@ export default function YourCommission() {
     setCurrentSelect(commission);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-    setCurrentSelect(null);
+  const handleClose = async () => {
+    try {
+      setLoading(true);
+
+      if (currentSelect) {
+        // Nếu progress = 3, gửi artworkURL lên API
+        const artworkURLToSend = activeStep === 4 ? artworkURL : null;
+
+        await updateProgress(
+          currentSelect.commissionID,
+          activeStep,
+          artworkURLToSend
+        );
+
+        console.log("✅ Progress saved:", activeStep);
+      }
+    } catch (error) {
+      console.error("❌ Error saving progress:", error);
+    } finally {
+      setLoading(false);
+      setOpen(false);
+      setCurrentSelect(null);
+    }
   };
 
   return (
@@ -388,10 +446,19 @@ export default function YourCommission() {
                               <span>{commission.creationDate || 'Not set'}</span>
                               <br />
                               <Typography variant='body1' style={{ fontWeight: 'bold' }}>Acceptance Date: </Typography>
-                              <span>{commission.acceptanceDate === null && commission.accept === null ? 'Not yet' : commission.acceptanceDate === null && commission.accept !== null ? 'Not Accepted' : commission.acceptanceDate}</span>
+                              <span>
+                                {commission.acceptanceDate
+                                  ? formatDateTime(commission.acceptanceDate)
+                                  : commission.accept === null
+                                    ? 'Not yet'
+                                    : 'Not Accepted'}
+                              </span>
                               <br />
                               <Typography variant='body1' style={{ fontWeight: 'bold' }}>Completion Date: </Typography>
-                              <span>{commission.completionDate || 'Not completed'}</span>
+                              <span>{commission.completionDate ? formatDateTime(commission.completionDate) : 'Not completed'}</span>
+                              <Typography variant="h6">
+                                {commission.artworkURL ? `Artwork Drive Link: ${commission.artworkURL}` : ''}
+                              </Typography>
                               {commission.message && (
                                 <Typography variant='body2' color="red" style={{ fontWeight: 'bold' }}>
                                   Rejection Reason: {commission.message}
@@ -425,44 +492,30 @@ export default function YourCommission() {
         </div>
 
         {/* Dialog để từ chối */}
-        <RejectDialog
-          onClose={handleRejectClose}
-          aria-labelledby="reject-dialog-title"
-          open={rejectDialogOpen}
-          fullWidth={true}
-          maxWidth='sm'
-        >
-          <DialogTitle sx={{ m: 0, p: 2 }} id="reject-dialog-title">
-            Enter Rejection Reason
-          </DialogTitle>
-          <DialogContent dividers>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="reject-message"
-              label="Reason for Rejection"
+        <Dialog onClose={handleRejectClose} open={rejectDialogOpen} fullWidth maxWidth="sm">
+          <DialogTitle>Enter Rejection Reason</DialogTitle>
+          <DialogContent sx={{ overflow: 'hidden' }}>
+            <input
+              ref={inputRef}
               type="text"
-              fullWidth
-              variant="standard"
+              id="reject-message"
+              placeholder="Enter reason..."
               value={rejectMessage}
-              onChange={(e) => {
-                console.log('Input value:', e.target.value);
-                setRejectMessage(e.target.value);
+              onChange={(e) => setRejectMessage(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '8px',
+                fontSize: '16px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
               }}
-              onFocus={(e) => {
-                console.log('TextField focused');
-                e.target.select(); // Tự động chọn toàn bộ text khi focus
-              }}
-              onBlur={(e) => console.log('TextField blurred')} // Log để debug khi mất focus
-              inputRef={inputRef}
-              inputProps={{ maxLength: 500 }}
             />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleRejectClose}>Cancel</Button>
             <Button onClick={handleRejectSubmit}>Submit</Button>
           </DialogActions>
-        </RejectDialog>
+        </Dialog>
 
         {/* Dialog để theo dõi tiến trình */}
         <BootstrapDialog

@@ -1,18 +1,15 @@
-
 import { ThemeContext } from '../Themes/ThemeProvider.tsx';
 import Box from '@mui/material/Box';
 import '../../css/YourRequest.css';
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { commission } from '../../share/Commission.js'
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -26,32 +23,56 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
-import { colors } from '@mui/material';
-import { Creator } from '../../Interfaces/UserInterface.ts';
-import { ICommissionForm, IExtraCommissionForm } from '../../Interfaces/CommissionForm.ts';
-import { GetCommissionRequestorById } from '../../API/CommissionAPI/GET.tsx';
+
+// Dữ liệu test
+const testCommissionList = [
+  {
+    commissionID: "1",
+    requestorUserName: "JohnDoe",
+    requestorPhone: "123-456-7890",
+    requestorEmail: "johndoe@example.com",
+    description: "I need a portrait of my dog in watercolor style.",
+    accept: true,
+    progress: 2 // Đang ở bước 'Submit Artwork'
+  },
+  {
+    commissionID: "2",
+    requestorUserName: "JaneSmith",
+    requestorPhone: "987-654-3210",
+    requestorEmail: "janesmith@example.com",
+    description: "A digital illustration of a fantasy character.",
+    accept: false,
+    progress: 0 // Chưa được chấp nhận
+  },
+  {
+    commissionID: "3",
+    requestorUserName: "AlexBrown",
+    requestorPhone: "555-555-5555",
+    requestorEmail: "alexbrown@example.com",
+    description: "A logo design for my small business.",
+    accept: null, // Đang chờ chấp nhận
+    progress: 0
+  }
+];
 
 export default function YourRequest() {
-  const { theme } = useContext(ThemeContext)
-  // Tạo một đối tượng trạng thái để lưu trạng thái của từng mục trong danh sách
-  const [acceptedItems, setAcceptedItems] = useState<ICommissionForm>();
-  const [commissionList, setCommissionList] = useState<IExtraCommissionForm[]>([]);
-  const navigate = useNavigate()
+  const { theme } = useContext(ThemeContext);
+  const [acceptedItems, setAcceptedItems] = useState(null);
+  const [commissionList, setCommissionList] = useState([]);
+  const navigate = useNavigate();
   const savedAuth = sessionStorage.getItem('auth');
-  const savedUser: Creator = savedAuth ? JSON.parse(savedAuth) : null;
+  const savedUser = savedAuth ? JSON.parse(savedAuth) : null;
+
   if (savedUser === null) {
-    navigate(`/`)
+    navigate(`/`);
   }
+
   useEffect(() => {
-    const getCommissionForm = async () => {
-      const commissionForm: IExtraCommissionForm[] | undefined = await GetCommissionRequestorById(savedUser.creatorID)
-      setCommissionList(commissionForm ?? [])
-    }
-    getCommissionForm()
-  }, [])
+    // Sử dụng dữ liệu test thay vì gọi API
+    setCommissionList(testCommissionList);
+  }, []);
 
-
-  //  MUI Dialog
+  // MUI Dialog
   const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
       padding: theme.spacing(2),
@@ -61,12 +82,11 @@ export default function YourRequest() {
     },
   }));
 
-
   const [open, setOpen] = React.useState(false);
 
-  const handleClickOpen = (commission:ICommissionForm) => {
+  const handleClickOpen = (commission) => {
     setOpen(true);
-    setAcceptedItems(commission)
+    setAcceptedItems(commission);
   };
   const handleClose = () => {
     setOpen(false);
@@ -74,9 +94,11 @@ export default function YourRequest() {
 
   // MUI Step
   const steps = ['Accept requests', 'Work in progress', 'Submit Artwork', 'Commission Complete!'];
+
   return (
     <div className='yourRequest'>
-      <Box className='box'
+      <Box
+        className='box'
         sx={{
           color: theme.color,
           backgroundColor: `rgba(${theme.rgbBackgroundColor},0.97)`,
@@ -86,64 +108,87 @@ export default function YourRequest() {
           borderRadius: '5px',
           marginBottom: '15px',
           minHeight: '600px'
-        }}>
-
-
+        }}
+      >
         <h1>Your Request:</h1>
         <Divider variant='middle' sx={{ borderColor: theme.color }} />
         <div className='listcommission' style={{ width: '100%', display: 'flex', justifyContent: 'center', paddingBottom: '40px' }}>
-          <List sx={{ width: '100%', maxWidth: 1000, bgcolor: 'background.paper' }}
+          <List
+            sx={{ width: '100%', maxWidth: 1000, bgcolor: 'background.paper' }}
             style={{
-              borderTop: '1px solid black', borderLeft: '1px solid black', borderRight: '1px solid black',
+              borderTop: '1px solid black',
+              borderLeft: '1px solid black',
+              borderRight: '1px solid black',
               borderRadius: '10px',
               padding: 0,
               marginBottom: '50px',
               marginTop: '30px'
-            }}>
-            {commissionList.map((commision: IExtraCommissionForm) => (
-              <div>
-                <ListItem alignItems="flex-start"
-
-                  key={commision.commissionID} >
+            }}
+          >
+            {commissionList.map((commission) => (
+              <div key={commission.commissionID}>
+                <ListItem alignItems="flex-start">
                   <div className='onecommission'>
                     <div className='content'>
-
                       <ListItemText>
                         <div className='header' style={{ display: 'flex', marginBottom: '5px' }}>
-                          {commision.accept === true ? <Avatar style={{ background: '#10AF27' }}><CheckIcon /></Avatar> :
-                            (commision.accept === false ? <Avatar style={{ background: 'red' }}><ClearIcon /></Avatar> :
-                              <Avatar style={{ background: theme.color }}><NotificationsActiveIcon /></Avatar>)}
-
-                          {/* tên người đặt hàng */}
-                          <Typography variant='h5' style={{ margin: 'auto 15px ' }}>
-                            You are requesting a commission from: {commision.requestorUserName}
+                          {commission.accept === true ? (
+                            <Avatar style={{ background: '#10AF27' }}><CheckIcon /></Avatar>
+                          ) : commission.accept === false ? (
+                            <Avatar style={{ background: 'red' }}><ClearIcon /></Avatar>
+                          ) : (
+                            <Avatar style={{ background: theme.color }}><NotificationsActiveIcon /></Avatar>
+                          )}
+                          <Typography variant='h5' style={{ margin: 'auto 15px' }}>
+                            You are requesting a commission from: {commission.requestorUserName}
                           </Typography>
                         </div>
                         <div className='contentcommission'>
                           <div>
-                            <div> 
-                            <Typography variant='body1'>Phone: {commision.requestorPhone}</Typography>
-                            <Typography variant='body1'>Email: {commision.requestorEmail}</Typography>
-                              <Typography variant='body1' style={{ fontWeight: 'bold' }}> Description: </Typography>
-                              <span> {commision.description}</span>
-                            </div>
+                            <Typography variant='body1'>Phone: {commission.requestorPhone}</Typography>
+                            <Typography variant='body1'>Email: {commission.requestorEmail}</Typography>
+                            <Typography variant='body1' style={{ fontWeight: 'bold' }}> Description: </Typography>
+                            <span>{commission.description}</span>
                           </div>
                         </div>
-                      </ListItemText></div>
+                      </ListItemText>
+                    </div>
                     <div className='button'>
-                      {commision.accept === true ?
-                        <Button variant="contained" style={{ backgroundColor: '#10AF27' }} onClick={() => handleClickOpen(commision)}  >Track the process</Button> :
-                        (commision.accept === false ?
-                          <Button style={{ paddingRight: '40px', paddingLeft: '40px' }} variant="contained" disabled  >Commission Declined</Button> :
-                          <Button style={{ paddingRight: '40px', paddingLeft: '40px', backgroundColor: '#1976d2', color: 'white' }} variant="contained" disabled  >Waiting To Be Accepted</Button>)}
+                      {commission.accept === true ? (
+                        <Button
+                          variant="contained"
+                          style={{ backgroundColor: '#10AF27' }}
+                          onClick={() => handleClickOpen(commission)}
+                        >
+                          Track the process
+                        </Button>
+                      ) : commission.accept === false ? (
+                        <Button
+                          style={{ paddingRight: '40px', paddingLeft: '40px' }}
+                          variant="contained"
+                          disabled
+                        >
+                          Commission Declined
+                        </Button>
+                      ) : (
+                        <Button
+                          style={{ paddingRight: '40px', paddingLeft: '40px', backgroundColor: '#1976d2', color: 'white' }}
+                          variant="contained"
+                          disabled
+                        >
+                          Waiting To Be Accepted
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </ListItem>
-                <Divider component="li" style={{ backgroundColor: 'black' }} /> </div>
+                <Divider component="li" style={{ backgroundColor: 'black' }} />
+              </div>
             ))}
-          </List></div>
+          </List>
+        </div>
 
-        {/* Viết Dialog */}
+        {/* Dialog */}
         <BootstrapDialog
           onClose={handleClose}
           aria-labelledby="customized-dialog-title"
@@ -179,10 +224,10 @@ export default function YourRequest() {
                   );
                 })}
               </Stepper>
-
             </Box>
           </DialogContent>
         </BootstrapDialog>
-      </Box></div>
-  )
+      </Box>
+    </div>
+  );
 }
