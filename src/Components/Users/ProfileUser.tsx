@@ -491,6 +491,16 @@ export default function ProfileUser() {
     }
   };
 
+
+
+  // HANDLE CHATTING
+
+  const handleChatting = () => {
+      
+  }
+
+
+
   return (
       <div className="">
         <div className="headeruser">
@@ -620,6 +630,13 @@ export default function ProfileUser() {
                           Follow
                         </Button>
                     )}
+                    <Button
+                           style={{ width: "120px", height: "40px" , marginLeft : '10px' }}
+                           variant="contained"
+                           onClick={() => handleChatting()}
+                           >
+                        Chat
+                    </Button>
                   </div>
               ) : (
                   ""
@@ -672,6 +689,7 @@ export default function ProfileUser() {
                   {/* Hiển thị form request khi nhấn nút */}
                   {showCommissionForm && <CommissionForm onClose={() => setShowCommissionForm(false)}/>}
                   {userInSession.accountId !== user?.accountId ? (
+                    
                       <Button
                           onClick={handleClickOpen}
                           variant="contained"
@@ -681,6 +699,7 @@ export default function ProfileUser() {
                         Report
                       </Button>
                       
+                     
                   ) : (
                       ""
                   )}

@@ -38,29 +38,14 @@ const Chat = ({ onClose }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
+
+
+  //HANDLE
   useEffect(() => {
-    const autoResponses = [
-      "That's interesting! Tell me more 🤔",
-      "Amazing work! Keep it up! 👏",
-      "I love your creative style! ✨",
-      "Have you tried using different techniques?",
-      "The composition looks perfect! 🎨",
-    ];
-    const interval = setInterval(() => {
-      if (Math.random() > 0.7) {
-        const randomResponse =
-          autoResponses[Math.floor(Math.random() * autoResponses.length)];
-        const newAutoMessage = {
-          id: messages.length + 1,
-          senderId: selectedUser.id,
-          content: randomResponse,
-          timestamp: new Date().toISOString(),
-        };
-        setMessages((prev) => [...prev, newAutoMessage]);
-      }
-    }, 5000);
-    return () => clearInterval(interval);
+    
   }, [selectedUser, messages]);
+
+
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -80,11 +65,6 @@ const Chat = ({ onClose }) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-  const handlePopoverOpen = (event, user) => {
-    setAnchorEl(event.currentTarget);
-    const preview = mockMessages.filter((msg) => msg.senderId === user.id).slice(-1)[0];
-    setPreviewChat(preview);
-  };
 
   const handlePopoverClose = () => {
     setAnchorEl(null);

@@ -1,15 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Chat from "./Chat";
 import ChatIcon from "@mui/icons-material/Chat";
 import "../css/ChatButton.css";
 import { Badge } from "@mui/material";
+import SockJS from 'sockjs-client';
+import { Stomp } from '@stomp/stompjs';
+
 
 const ChatButton = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [chat, setChat] = useState([]);
+
+
+  useEffect (() => {
+    
+  },[chat])
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
   };
+
+
 
   return (
     <>
