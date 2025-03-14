@@ -262,10 +262,15 @@ export default function ProfileUser() {
     setValue(newValue);
   };
 
-  // Cái này để chuyển tab profile từ profile người khác sang profile mình.
   useEffect(() => {
     const getUserProfile = async () => {
       const userProfile = await GetCreatorByAccountID(id ? id : "0");
+      console.log("🟢 Dữ liệu User từ API:", userProfile);
+
+      if (userProfile) {
+        console.log(`🔍 Kiểm tra typeID trước khi setState:`, userProfile.typeId);
+      }      
+      
       setUser(userProfile);
 
       if ( userInSession.userId &&  userProfile?.userId && userInSession.userId !== userProfile.userId) {
@@ -654,7 +659,7 @@ export default function ProfileUser() {
                 </div>
                 <div className="buttonSubcribe">
                   {/* Kiểm tra RankID chính xác dựa vào API trả về */}
-                  {user?.rankId === 2 ? (
+                  {user?.typeId !== 1 ? (
                       <Button variant="contained" onClick={() => setShowCommissionForm(true)}>
                         <ShoppingBagIcon style={{ marginRight: "5px" }} />
                         Request an Custom Art

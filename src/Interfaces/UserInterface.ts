@@ -38,5 +38,6 @@ export interface Creator {
   followerCount: number | 0,
   email:string,
   RankID:number,
+  typeId:number,
   RoleID: number
 } // This is the Object Creator, having all the infomation.
