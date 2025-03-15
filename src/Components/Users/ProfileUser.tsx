@@ -676,7 +676,7 @@ export default function ProfileUser() {
                 </div>
                 <div className="buttonSubcribe">
                   {/* Kiểm tra RankID chính xác dựa vào API trả về */}
-                  {user?.typeId !== 1 ? (
+                  {userInSession.accountId !== user?.accountId ? user?.typeId !== 1 ? (
                       <Button variant="contained" onClick={() => setShowCommissionForm(true)}>
                         <ShoppingBagIcon style={{ marginRight: "5px" }} />
                         Request an Custom Art
@@ -689,7 +689,7 @@ export default function ProfileUser() {
                         <ShoppingBagIcon color="inherit" style={{ marginRight: "5px" }} />
                         This person cannot receive commission
                       </Button>
-                  )}
+                  ) : ""}
 
                   {/* Hiển thị form request khi nhấn nút */}
                   {showCommissionForm && <CommissionForm onClose={() => setShowCommissionForm(false)}/>}
