@@ -10,6 +10,28 @@ const creatorvipstatusurl = `http://localhost:7233/api/Creator/GetID/UserName/Vi
 const gettotalartworklikesbycreatorurl = `http://localhost:7233/api/artworks/total-likes/`;
 const top10UsersUrl = "http://localhost:7233/api/Creator/top-popular";
 const checkFollow = "http://localhost:7233/api/Follow/checkFollow";
+const getUserByIdUrl = "http://localhost:7233/api/Creator/userID/";
+
+
+export async function GetUserNameById(userId: string | number) {
+  try {
+      const response = await axios.get(getUserByIdUrl + userId);
+      const userData = response.data;
+
+      if (!userData || (!userData.firstName && !userData.lastName)) {
+          console.warn(`⚠️ Không tìm thấy firstName hoặc lastName cho userID ${userId}`);
+          return "Unknown User";
+      }
+
+      return `${userData.firstName ?? ""} ${userData.lastName ?? ""}`.trim(); // ✅ Ghép firstName + lastName
+  } catch (err) {
+      console.error(`❌ Lỗi khi lấy userName cho userID ${userId}:`, err);
+      return "Unknown User";
+  }
+}
+
+
+
 
 export async function GetTop10Users() {
   try {
