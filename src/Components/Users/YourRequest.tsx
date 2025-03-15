@@ -29,6 +29,7 @@ import { colors } from '@mui/material';
 import { Creator } from '../../Interfaces/UserInterface.ts';
 import { ICommissionForm, IExtraCommissionForm } from '../../Interfaces/CommissionForm.ts';
 import { GetCommissionRequestorById } from '../../API/CommissionAPI/GET.tsx';
+import { GetUserNameById } from '../../API/UserAPI/GET.tsx';
 
 export default function YourRequest() {
   const { theme } = useContext(ThemeContext)
@@ -41,13 +42,47 @@ export default function YourRequest() {
   if (savedUser === null) {
     navigate(`/`)
   }
+  
   useEffect(() => {
     const getCommissionForm = async () => {
-      const commissionForm: IExtraCommissionForm[] | undefined = await GetCommissionRequestorById(savedUser.creatorID)
-      setCommissionList(commissionForm ?? [])
-    }
-    getCommissionForm()
-  }, [])
+        if (!savedUser || !savedUser.userId) {
+            console.error("❌ Không tìm thấy userId từ sessionStorage!");
+            return;
+        }
+        
+        console.log("🟢 Requestor ID gửi lên API:", savedUser.userId);
+
+        let commissionForm = await GetCommissionRequestorById(savedUser.userId);
+        console.log("🟢 Danh sách commission của requestor:", commissionForm);
+
+        // Fetch requestorUserName nếu chưa có hoặc là "Unknown User"
+        const updatedCommissions = await Promise.all(
+            commissionForm.map(async (commission) => {
+                if (!commission.requestorUserName || commission.requestorUserName === "Unknown User") {
+                    try {
+                        let userData = await GetUserNameById(commission.requestorID);
+                        if (userData && userData.userName) {
+                            commission.requestorUserName = userData.userName;
+                        } else {
+                            commission.requestorUserName = "Unknown User";
+                        }
+                    } catch (error) {
+                        console.error("❌ Lỗi khi lấy User:", error);
+                    }
+                }
+                return commission;
+            })
+        );
+
+        setCommissionList(updatedCommissions ?? []);
+    };
+
+    getCommissionForm();
+}, []);
+
+
+  
+  
 
 
   //  MUI Dialog
@@ -115,7 +150,7 @@ export default function YourRequest() {
 
                           {/* tên người đặt hàng */}
                           <Typography variant='h5' style={{ margin: 'auto 15px ' }}>
-                            You are requesting a commission from: {commision.requestorUserName}
+                            You are requesting a commission to: {commision.requestorUserName || "Loading..."}
                           </Typography>
                         </div>
                         <div className='contentcommission'>
