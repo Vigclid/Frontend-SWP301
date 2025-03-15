@@ -1,122 +1,309 @@
-import React from 'react'
-import AdminNavbar from './NavigationAd';
-import { useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
-import { ListofUsers } from '../../share/ListofUsers';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import VerifiedIcon from '@mui/icons-material/Verified';
-import { green } from '@mui/material/colors';
-import Button from '@mui/material/Button';
-import WarningIcon from '@mui/icons-material/Warning';
-import TablePagination from '@mui/material/TablePagination';
-import { Container, Box, Typography } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import DialogActions from '@mui/material/DialogActions';
+import React, { useEffect, useState } from "react";
+import {
+  Container,
+  Typography,
+  Button,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Box,
+  Tab,
+  Tabs,
+  Paper,
+  CircularProgress,
+  Avatar,
+} from "@mui/material";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import { useNavigate } from "react-router-dom";
+import moment from "moment";
+import { GetListReportsUnfinished, GetListReportsFinished } from "../../API/AdminAPI/GET.tsx";
+import { LockAccount, UnlockAccount, UpdateReportStatus } from "../../API/AdminAPI/PUT.tsx";
+import { DeleteArtwork } from "../../API/AdminAPI/DELETE.tsx";
+import { GetCreatorByID } from "../../API/UserAPI/GET.tsx";
+
+function TabPanel({ children, value, index }) {
+  return (
+    <div hidden={value !== index} role="tabpanel" id={`report-tabpanel-${index}`}>
+      {value === index && children}
+    </div>
+  );
+}
+
 export default function Report() {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  // Handle change page
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  const [unfinishedReports, setUnfinishedReports] = useState([]);
+  const [finishedReports, setFinishedReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [tabValue, setTabValue] = useState(0);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const navigate = useNavigate();
+
+  const fetchReportsWithUserInfo = async () => {
+    setLoading(true);
+    try {
+      const [unfinishedData, finishedData] = await Promise.all([GetListReportsUnfinished(), GetListReportsFinished()]);
+
+      const processReports = async (reports) => {
+        return await Promise.all(
+          reports.map(async (report) => {
+            const reporter = await GetCreatorByID(report.reporterId.toString());
+            const reported = await GetCreatorByID(report.reportedId.toString());
+            return { ...report, reporterInfo: reporter, reportedInfo: reported };
+          })
+        );
+      };
+
+      const unfinishedWithUsers = await processReports(unfinishedData);
+      const finishedWithUsers = await processReports(finishedData);
+
+      setUnfinishedReports(unfinishedWithUsers);
+      setFinishedReports(finishedWithUsers);
+    } catch (error) {
+      console.error("Error fetching reports:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Handle change rows per page
-  const handleChangeRowsPerPage = event => {
-    setRowsPerPage(+event.target.value);
-    setPage(0); // Reset page number back to 0 when changing rows per page
+  useEffect(() => {
+    fetchReportsWithUserInfo();
+  }, []);
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
   };
 
-  // Calculate the portion of users to display based on pagination
-  const paginatedUsers = ListofUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const handleUserClick = (accountId) => {
+    navigate(`/characters/profile/${accountId}`);
+  };
 
-  const [open, setOpen] = useState(false);
-  const handleClose = () => { setOpen(false); };
+  const handleArtworkClick = (artworkId) => {
+    navigate(`/characters/artwork/${artworkId}`);
+  };
 
+  const showConfirmDialog = (action, params) => {
+    setConfirmAction({ action, params });
+    setDialogOpen(true);
+  };
+
+  const handleConfirmAction = async () => {
+    if (!confirmAction) return;
+
+    try {
+      switch (confirmAction.action) {
+        case "lock":
+          await LockAccount(confirmAction.params.accountId);
+          break;
+        case "unlock":
+          await UnlockAccount(confirmAction.params.accountId);
+          break;
+        case "delete":
+          await DeleteArtwork(confirmAction.params.artworkId);
+          break;
+        case "complete":
+          await UpdateReportStatus(confirmAction.params.reportId);
+          break;
+      }
+      await fetchReportsWithUserInfo();
+    } catch (error) {
+      console.error(`Error performing ${confirmAction.action}:`, error);
+    }
+    setDialogOpen(false);
+    setConfirmAction(null);
+  };
+
+  const renderReportTable = (reports) => (
+    <TableContainer component={Paper} style={{ marginBottom: "50px", marginTop: "40px" }}>
+      <Table>
+        <TableHead>
+          <TableRow style={{ backgroundColor: "#0b81ff" }}>
+            <TableCell style={{ color: "white" }}>
+              <strong>Reporter</strong>
+            </TableCell>
+            <TableCell style={{ color: "white" }}>
+              <strong>Reported</strong>
+            </TableCell>
+            <TableCell style={{ color: "white" }}>
+              <strong>Artwork</strong>
+            </TableCell>
+            <TableCell style={{ color: "white" }}>
+              <strong>Create Date</strong>
+            </TableCell>
+            <TableCell style={{ color: "white" }}>
+              <strong>Description</strong>
+            </TableCell>
+            <TableCell style={{ color: "white" }}>
+              <strong>Behavior</strong>
+            </TableCell>
+            <TableCell style={{ color: "white" }}>
+              <strong>Status</strong>
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {reports.map((report) => (
+            <TableRow key={report.reportId}>
+              <TableCell>
+                <Box
+                  onClick={() => handleUserClick(report.reporterInfo?.accountId)}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    cursor: "pointer",
+                    "&:hover": { textDecoration: "underline" },
+                  }}>
+                  <Avatar src={report.reporterInfo?.profilePicture} />
+                  {report.reporterInfo?.firstName} {report.reporterInfo?.lastName}
+                </Box>
+              </TableCell>
+              <TableCell>
+                <Box
+                  onClick={() => handleUserClick(report.reportedInfo?.accountId)}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    cursor: "pointer",
+                    "&:hover": { textDecoration: "underline" },
+                  }}>
+                  <Avatar src={report.reportedInfo?.profilePicture} />
+                  {report.reportedInfo?.firstName} {report.reportedInfo?.lastName}
+                </Box>
+              </TableCell>
+              <TableCell>
+                {report.artworkId !== 0 && (
+                  <Typography
+                    onClick={() => handleArtworkClick(report.artworkId)}
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": { textDecoration: "underline" },
+                    }}>
+                    {report.artworkId}
+                  </Typography>
+                )}
+              </TableCell>
+              <TableCell>{moment(report.createdDate).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
+              <TableCell>{report.description}</TableCell>
+              <TableCell>
+                <Box sx={{ display: "flex", gap: 1, flexDirection: "column" }}>
+                  {report.statusUser === 1 && (
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => showConfirmDialog("lock", { accountId: report.reportedInfo?.accountId })}>
+                      Lock Account
+                    </Button>
+                  )}
+                  {report.statusUser === 0 && (
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={() => showConfirmDialog("unlock", { accountId: report.reportedInfo?.accountId })}>
+                      Unlock Account
+                    </Button>
+                  )}
+                  {report.artworkId !== 0 && (
+                    <Button
+                      variant="contained"
+                      onClick={() => showConfirmDialog("delete", { artworkId: report.artworkId })}>
+                      Delete Artwork
+                    </Button>
+                  )}
+                </Box>
+              </TableCell>
+              <TableCell>
+                {report.status === 0 ? (
+                  <Button
+                    variant="outlined"
+                    color="warning"
+                    onClick={() => showConfirmDialog("complete", { reportId: report.reportId })}
+                    sx={{
+                      width: "100%",
+                      "&:hover": {
+                        backgroundColor: "warning.light",
+                      },
+                    }}>
+                    Pending
+                  </Button>
+                ) : (
+                  <Box
+                    sx={{
+                      bgcolor: "success.light",
+                      color: "success.dark",
+                      p: 1,
+                      borderRadius: 1,
+                      textAlign: "center",
+                      fontWeight: "bold",
+                      boxShadow: 1,
+                    }}>
+                    Processed
+                  </Box>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <Container style={{ marginLeft: '350px' }}>
-      <Typography variant="h4" gutterBottom style={{ fontWeight: 'bold', marginTop: '40px' }}>
-        List Of Report:
+    <Container style={{ marginLeft: "300px" }}>
+      <Typography variant="h4" gutterBottom style={{ fontWeight: "bold", marginTop: "40px" }}>
+        Reports Management
       </Typography>
-      <TableContainer component={Paper} style={{ marginBottom: '70px' }}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table" >
-          <TableHead>
-            <TableRow style={{ backgroundColor: '#0b81ff' }}>
-              <TableCell style={{ color: 'white' }}>ID Report</TableCell>
-              <TableCell style={{ color: 'white' }} align="left">Reported User ID</TableCell>
-              <TableCell style={{ color: 'white', width: '220px' }} align="left">Reported User Name</TableCell>
-              <TableCell style={{ color: 'white', width: '500px' }} align="left">Reason for being reported</TableCell>
-              <TableCell style={{ color: 'white', width: '100px' }} align="left">Ban Account</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedUsers.map((user) => (
-              <TableRow
-                key={user.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {user.id}
-                </TableCell>
-                {/* user.User là user Name */}
-                <TableCell align="left">{user.User}</TableCell>
-                <TableCell align="left">{user.email}</TableCell>
-                <TableCell align="left">{user.Phone}</TableCell>
 
-                <TableCell align="left">
-                  <Button variant="contained" color="error" onClick={() => { setOpen(true) }}>
-                    <WarningIcon />
-                  </Button></TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <TablePagination
-          rowsPerPageOptions={10}
-          component="div"
-          count={ListofUsers.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </TableContainer>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Congraturation"}
-        </DialogTitle>
+      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Tabs value={tabValue} onChange={handleTabChange}>
+          <Tab label="Unfinished Reports" />
+          <Tab label="Finished Reports" />
+        </Tabs>
+      </Box>
+
+      <TabPanel value={tabValue} index={0}>
+        {renderReportTable(unfinishedReports)}
+      </TabPanel>
+
+      <TabPanel value={tabValue} index={1}>
+        {renderReportTable(finishedReports)}
+      </TabPanel>
+
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+        <DialogTitle>Confirmation</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <Alert severity="success">
-              <AlertTitle>You want to ban this account ?</AlertTitle>
-            </Alert>
-          </DialogContentText>
+          Are you sure you want to{" "}
+          {confirmAction?.action === "complete"
+            ? "complete this report"
+            : confirmAction?.action === "lock"
+            ? "lock this account"
+            : confirmAction?.action === "unlock"
+            ? "unlock this account"
+            : "delete this artwork"}
+          ?
         </DialogContent>
         <DialogActions>
-          {/* chỗ này gắn hàm vô : onClick={()=>handleDelete()}*/}
-          <Button  >yes</Button>
-          <Button autoFocus onClick={handleClose}>
-            No
+          <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleConfirmAction} variant="contained" color="primary">
+            Accept
           </Button>
         </DialogActions>
       </Dialog>
-
     </Container>
-  )
+  );
 }
