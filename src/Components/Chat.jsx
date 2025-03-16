@@ -10,11 +10,14 @@ import Popover from "@mui/material/Popover";
 import { ThemeContext } from "./Themes/ThemeProvider.tsx";
 import { Button } from "@mui/material";
 
-const Chat = ({ onClose }) => {
+const Chat = ({ onClose , chat, chatProfile , message , userInSession}) => {
   const chatRef = useRef(null); 
-  const [messages, setMessages] = useState(mockMessages);
+  const [messages, setMessages] = useState(
+    message.filter(message => (message.senderId === userInSession.userId || message.receiverId === userInSession.userId) &&
+    (message.senderId === chatProfile[0].userId || message.receiverId === chatProfile[0].userId)
+    ));
   const [newMessage, setNewMessage] = useState("");
-  const [selectedUser, setSelectedUser] = useState(mockUsers[0]);
+  const [selectedUser, setSelectedUser] = useState(chatProfile[0]);
   const messagesEndRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [previewChat, setPreviewChat] = useState(null);
@@ -43,7 +46,7 @@ const Chat = ({ onClose }) => {
   //HANDLE
   useEffect(() => {
     
-  }, [selectedUser, messages]);
+  }, [chatProfile, messages]);  
 
 
 
@@ -73,6 +76,13 @@ const Chat = ({ onClose }) => {
 
   const openPopover = Boolean(anchorEl);
 
+  const handleSwitchSelectedUser = async(user) => {
+    setSelectedUser(user)
+    setMessages( message.filter(message => (message.senderId === userInSession.userId || message.receiverId === userInSession.userId) &&
+    (message.senderId === user.userId || message.receiverId === user.userId)
+    ))
+  }
+
   return (
     <Box
       ref={chatRef}
@@ -92,25 +102,40 @@ const Chat = ({ onClose }) => {
     >
       
       
-      <Box sx={{ width: "250px", borderRight: "1px solid #ccc" }}>
-      <List>
-        {mockUsers.map((user) => (
-          <ListItem
-            key={user.id}
-          >
-            <img
-              src={user.avatar}
-              alt={user.name}
-              className="user-avatar"
-              style={{ width: 40, height: 40, borderRadius: "50%" }}
-            />
-            <Box sx={{ ml: 1 }}>
-              <Typography variant="body2">{user.name}</Typography>
-            </Box>
-          </ListItem>
-        ))}
-      </List>
+      <Box sx={{ width: "200px", borderRight: "1px solid #ccc" }}>
+        <List>
+          {chatProfile.map((user,index) => (
+            <ListItem
+              key={index}
+              onClick={() => handleSwitchSelectedUser(user)}
+              sx={{
+                border: '1px solid transparent',
+                '&:hover': {
+                  borderColor: theme.backgroundColor3,
+                  borderRadius: '20px',
+                  color : theme.color2,
+                  cursor: 'pointer'
+                },
+                padding: 1 
+              }}
+            >
+              <img
+                src={user.profilePicture}
+                alt={user.lastName}
+                className="user-avatar"
+                style={{ width: 40, height: 40, borderRadius: "50%" }}
+              />
+              <Box sx={{ ml: 1 }}>
+                <Typography variant="body2">
+                  {user.firstName} {user.lastName}
+                </Typography>
+              </Box>
+            </ListItem>
+          ))}
+        </List>
       </Box>
+
+      {selectedUser !== null ? (<>
 
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <Box
@@ -122,17 +147,17 @@ const Chat = ({ onClose }) => {
           }}
         >
           <img
-            src={selectedUser.avatar}
-            alt={selectedUser.name}
+            src={selectedUser.profilePicture}
+            alt={selectedUser.lastName}
             className="user-avatar"
             style={{ width: 40, height: 40, borderRadius: "50%" }}
           />
 
           
-          
+
           <Box sx={{ ml: 1 }}>
-            <Typography variant="subtitle1">{selectedUser.name}</Typography>
-            <Typography variant="caption">{selectedUser.status}</Typography>
+            <Typography variant="subtitle1">{selectedUser.firstName} {selectedUser.lastName}</Typography>
+            <Typography variant="caption">Coins: {selectedUser.coins}</Typography>
           </Box>
           <Box sx={{ marginLeft: "auto" }}>
             <Button
@@ -154,7 +179,7 @@ const Chat = ({ onClose }) => {
             flexGrow: 1,
             overflowY: "auto",
             p: 1,
-            scrollBehavior: "smooth", // Thêm để cuộn mượt hơn
+            scrollBehavior: "smooth", 
           }}
         >
           {messages.map((message) => (
@@ -162,7 +187,7 @@ const Chat = ({ onClose }) => {
               key={message.id}
               sx={{
                 mb: 1,
-                textAlign: message.senderId === 1 ? "right" : "left",
+                textAlign: message.senderId === userInSession.userId ? "right" : "left",
               }}
             >
               <Box
@@ -170,16 +195,16 @@ const Chat = ({ onClose }) => {
                   display: "inline-block",
                   p: 1,
                   bgcolor:
-                    message.senderId === 1 ? "primary.main" : "grey.300",
-                  color: message.senderId === 1 ? "white" : "black",
+                    message.senderId === userInSession.userId ? "primary.main" : "grey.300",
+                  color: message.senderId === userInSession.userId ? "white" : "black",
                   borderRadius: 1,
                   maxWidth: "80%",
                 }}
               >
-                {message.content}
+                {message.messageContent}
               </Box>
-              <Typography variant="caption">
-                {formatTimestamp(message.timestamp)}
+              <Typography variant="caption" sx={{marginLeft: '4.8px'}}>
+                {formatTimestamp(message.dateSent)}
               </Typography>
             </Box>
           ))}
@@ -222,7 +247,7 @@ const Chat = ({ onClose }) => {
           </Button>
         </Box>
       </Box>
-
+      </>): ("")}
       <Popover
         open={openPopover}
         anchorEl={anchorEl}
@@ -236,6 +261,7 @@ const Chat = ({ onClose }) => {
         </Typography>
       </Popover>
     </Box>
+
   );
 };
 

@@ -9,7 +9,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import ChatIcon from "@mui/icons-material/Chat";
-import PropTypes from "prop-types";
+import PropTypes, { number } from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
@@ -68,6 +68,8 @@ import { Follow } from "../../Interfaces/FollowingInterface";
 import { DeleteFollowUser } from "../../API/UserAPI/DELETE.tsx";
 import { CheckFollowStatus } from "../../API/UserAPI/GET.tsx";
 import CommissionForm from "./CommissionForm.tsx";
+import { Chat, Message } from "../../Interfaces/ChatInterfaces.ts";
+import { createChat } from "../../API/ChatAPT/POST.tsx";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -501,7 +503,14 @@ export default function ProfileUser() {
   // HANDLE CHATTING
 
   const handleChatting = () => {
-      
+      const newChat : Chat = {
+        chatId : 0,
+        user1Id : Number(id),
+        user2Id : Number(userInSession.userId),
+        status : 0,
+      }
+
+      createChat(newChat);
   }
 
 
