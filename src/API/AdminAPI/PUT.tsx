@@ -2,6 +2,15 @@ import axios from "axios";
 
 const adminurl = "http://localhost:7233/admin";
 
+interface ArtistFormDTO {
+  formId: number;
+  descriptions: string;
+  status: number;
+  dateCreation: string;
+  userId: number;
+  rankID: number;
+}
+
 export async function LockAccount(accountId: number) {
   try {
     await axios.put(`${adminurl}/LockAccount/${accountId}`);
@@ -14,6 +23,15 @@ export async function LockAccount(accountId: number) {
 export async function UnlockAccount(accountId: number) {
   try {
     await axios.put(`${adminurl}/UnlockAccount/${accountId}`);
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function AcceptToUpgrade(dto: ArtistFormDTO) {
+  try {
+    await axios.put(`${adminurl}/AcceptToUpgrade/`, dto);
   } catch (err) {
     console.error(err);
     throw err;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Container, Box, Typography, Paper } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { Container, Box, Typography, Paper, Button } from "@mui/material";
 import AdminNavbar from "./NavigationAd.jsx";
 import "../../css/Admin.css";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
@@ -32,6 +33,10 @@ export default function Admin() {
   const [nearest7arts, setNearest7Arts] = useState<Artwork[]>();
   const [creatorlist, setCreatorList] = useState<Creator[]>();
   const [loading, setLoading] = useState(false);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [displayOption, setDisplayOption] = useState<number | string>(10);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getArtworkCount = async () => {
@@ -374,23 +379,66 @@ export default function Admin() {
               <div className="chart" style={{ width: "700px", margin: "auto", padding: "25px" }}>
                 <Bar options={options} data={data} />
               </div>
+              <Box sx={{ mb: 2, margin: "20px" }}>
+                <select
+                  value={displayOption}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setDisplayOption(value);
+                    setItemsPerPage(value === "All" ? nearest7arts?.length || 0 : Number(value));
+                    setCurrentPage(1);
+                  }}
+                  style={{
+                    padding: "8px",
+                    borderRadius: "4px",
+                    border: "1px solid #e0e0e0",
+                    marginRight: "10px",
+                  }}>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value="All">All</option>
+                </select>
+                <span style={{ color: "#666" }}>Items per page</span>
+              </Box>
               <div className="nameworks-container">
                 {Array.isArray(nearest7arts) &&
-                  nearest7arts.filter(Boolean).map((work, index) => {
-                    // Extract and convert values to proper types
-                    const id = work?.artworkID ? String(work.artworkID).trim() : "";
-                    const name = work?.artworkName ? String(work.artworkName).trim() : "";
+                  nearest7arts
+                    .filter(Boolean)
+                    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                    .map((work, index) => {
+                      const id = work?.artworkID ? String(work.artworkID).trim() : "";
+                      const name = work?.artworkName ? String(work.artworkName).trim() : "";
 
-                    // Only render if we have valid data
-                    if (!id || !name) return null;
+                      if (!id || !name) return null;
 
-                    return (
-                      <div className="namework" key={index}>
-                        <span>{id}</span>: <span>{name}</span>
-                      </div>
-                    );
-                  })}
+                      return (
+                        <div
+                          className="namework"
+                          key={index}
+                          onClick={() => navigate(`/characters/artwork/${id}`)}
+                          style={{ cursor: "pointer", padding: "10px" }}>
+                          <span>{id}</span> <span>{name}</span>
+                        </div>
+                      );
+                    })}
               </div>
+              {displayOption !== "All" && Array.isArray(nearest7arts) && nearest7arts.length > itemsPerPage && (
+                <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2, marginBottom: "20px" }}>
+                  <Button
+                    variant="outlined"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((prev) => prev - 1)}>
+                    Back
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    disabled={currentPage * itemsPerPage >= nearest7arts.length}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}>
+                    Next
+                  </Button>
+                </Box>
+              )}
             </Box>
 
             <Box className="boxdoughnut">

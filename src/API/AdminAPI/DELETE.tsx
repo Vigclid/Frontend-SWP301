@@ -10,3 +10,12 @@ export async function DeleteArtwork(artworkId: number) {
     throw err;
   }
 }
+
+export async function RefuseToUpgrade(formId: number) {
+  try {
+    await axios.delete(`${adminurl}/RefuseToUpgrade/${formId}`);
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}

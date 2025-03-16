@@ -6,6 +6,7 @@ import ListUser from "./ListUser";
 import Report from "./Report";
 import ManageOrders from "./ManageOrders.tsx";
 import Activity from "./Activity.tsx";
+import RequestToUpgrade from "./RequestToUpgrade.tsx";
 export default function RouterAdmin() {
   return (
     <div>
@@ -14,6 +15,7 @@ export default function RouterAdmin() {
         <Route path={`/`} element={<Admin />} />
         <Route path={`listuser`} element={<ListUser />} />
         <Route path={`report`} element={<Report />} />
+        <Route path={`request-upgrade`} element={<RequestToUpgrade />} />
         <Route path={`manageorders`} element={<ManageOrders />} />
         <Route path={`activity`} element={<Activity />} />
       </Routes>

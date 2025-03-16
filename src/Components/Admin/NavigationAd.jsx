@@ -1,11 +1,15 @@
 import * as React from "react";
-import { Drawer, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Drawer, List, ListItem, ListItemIcon, ListItemText, Snackbar, Alert } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import ListItemButton from "@mui/material/ListItemButton";
 import LogoutIcon from "@mui/icons-material/Logout";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { Link } from "react-router-dom";
+import { generateAdminReport } from "./ExportPDF.tsx";
 import { useAuth } from "../AuthenContext.tsx";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 function AdminNavbar() {
@@ -19,6 +23,45 @@ function AdminNavbar() {
   // Add more navigation items here
   // ];
   const { logout } = useAuth();
+  const [exporting, setExporting] = React.useState(false);
+  const [snackbar, setSnackbar] = React.useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await generateAdminReport();
+      setSnackbar({
+        open: true,
+        message: "Report opened in new window. Please allow popups if you don't see it.",
+        severity: "success",
+      });
+    } catch (error) {
+      console.error("Error generating report:", error);
+      if (error.message?.includes("popup")) {
+        setSnackbar({
+          open: true,
+          message: "Please allow popups to generate the report",
+          severity: "warning",
+        });
+      } else {
+        setSnackbar({
+          open: true,
+          message: "Failed to generate report",
+          severity: "error",
+        });
+      }
+    } finally {
+      setExporting(false);
+    }
+  };
   return (
     <div style={{ display: "flex" }}>
       <Drawer
@@ -64,7 +107,7 @@ function AdminNavbar() {
           <Link to={"report"}>
             <ListItemButton button style={{ width: "220px", marginLeft: "10px" }}>
               <ListItemIcon>
-                <BarChartIcon style={{ color: "#fdfdff" }} />
+                <ErrorOutlineIcon style={{ color: "#fdfdff" }} />
               </ListItemIcon>
               <ListItemText primary="Reports" />
             </ListItemButton>
@@ -88,6 +131,26 @@ function AdminNavbar() {
               <ListItemText primary="Activity On ArtHub" />
             </ListItemButton>
           </Link>
+          <Link to={"request-upgrade"}>
+            <ListItemButton button style={{ width: "220px", marginLeft: "10px" }}>
+              <ListItemIcon>
+                <AutoAwesomeIcon style={{ color: "#fdfdff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Request To Upgrade" />
+            </ListItemButton>
+          </Link>
+
+          {/* Export Report */}
+          <ListItemButton
+            button
+            style={{ width: "220px", marginLeft: "10px" }}
+            onClick={handleExport}
+            disabled={exporting}>
+            <ListItemIcon>
+              <FileDownloadIcon style={{ color: "#fdfdff" }} />
+            </ListItemIcon>
+            <ListItemText primary={exporting ? "Generating..." : "Export Report"} />
+          </ListItemButton>
 
           {/* Log out */}
           <ListItemButton button style={{ width: "220px", marginLeft: "10px" }} onClick={logout}>
@@ -99,6 +162,15 @@ function AdminNavbar() {
         </List>
       </Drawer>
       <div style={{ flexGrow: 1, padding: 3 }}>{/* Main content will go here */}</div>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
