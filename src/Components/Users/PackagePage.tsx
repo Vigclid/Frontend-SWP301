@@ -11,14 +11,16 @@ import { CurrentPackage, Package } from "../../Interfaces/Package.ts";
 import { GetCurrentPackageByAccountID, GetPackage } from "../../API/PackageAPI/GET.tsx";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-import PackagePaymentConfirm from "./PackagePaymentConfirm.tsx";
+import PackagePaymentConfirm from "./PackagePaymentConfirm.tsx"; // Keep this for Purchase
+import PackageFormPopup from "./PackageFormPopup.tsx"; // Form for Send Us
 
 export default function PackagePage({ onCurrentPackageChange }) {
   const { theme, dark } = useContext(ThemeContext);
   const [packageService, setPackageService] = useState<Package[]>([]);
   const [currentPackage, setCurrentPackage] = useState<CurrentPackage | null>(null);
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // For Purchase popup
+  const [openForm, setOpenForm] = useState(false); // For Send Us form
   const [selectPackage, setSelectPackage] = useState<Package>();
 
   const savedAuth = sessionStorage.getItem("auth");
@@ -44,8 +46,16 @@ export default function PackagePage({ onCurrentPackageChange }) {
 
   const handleOpen = (pkg) => {
     setSelectPackage(pkg);
-    setOpen(!open);
+    setOpen(true);
   };
+
+  const handleOpenForm = (pkg) => {
+    setSelectPackage(pkg);
+    setOpenForm(true);
+  };
+
+  const handleClose = () => setOpen(false);
+  const handleCloseForm = () => setOpenForm(false);
 
   // Define benefits for each package typeId
   const benefitsMap = {
@@ -80,8 +90,6 @@ export default function PackagePage({ onCurrentPackageChange }) {
         <CardContent>
           <Box
             sx={{ display: "flex", flexDirection: "column", margin: "40px 20px 20px 20px", alignItems: "flex-start" }}>
-            {" "}
-            {/* Tăng margin-top từ 20px lên 40px */}
             <Typography
               gutterBottom
               variant="h4"
@@ -97,11 +105,11 @@ export default function PackagePage({ onCurrentPackageChange }) {
           <Box
             sx={{
               color: "white",
-              margin: "20px 20px 20px 20px" /* Giữ margin-top nhỏ hơn để không đẩy quá xa */,
+              margin: "20px 20px 20px 20px",
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
-              minHeight: "180px" /* Giữ chiều cao tối thiểu */,
+              minHeight: "180px",
             }}>
             <Stack spacing={1}>
               {benefits.map((benefit, index) => (
@@ -122,8 +130,6 @@ export default function PackagePage({ onCurrentPackageChange }) {
             flexDirection: "column",
             alignItems: "center",
           }}>
-          {" "}
-          {/* Bọc Button và Typography để định vị cố định từ đáy */}
           <Button
             disabled={currentPackage?.typeID === service.typeId}
             sx={{
@@ -153,7 +159,7 @@ export default function PackagePage({ onCurrentPackageChange }) {
                 textAlign: "center",
                 fontFamily: "UniSpace",
                 color: theme.color3,
-                marginTop: "100px" /* Khoảng cách trên giữa Button và Typography */,
+                marginTop: "100px",
                 display: "block",
                 margin: "0 auto",
               }}
@@ -218,7 +224,7 @@ export default function PackagePage({ onCurrentPackageChange }) {
             alignSelf: "flex-start",
             ":hover": { border: "solid 1px #FFCF50", color: "#FFCF50" },
           }}
-          onClick={() => handleOpen(service)}>
+          onClick={() => handleOpenForm(service)}>
           Send Us
         </Button>
       </Box>
@@ -276,7 +282,8 @@ export default function PackagePage({ onCurrentPackageChange }) {
         </Box>
         <Box sx={{ padding: "0% 2% 2% 2%" }}>{packageService[4] && renderArtistCard(packageService[4])}</Box>
       </Box>
-      <PackagePaymentConfirm open={open} handleClose={handleOpen} item={selectPackage} />
+      <PackagePaymentConfirm open={open} handleClose={handleClose} item={selectPackage} />
+      <PackageFormPopup open={openForm} handleClose={handleCloseForm} />
     </div>
   );
 }
