@@ -38,10 +38,17 @@ export async function GetArtsNoImageByCreatorId(id: string) {
 
 export async function GetRecentArtListLikeCount() {
   try {
-    let artList: Artwork[] = await axios.get(recentartworks).then((response) => response.data);
-    return artList;
+    const response = await axios.get(recentartworks);
+    const artList: Artwork[] = Array.isArray(response.data) ? response.data : [];
+    return artList.map((art) => ({
+      ...art,
+      artworkID: String(art.artworkID || ""),
+      artworkName: String(art.artworkName || ""),
+      likes: Number(art.likes || 0),
+    }));
   } catch (err) {
     console.log(err);
+    return [];
   }
 }
 
