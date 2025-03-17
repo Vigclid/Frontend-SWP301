@@ -3,7 +3,7 @@ import { Creator } from "../../Interfaces/UserInterface";
 import { Chat, Message } from "../../Interfaces/ChatInterfaces";
 
 const chatURL = `http://localhost:7233/api/chat/`;
-
+const messagesURL = `http://localhost:7233/api/message/`;
 
 export const getChatProfileByUserId = async(id : number) => {
     try {

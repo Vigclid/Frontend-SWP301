@@ -39,18 +39,30 @@ export default function FavouritesIcon({ userID, artworkID }) {
   }, []);
 
   useEffect(() => {
-    // Cái này để xử lý animation khi isClicked thay đổi
-    if (isClicked) {
-      for (const span of spansRef.current) {
-        span.classList.add("anim");
+    if (isClicked && spansRef.current) {
+      // Lưu lại giá trị của spansRef.current vào một biến để dễ sử dụng
+      const spans = spansRef.current;
+      for (const span of spans) {
+        if (span) {
+          span.classList.add("anim");
+        }
       }
-      setTimeout(() => {
-        for (const span of spansRef.current) {
-          span.classList.remove("anim");
+      const timeoutId = setTimeout(() => {
+        // Kiểm tra lại trước khi xử lý
+        if (spansRef.current) {
+          for (const span of spansRef.current) {
+            if (span) {
+              span.classList.remove("anim");
+            }
+          }
         }
       }, 700);
+      
+      // Dọn dẹp timeout khi component unmount hoặc isClicked thay đổi
+      return () => clearTimeout(timeoutId);
     }
   }, [isClicked]);
+  
 
   return (
     <div className="hero">

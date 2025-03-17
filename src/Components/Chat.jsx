@@ -9,28 +9,60 @@ import Typography from "@mui/material/Typography";
 import Popover from "@mui/material/Popover";
 import { ThemeContext } from "./Themes/ThemeProvider.tsx";
 import { Button } from "@mui/material";
+import { sendMessage } from "../API/ChatAPT/POST.tsx";
 
-const Chat = ({ onClose , chat, chatProfile , message , userInSession}) => {
-  const chatRef = useRef(null); 
-  const [messages, setMessages] = useState(
-    message.filter(message => (message.senderId === userInSession.userId || message.receiverId === userInSession.userId) &&
-    (message.senderId === chatProfile[0].userId || message.receiverId === chatProfile[0].userId)
-    ));
-  const [newMessage, setNewMessage] = useState("");
-  const [selectedUser, setSelectedUser] = useState(chatProfile[0]);
+const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }) => {
+  const chatRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const [messages, setMessages] = useState(() => {
+    if (!message || !chatProfile || !chatProfile[0]) {
+      return [];
+    }
+    return message.filter(
+      (msg) =>
+        (msg.senderId === userInSession.userId || msg.receiverId === userInSession.userId) &&
+        (msg.senderId === chatProfile[0].userId || msg.receiverId === chatProfile[0].userId)
+    );
+  });
+  const [newMessage, setNewMessage] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [previewChat, setPreviewChat] = useState(null);
-  const {theme} = useContext(ThemeContext);
-  
+  const { theme } = useContext(ThemeContext);
+
+  // Cập nhật selectedUser dựa trên chatProfile
+  useEffect(() => {
+    if (chatProfile && chatProfile.length > 0) {
+      setSelectedUser(chatProfile[0]);
+    } else {
+      setSelectedUser(null);
+    }
+  }, [chatProfile]);
+
+  // Cập nhật messages khi message hoặc selectedUser thay đổi
+  useEffect(() => {
+    if (selectedUser && message) {
+      setMessages(
+        message.filter(
+          (msg) =>
+            (msg.senderId === userInSession.userId || msg.receiverId === userInSession.userId) &&
+            (msg.senderId === selectedUser.userId || msg.receiverId === selectedUser.userId)
+        )
+      );
+    } else {
+      setMessages([]);
+    }
+  }, [message, selectedUser, userInSession]);
+
+  // Cuộn xuống cuối danh sách tin nhắn
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
+  // Đóng chat khi click bên ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (chatRef.current && !chatRef.current.contains(event.target)) {
@@ -41,47 +73,47 @@ const Chat = ({ onClose , chat, chatProfile , message , userInSession}) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-
-
-  //HANDLE
-  useEffect(() => {
-    
-  }, [chatProfile, messages]);  
-
-
-
+  // Gửi tin nhắn
   const handleSendMessage = (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !selectedUser) return;
     const newMsg = {
-      id: messages.length + 1,
-      senderId: 1,
-      content: newMessage,
-      timestamp: new Date().toISOString(),
+      senderId: userInSession.userId,
+      receiverId: selectedUser.userId,
+      messageContent: newMessage,
+      dateSent: new Date(),
     };
-    setMessages((prev) => [...prev, newMsg]);
+    setMessage((prev) => [...prev, newMsg]);
+    sendMessage(newMsg);
     setNewMessage("");
   };
 
+  // Định dạng thời gian
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-
+  // Đóng popover
   const handlePopoverClose = () => {
     setAnchorEl(null);
     setPreviewChat(null);
   };
-
   const openPopover = Boolean(anchorEl);
 
-  const handleSwitchSelectedUser = async(user) => {
-    setSelectedUser(user)
-    setMessages( message.filter(message => (message.senderId === userInSession.userId || message.receiverId === userInSession.userId) &&
-    (message.senderId === user.userId || message.receiverId === user.userId)
-    ))
-  }
+  // Chuyển đổi người dùng được chọn
+  const handleSwitchSelectedUser = (user) => {
+    setSelectedUser(user);
+    setMessages(
+      message
+        ? message.filter(
+            (msg) =>
+              (msg.senderId === userInSession.userId || msg.receiverId === userInSession.userId) &&
+              (msg.senderId === user.userId || msg.receiverId === user.userId)
+          )
+        : []
+    );
+  };
 
   return (
     <Box
@@ -91,163 +123,169 @@ const Chat = ({ onClose , chat, chatProfile , message , userInSession}) => {
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        width: '70%',
-        height: '80%',
+        width: "70%",
+        height: "80%",
         boxShadow: 3,
         borderRadius: 2,
-        color :theme.color,
+        color: theme.color,
         backgroundColor: theme.backgroundColor,
         display: "flex",
       }}
     >
-      
-      
+      {/* Danh sách người dùng */}
       <Box sx={{ width: "200px", borderRight: "1px solid #ccc" }}>
-        <List>
-          {chatProfile.map((user,index) => (
-            <ListItem
-              key={index}
-              onClick={() => handleSwitchSelectedUser(user)}
-              sx={{
-                border: '1px solid transparent',
-                '&:hover': {
-                  borderColor: theme.backgroundColor3,
-                  borderRadius: '20px',
-                  color : theme.color2,
-                  cursor: 'pointer'
-                },
-                padding: 1 
-              }}
-            >
-              <img
-                src={user.profilePicture}
-                alt={user.lastName}
-                className="user-avatar"
-                style={{ width: 40, height: 40, borderRadius: "50%" }}
-              />
-              <Box sx={{ ml: 1 }}>
-                <Typography variant="body2">
-                  {user.firstName} {user.lastName}
-                </Typography>
-              </Box>
-            </ListItem>
-          ))}
-        </List>
+        {chatProfile && chatProfile.length > 0 ? (
+          <List>
+            {chatProfile.map((user, index) => (
+              <ListItem
+                key={index}
+                onClick={() => handleSwitchSelectedUser(user)}
+                sx={{
+                  border: "1px solid transparent",
+                  "&:hover": {
+                    borderColor: theme.backgroundColor3,
+                    borderRadius: "20px",
+                    color: theme.color2,
+                    cursor: "pointer",
+                  },
+                  padding: 1,
+                }}
+              >
+                <img
+                  src={user.profilePicture}
+                  alt={user.lastName}
+                  className="user-avatar"
+                  style={{ width: 40, height: 40, borderRadius: "50%" }}
+                />
+                <Box sx={{ ml: 1 }}>
+                  <Typography variant="body2">
+                    {user.firstName} {user.lastName}
+                  </Typography>
+                </Box>
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          <Typography>Không có người dùng nào</Typography>
+        )}
       </Box>
 
-      {selectedUser !== null ? (<>
-
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            p: 1,
-            borderBottom: "1px solid #ccc",
-          }}
-        >
-          <img
-            src={selectedUser.profilePicture}
-            alt={selectedUser.lastName}
-            className="user-avatar"
-            style={{ width: 40, height: 40, borderRadius: "50%" }}
-          />
-
-          
-
-          <Box sx={{ ml: 1 }}>
-            <Typography variant="subtitle1">{selectedUser.firstName} {selectedUser.lastName}</Typography>
-            <Typography variant="caption">Coins: {selectedUser.coins}</Typography>
+      {/* Giao diện chat */}
+      {selectedUser ? (
+        <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              p: 1,
+              borderBottom: "1px solid #ccc",
+            }}
+          >
+            <img
+              src={selectedUser.profilePicture}
+              alt={selectedUser.lastName}
+              className="user-avatar"
+              style={{ width: 40, height: 40, borderRadius: "50%" }}
+            />
+            <Box sx={{ ml: 1 }}>
+              <Typography variant="subtitle1">
+                {selectedUser.firstName} {selectedUser.lastName}
+              </Typography>
+              <Typography variant="caption">Coins: {selectedUser.coins}</Typography>
+            </Box>
+            <Box sx={{ marginLeft: "auto" }}>
+              <Button
+                onClick={onClose}
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "20px",
+                  cursor: "pointer",
+                }}
+              >
+                ×
+              </Button>
+            </Box>
           </Box>
-          <Box sx={{ marginLeft: "auto" }}>
-            <Button
-              onClick={onClose}
+
+          <Box
+            sx={{
+              flexGrow: 1,
+              overflowY: "auto",
+              p: 1,
+              scrollBehavior: "smooth",
+            }}
+          >
+            {messages.map((message, index) => (
+              <Box
+                key={index}
+                sx={{
+                  mb: 1,
+                  textAlign: message.senderId === userInSession.userId ? "right" : "left",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "inline-block",
+                    p: 1,
+                    bgcolor:
+                      message.senderId === userInSession.userId ? "primary.main" : "grey.300",
+                    color: message.senderId === userInSession.userId ? "white" : "black",
+                    borderRadius: 1,
+                    maxWidth: "80%",
+                  }}
+                >
+                  {message.messageContent}
+                </Box>
+                <Typography variant="caption" sx={{ marginLeft: "4.8px" }}>
+                  {formatTimestamp(message.dateSent)}
+                </Typography>
+              </Box>
+            ))}
+            <div ref={messagesEndRef} />
+          </Box>
+
+          <Box
+            component="form"
+            sx={{
+              display: "flex",
+              p: 1,
+              borderTop: "1px solid #ccc",
+            }}
+            onSubmit={handleSendMessage}
+          >
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Nhập tin nhắn..."
               style={{
-                background: "none",
-                border: "none",
-                fontSize: "20px",
+                flexGrow: 1,
+                padding: "8px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+              }}
+            />
+            <Button
+              type="submit"
+              style={{
+                marginLeft: "8px",
+                display: "flex",
+                alignItems: "center",
                 cursor: "pointer",
+                border: "none",
+                background: "none",
               }}
             >
-              ×
+              <SendIcon />
             </Button>
           </Box>
         </Box>
+      ) : (
+        <Typography>Không có cuộc trò chuyện nào được chọn</Typography>
+      )}
 
-        <Box
-          sx={{
-            flexGrow: 1,
-            overflowY: "auto",
-            p: 1,
-            scrollBehavior: "smooth", 
-          }}
-        >
-          {messages.map((message) => (
-            <Box
-              key={message.id}
-              sx={{
-                mb: 1,
-                textAlign: message.senderId === userInSession.userId ? "right" : "left",
-              }}
-            >
-              <Box
-                sx={{
-                  display: "inline-block",
-                  p: 1,
-                  bgcolor:
-                    message.senderId === userInSession.userId ? "primary.main" : "grey.300",
-                  color: message.senderId === userInSession.userId ? "white" : "black",
-                  borderRadius: 1,
-                  maxWidth: "80%",
-                }}
-              >
-                {message.messageContent}
-              </Box>
-              <Typography variant="caption" sx={{marginLeft: '4.8px'}}>
-                {formatTimestamp(message.dateSent)}
-              </Typography>
-            </Box>
-          ))}
-          <div ref={messagesEndRef} />
-        </Box>
-
-        <Box
-          component="form"
-          sx={{
-            display: "flex",
-            p: 1,
-            borderTop: "1px solid #ccc",
-          }}
-          onSubmit={handleSendMessage}
-        >
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            style={{
-              flexGrow: 1,
-              padding: "8px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-            }}
-          />
-          <Button
-            type="submit"
-            style={{
-              marginLeft: "8px",
-              display: "flex",
-              alignItems: "center",
-              cursor: "pointer",
-              border: "none",
-              background: "none",
-            }}
-          >
-            <SendIcon />
-          </Button>
-        </Box>
-      </Box>
-      </>): ("")}
+      {/* Popover xem trước */}
       <Popover
         open={openPopover}
         anchorEl={anchorEl}
@@ -261,7 +299,6 @@ const Chat = ({ onClose , chat, chatProfile , message , userInSession}) => {
         </Typography>
       </Popover>
     </Box>
-
   );
 };
 

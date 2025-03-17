@@ -505,7 +505,7 @@ export default function ProfileUser() {
   const handleChatting = () => {
       const newChat : Chat = {
         chatId : 0,
-        user1Id : Number(id),
+        user1Id : Number(user?.userId),
         user2Id : Number(userInSession.userId),
         status : 0,
       }
