@@ -719,7 +719,12 @@ export default function ProfileUser() {
                   )}
 
                   {/* Popup Report */}
-                  <Dialog open={open} onClose={handleClose}>
+                  <Dialog open={open} onClose={handleClose} className="dialog-custom" // Áp dụng class từ ArtPost.css
+                          BackdropProps={{
+                            sx: {
+                              backgroundColor: "rgba(0, 0, 0, 0.5)", // Lớp phủ mờ
+                            },
+                          }}>
                     <ReportForm
                         reporterId={Number(userInSession.userId)}
                         reportedId={Number(user?.userId)}
