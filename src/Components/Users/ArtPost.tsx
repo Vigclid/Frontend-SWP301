@@ -234,7 +234,6 @@ export default function PostWork() {
   }
   return (
     <Box sx={{ paddingTop: "2%" }}>
-      <DevToolsBlocker />
       <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 100 }} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>

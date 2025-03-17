@@ -46,3 +46,13 @@ export async function UpdateReportStatus(reportId: number) {
     throw err;
   }
 }
+
+export const AcceptWithdraw = async (withdrawId: number) => {
+  try {
+    const response = await axios.put(adminurl + `/AcceptWithdraw/${withdrawId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error accepting withdraw:", error);
+    throw error;
+  }
+};

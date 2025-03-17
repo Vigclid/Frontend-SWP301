@@ -36,21 +36,6 @@ export default function RecommendedWords({ artworkList, user }) {
     return creator ? `${creator.firstName} ${creator.lastName}` : "Unknown Author";
   };
 
-  //Covert Blob to Base64 string to easily view the image
-  function blobToBase64(blob: Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        const base64data = reader.result as string;
-        resolve(base64data);
-      };
-      reader.onerror = (error) => {
-        reject(error);
-      };
-    });
-  }
-
   function ReccomendedArts() {
     return (
       <ImageList className="recommendedImages" cols={5}>

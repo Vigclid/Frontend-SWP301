@@ -8,6 +8,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { Link } from "react-router-dom";
 import { generateAdminReport } from "./ExportPDF.tsx";
 import { useAuth } from "../AuthenContext.tsx";
@@ -112,13 +113,14 @@ function AdminNavbar() {
               <ListItemText primary="Reports" />
             </ListItemButton>
           </Link>
-          {/* ManageOrders */}
-          <Link to={"manageorders"}>
+
+          {/* Withdraw Management */}
+          <Link to={"withdraw-management"}>
             <ListItemButton button style={{ width: "220px", marginLeft: "10px" }}>
               <ListItemIcon>
-                <ManageAccountsIcon style={{ color: "#fdfdff" }} />
+                <AccountBalanceWalletIcon style={{ color: "#fdfdff" }} />
               </ListItemIcon>
-              <ListItemText primary="Manage Orders" />
+              <ListItemText primary="Withdraw Management" />
             </ListItemButton>
           </Link>
 
