@@ -18,7 +18,7 @@ import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import { Notification } from '../../Interfaces/NotificationInterfaces.ts';
 import axios from "axios";
-
+import { useAuth } from '../AuthenContext.tsx';
 const notificationsURL = "http://localhost:7233/api/notification/"
 const followingUserByFollowId = "http://localhost:7233/api/Follow/user/"
 interface CustomizedDropdownProps {
@@ -28,6 +28,8 @@ interface CustomizedDropdownProps {
 function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedDropdownProps)  {
 
     const audioRef = useRef(new Audio('/audios/notification.mp3'));
+
+    const { logout } = useAuth();
 
     const { theme } = useContext(ThemeContext);
     const [anchorEl, setAnchorEl] = useState(null)
@@ -72,6 +74,11 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
           // Cập nhật state với thông báo mới
           setNotifications(prev => [notification, ...prev]);
         });
+
+        stompClient.subscribe(`/topic/lockUser/${user.accountId}`, message => {
+          logout();
+          alert("Your account has been banned by Admin.");
+        });
       });
   
       // Cleanup khi component unmount
@@ -83,11 +90,20 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
 
     useEffect(() =>{
       const fetchProfiles = async () => {
+
         const profilePromises = notifications.map(async (notification) => {
-          if (notification.followID && !profiles[notification.followID]) { // Sử dụng followID làm key
+          
+          if (notification.followID && !profiles[notification.notificationId]) { // Sử dụng followID làm key
             const response = await axios.get(`${followingUserByFollowId}${notification.followID}`);
-            return { userId: notification.followID, profile: response.data };
+            
+            return { userId: notification.notificationId, profile: response.data };
           }
+          
+          if (notification.transferID && !profiles[notification.notificationId]) { // Sử dụng followID làm key
+            const response = await axios.get(`http://localhost:7233/api/Payment/trans/sender/${notification.transferID}`);
+            return { userId: notification.notificationId, profile: response.data };
+          }
+
           return null;
         });
     
@@ -139,8 +155,8 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
           {(
             <List>
             {notifications.map((notification, index) => {
-            const profile = notification.followID ? profiles[notification.followID] : null;
-
+            const profile = notification.notificationId ? profiles[notification.notificationId] : null;
+            
             return (
               <Link to={`profile/${profile?.accountId}`}>
                 <ListItemButton key={index}>
@@ -150,7 +166,11 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
                   <ListItemText 
 
                     primary={`Hello ${user.firstName} ${user.lastName}`} 
-                    secondary={`${notification.message} | ${profile?.firstName} ${profile?.lastName}`}
+                    secondary={
+                      notification.message?.includes('#3') ? `${notification.message?.slice(2)} | ${notification.amount}$ | ${profile?.firstName} ${profile?.lastName}`:
+                      notification.message?.includes('#2') ? `You just withdrawl ${notification.amount}!` :
+                        `${notification.message} | ${profile?.firstName} ${profile?.lastName}`
+                    }
                     primaryTypographyProps={{ sx: { color: theme.color } }}
                     secondaryTypographyProps={{ sx: { color:  theme.color2 } }}
                   />

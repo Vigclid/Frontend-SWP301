@@ -7,4 +7,5 @@ export interface Notification {
     isRead : number 
     followID : number | undefined
     amount : number | undefined
+    transferID: number | undefined
 }

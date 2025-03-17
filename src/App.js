@@ -13,7 +13,7 @@ function App() {
   const role = sessionStorage.getItem("userRole");
   return (
     <div className="App">
-      <DevToolsBlocker />
+      
       <Routes>
         <Route path="/" element={<FrontPage />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
