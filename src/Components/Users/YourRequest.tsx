@@ -42,47 +42,47 @@ export default function YourRequest() {
   if (savedUser === null) {
     navigate(`/`)
   }
-  
+
   useEffect(() => {
     const getCommissionForm = async () => {
-        if (!savedUser || !savedUser.userId) {
-            console.error("❌ Không tìm thấy userId từ sessionStorage!");
-            return;
-        }
-        
-        console.log("🟢 Requestor ID gửi lên API:", savedUser.userId);
+      if (!savedUser || !savedUser.userId) {
+        console.error("❌ Không tìm thấy userId từ sessionStorage!");
+        return;
+      }
 
-        let commissionForm = await GetCommissionRequestorById(savedUser.userId);
-        console.log("🟢 Danh sách commission của requestor:", commissionForm);
+      console.log("🟢 Requestor ID gửi lên API:", savedUser.userId);
 
-        // Fetch requestorUserName nếu chưa có hoặc là "Unknown User"
-        const updatedCommissions = await Promise.all(
-            commissionForm.map(async (commission) => {
-                if (!commission.requestorUserName || commission.requestorUserName === "Unknown User") {
-                    try {
-                        let userData = await GetUserNameById(commission.requestorID);
-                        if (userData && userData.userName) {
-                            commission.requestorUserName = userData.userName;
-                        } else {
-                            commission.requestorUserName = "Unknown User";
-                        }
-                    } catch (error) {
-                        console.error("❌ Lỗi khi lấy User:", error);
-                    }
-                }
-                return commission;
-            })
-        );
+      let commissionForm = await GetCommissionRequestorById(savedUser.userId);
+      console.log("🟢 Danh sách commission của requestor:", commissionForm);
 
-        setCommissionList(updatedCommissions ?? []);
+      // Fetch requestorUserName nếu chưa có hoặc là "Unknown User"
+      const updatedCommissions = await Promise.all(
+        commissionForm.map(async (commission) => {
+          if (!commission.requestorUserName || commission.requestorUserName === "Unknown User") {
+            try {
+              let userData = await GetUserNameById(commission.requestorID);
+              if (userData && userData.userName) {
+                commission.requestorUserName = userData.userName;
+              } else {
+                commission.requestorUserName = "Unknown User";
+              }
+            } catch (error) {
+              console.error("❌ Lỗi khi lấy User:", error);
+            }
+          }
+          return commission;
+        })
+      );
+
+      setCommissionList(updatedCommissions ?? []);
     };
 
     getCommissionForm();
-}, []);
+  }, []);
 
 
-  
-  
+
+
 
 
   //  MUI Dialog
@@ -98,7 +98,7 @@ export default function YourRequest() {
 
   const [open, setOpen] = React.useState(false);
 
-  const handleClickOpen = (commission:ICommissionForm) => {
+  const handleClickOpen = (commission: ICommissionForm) => {
     setOpen(true);
     setAcceptedItems(commission)
   };
@@ -155,9 +155,9 @@ export default function YourRequest() {
                         </div>
                         <div className='contentcommission'>
                           <div>
-                            <div> 
-                            <Typography variant='body1'>Phone: {commision.requestorPhone}</Typography>
-                            <Typography variant='body1'>Email: {commision.requestorEmail}</Typography>
+                            <div>
+                              <Typography variant='body1'>Phone: {commision.requestorPhone}</Typography>
+                              <Typography variant='body1'>Email: {commision.requestorEmail}</Typography>
                               <Typography variant='body1' style={{ fontWeight: 'bold' }}> Description: </Typography>
                               <span> {commision.description}</span>
                             </div>
@@ -214,9 +214,16 @@ export default function YourRequest() {
                 })}
               </Stepper>
 
+              {/* Display Artwork URL if it is not null */}
+              {acceptedItems?.artworkURL && acceptedItems.artworkURL !== null && (
+                <Typography variant="body1" style={{ marginTop: '15px', color: theme.color }}>
+                  ArtworkURL: <a href={acceptedItems.artworkURL} target="_blank" rel="noopener noreferrer">{acceptedItems.artworkURL}</a>
+                </Typography>
+              )}
             </Box>
           </DialogContent>
         </BootstrapDialog>
+
       </Box></div>
   )
 }

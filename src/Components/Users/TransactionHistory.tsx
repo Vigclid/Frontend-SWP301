@@ -38,8 +38,27 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from "axios";
 import {PostPayment} from "../../API/PaymentAPI/POST.tsx"
-
+import { GetBuyerTransactions, GetSellerTransactions } from "../../API/TransactionAPI/GET.tsx";
+import { GetCreatorByID } from '../../API/UserAPI/GET.tsx';
 // MUI Tab
+interface Transaction {
+  transactionID: number;
+  price: number;
+  buyDate: string;
+  sellerID: number;
+  buyerID: number;
+  artworkID: number;
+}
+interface TransactionTableProps {
+  transactions: Transaction[];
+  users: { [key: number]: Creator };
+  onRedirect: (artworkId: number) => void;
+  page: number;
+  rowsPerPage: number;
+  handleChangePage: (event: unknown, newPage: number) => void;
+  handleChangeRowsPerPage: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  theme: any;
+}
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -114,6 +133,12 @@ export default function TransactionHistory() {
   const [loading, setLoading] = useState(false);
   const [orderHeader, setOrderHeader] = useState<OrderHeader[] | undefined>()
 
+
+  const [buyerTransactions, setBuyerTransactions] = useState<Transaction[]>([]);
+  const [sellerTransactions, setSellerTransactions] = useState<Transaction[]>([]);
+  const [transactionUsers, setTransactionUsers] = useState<{ [key: number]: Creator }>({});
+
+
   const [payments, setPayments] = useState<Payment[]>([])
   //Handle button in deposit coin history
   const [checkTransCode,setCheckTransCode] = useState<Boolean>(true);
@@ -125,21 +150,61 @@ export default function TransactionHistory() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const orderYouBuyandSell = async () => {
-      setLoading(true)
-      let orderByBuyer: OrderDetailsExtended[] = await GetOrderDetailByBuyer(user?.creatorID)
-      setOrderByBuyer(orderByBuyer)
-      let orderBySeller: OrderDetailsExtended[] = await GetOrderDetailBySeller(user?.creatorID)
-      setOrderBySeller(orderBySeller)
-      let orderHeader: OrderHeader[] | undefined = await GetOrderHeader()
-      setOrderHeader(orderHeader)
-      let paymentsByUserId : Payment[] = await getPaymentsByUserId(user?.userId);
-      setPayments(paymentsByUserId);
-      setLoading(false)
-    }
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        if (!user?.userId) {
+          console.error("User not logged in");
+          return;
+        }
 
-    orderYouBuyandSell()
-  }, [])
+        // Fetch payments
+        const paymentsByUserId = await getPaymentsByUserId(user.userId.toString());
+        if (!paymentsByUserId) {
+          throw new Error("Failed to fetch payments");
+        }
+        setPayments(paymentsByUserId);
+
+        // Fetch transactions
+        const [buyerData, sellerData] = await Promise.all([
+          GetBuyerTransactions(user.userId),
+          GetSellerTransactions(user.userId),
+        ]);
+
+        if (!buyerData || !sellerData) {
+          throw new Error("Failed to fetch transactions");
+        }
+
+        setBuyerTransactions(buyerData);
+        setSellerTransactions(sellerData);
+
+        // Fetch user details for all transactions
+        const userIds = new Set([
+          ...buyerData.map((t) => t.buyerID),
+          ...buyerData.map((t) => t.sellerID),
+          ...sellerData.map((t) => t.buyerID),
+          ...sellerData.map((t) => t.sellerID),
+        ]);
+
+        const userPromises = Array.from(userIds).map((id) => GetCreatorByID(id.toString()));
+        const users = await Promise.all(userPromises);
+
+        const userMap = {};
+        users.forEach((user, index) => {
+          if (user) {
+            userMap[Array.from(userIds)[index]] = user;
+          }
+        });
+
+        setTransactionUsers(userMap);
+      } catch (error) {
+        console.error("Error fetching transaction data:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [user?.userId])
 
   const redirect = (artID) => {
     navigate(`../artwordrecomment/artwork/${artID}`)
@@ -172,7 +237,7 @@ export default function TransactionHistory() {
        onSubmit: (values) => {
         setLoadingButton(true);
         const _checkExists = async () => {
-          const AppScirpt = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjE04cVzXwl8n8mWjcw50NtmsGqaPGh5Xi7wfw1BpWjMmDZLQ0If13bJtyv9ccr6oQ7UbaRsgaFSgdBKB6OMA5JEMzS2YIHNe_yjBur16xzMCzHpVKSI-KNs6g9aVNYj8gxjsg_NZ0IxaE2KmtDiI1S1nbWYUvAs0UKs6LBh4nuL2icG6nF2CdT3rbnXbYLra8L0cmpEoU0X_dsMsolok_FT4U8E8Z9gtxRn1QwTfl0SiCiTxJCXoK1fyVVuisJN0kFlmL1_8z_iVkUGPg3cYgTUuZd2g&lib=MLQuxm21goJkl3evos7ArRqisV3GZFA2q"
+          const AppScirpt = "https://script.google.com/macros/s/AKfycbznOS8HW3m9CjNjcMGcG28PvSt8b4acEK15pku5HAfYyt7p0v5ZYr6i5IVIRm1tzgH2/exec"
           
           const _a = Boolean(await checkPaymentTransCodeExist(values.transCode))
           if (!_a) {
@@ -238,6 +303,171 @@ export default function TransactionHistory() {
         
        },
   })
+
+
+
+  const BoughtTransactionsTable: React.FC<TransactionTableProps> = ({
+    transactions,
+    users,
+    onRedirect,
+    page,
+    rowsPerPage,
+    handleChangePage,
+    handleChangeRowsPerPage,
+    theme,
+  }) => (
+    <TableContainer component={Paper} style={{ marginBottom: "50px", marginTop: "40px" }}>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+          <TableRow style={{ backgroundColor: "#0b81ff" }}>
+            <StyledTableCell style={{ color: "white" }} align="left">
+              Buyer
+            </StyledTableCell>
+            <StyledTableCell style={{ color: "white" }} align="left">
+              Seller
+            </StyledTableCell>
+            <StyledTableCell style={{ color: "white" }} align="left">
+              Date
+            </StyledTableCell>
+            <StyledTableCell style={{ color: "white" }} align="left">
+              Price
+            </StyledTableCell>
+            <StyledTableCell style={{ color: "white" }} align="left">
+              Artwork
+            </StyledTableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {transactions.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
+                <Typography variant="body1" sx={{ color: theme.color }}>
+                  No purchased artworks found
+                </Typography>
+              </TableCell>
+            </TableRow>
+          ) : (
+            transactions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((transaction) => (
+              <StyledTableRow key={transaction.transactionID}>
+                <StyledTableCell align="left">
+                  {users[transaction.buyerID]?.firstName} {users[transaction.buyerID]?.lastName}
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  {users[transaction.sellerID]?.firstName} {users[transaction.sellerID]?.lastName}
+                </StyledTableCell>
+                <StyledTableCell align="left">{transaction.buyDate.split("T")[0]}</StyledTableCell>
+                <StyledTableCell align="left">{transaction.price} Coins</StyledTableCell>
+                <StyledTableCell align="left">
+                  <Typography
+                    sx={{
+                      fontStyle: "italic",
+                      color: theme.color,
+                      width: "auto",
+                      cursor: "pointer",
+                      ":hover": { textDecoration: "underline" },
+                    }}
+                    onClick={() => onRedirect(transaction.artworkID)}>
+                    View
+                  </Typography>
+                </StyledTableCell>
+              </StyledTableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={transactions.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </TableContainer>
+  );
+  
+  const SoldTransactionsTable: React.FC<TransactionTableProps> = ({
+    transactions,
+    users,
+    onRedirect,
+    page,
+    rowsPerPage,
+    handleChangePage,
+    handleChangeRowsPerPage,
+    theme,
+  }) => (
+    <TableContainer component={Paper} style={{ marginBottom: "50px", marginTop: "40px" }}>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+          <TableRow style={{ backgroundColor: "#0b81ff" }}>
+            <StyledTableCell style={{ color: "white" }} align="left">
+              Seller
+            </StyledTableCell>
+            <StyledTableCell style={{ color: "white" }} align="left">
+              Buyer
+            </StyledTableCell>
+            <StyledTableCell style={{ color: "white" }} align="left">
+              Date
+            </StyledTableCell>
+            <StyledTableCell style={{ color: "white" }} align="left">
+              Price
+            </StyledTableCell>
+            <StyledTableCell style={{ color: "white" }} align="left">
+              Artwork
+            </StyledTableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {transactions.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
+                <Typography variant="body1" sx={{ color: theme.color }}>
+                  No sold artworks found
+                </Typography>
+              </TableCell>
+            </TableRow>
+          ) : (
+            transactions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((transaction) => (
+              <StyledTableRow key={transaction.transactionID}>
+                <StyledTableCell align="left">
+                  {users[transaction.sellerID]?.firstName} {users[transaction.sellerID]?.lastName}
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  {users[transaction.buyerID]?.firstName} {users[transaction.buyerID]?.lastName}
+                </StyledTableCell>
+                <StyledTableCell align="left">{transaction.buyDate.split("T")[0]}</StyledTableCell>
+                <StyledTableCell align="left">{transaction.price} Coins</StyledTableCell>
+                <StyledTableCell align="left">
+                  <Typography
+                    sx={{
+                      fontStyle: "italic",
+                      color: theme.color,
+                      width: "auto",
+                      cursor: "pointer",
+                      ":hover": { textDecoration: "underline" },
+                    }}
+                    onClick={() => onRedirect(transaction.artworkID)}>
+                    View
+                  </Typography>
+                </StyledTableCell>
+              </StyledTableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={transactions.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </TableContainer>
+  );
+
   return (
     <>
       <Backdrop
@@ -270,116 +500,33 @@ export default function TransactionHistory() {
               </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
-              <TableContainer component={Paper} style={{ marginBottom: '50px', marginTop: '40px' }}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table" >
-                  <TableHead>
-                    <TableRow style={{ backgroundColor: '#0b81ff' }}>
-                      <TableCell style={{ color: 'white' }} align="left">Artwork</TableCell>
-                      <TableCell style={{ color: 'white' }} align="left">Artist</TableCell>
-                      <TableCell style={{ color: 'white' }} align="left">Price</TableCell>
-                      <TableCell style={{ color: 'white' }} align="left">Date</TableCell>
-                      <TableCell style={{ color: 'white' }} align="left">Status</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {orderByBuyer?.map((order) => (
-                      <TableRow
-                        key={order.orderID}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                      >
-                        <TableCell component="th" scope="row">
-                          <Typography
-                            sx={{
-                              fontStyle: "italic",
-                              color: theme.color,
-                              width: "auto",
-                              ":hover": { textDecoration: "underline" },
-                            }}
-                            onClick={() => redirect(order.artWorkID)}
-                          >
-                            View
-                          </Typography>
-                        </TableCell>
-                        {/* Seller là của người bán */}
-                        <TableCell align="left">{order.sellerName}</TableCell>
-                        <TableCell align="left">{order.price}</TableCell>
-                        <TableCell align="left">{order.dateOfPurchase}</TableCell>
-                        <TableCell align="left">
-                          {order.orderID === orderHeader?.find(header => header.orderID === order.orderID).orderID && orderHeader?.find(header => header.orderID === order.orderID)?.confirmation === true ?
-                            'Complete' : 'admin is processing'}
-                        </TableCell>
-
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <TablePagination
-                  rowsPerPageOptions={5}
-                  component="div"
-                  count={Order.length}
-                  rowsPerPage={rowsPerPage}
+              <BoughtTransactionsTable
+                  transactions={buyerTransactions}
+                  users={transactionUsers}
+                  onRedirect={redirect}
                   page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  rowsPerPage={rowsPerPage}
+                  handleChangePage={handleChangePage}
+                  handleChangeRowsPerPage={handleChangeRowsPerPage}
+                  theme={theme}
                 />
-              </TableContainer>
+
             </CustomTabPanel>
+
             <CustomTabPanel value={value} index={1}>
-              <TableContainer component={Paper} style={{ marginBottom: '50px', marginTop: '40px' }}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table" >
-                  <TableHead>
-                    <TableRow style={{ backgroundColor: '#0b81ff' }}>
-                      <TableCell style={{ color: 'white' }} align="left">Artwork</TableCell>
-                      <TableCell style={{ color: 'white' }} align="left">Customer Name</TableCell>
-                      <TableCell style={{ color: 'white' }} align="left">Price</TableCell>
-                      <TableCell style={{ color: 'white' }} align="left">Date</TableCell>
-                      <TableCell style={{ color: 'white' }} align="left">Status</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {orderBySeller?.map((order) => (
-                      <TableRow
-                        key={order.orderID}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                      >
-                         <TableCell component="th" scope="row">
-                          <Typography
-                            sx={{
-                              fontStyle: "italic",
-                              color: theme.color,
-                              width: "auto",
-                              ":hover": { textDecoration: "underline" },
-                            }}
-                            onClick={() => redirect(order.artWorkID)}
-                          >
-                            View
-                          </Typography>
-                        </TableCell>
-                        {/* userNamereceiver là của người mua */}
-                        <TableCell align="left">{order.buyerName}</TableCell>
-                        <TableCell align="left">{order.price}</TableCell>
-                        <TableCell align="left">{order.dateOfPurchase}</TableCell>
-                        <TableCell align="left">
-                          {order.orderID === orderHeader?.find(header => header.orderID === order.orderID).orderID && orderHeader?.find(header => header.orderID === order.orderID)?.confirmation === true ?
-                            'Complete' :
-                            'Admin is processing'}
-                        </TableCell>
-
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <TablePagination
-                  rowsPerPageOptions={5}
-                  component="div"
-                  count={Order.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-              </TableContainer>
+              <SoldTransactionsTable
+                transactions={sellerTransactions}
+                users={transactionUsers}
+                onRedirect={redirect}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                handleChangePage={handleChangePage}
+                handleChangeRowsPerPage={handleChangeRowsPerPage}
+                theme={theme}
+              />
             </CustomTabPanel>
+
+
             <CustomTabPanel value={value} index={2}>
               <TableContainer component={Paper} style={{ marginBottom: '50px', marginTop: '40px' }}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table" >
@@ -401,7 +548,7 @@ export default function TransactionHistory() {
                             {/* userNamereceiver là của người mua */}
                             <StyledTableCell align="left">{payment.transCode}</StyledTableCell>
                             <StyledTableCell align="left">{payment.amount}</StyledTableCell>
-                            <StyledTableCell align="left">{payment.createdAt.split("T")[0]}</StyledTableCell>
+                            <StyledTableCell align="left">{payment.createdAt.split("+")[0]}</StyledTableCell>
                             <StyledTableCell align="left">
                               <Chip
                                 label={String(payment.status) === '1' ? 'Success' : 'Failed'}

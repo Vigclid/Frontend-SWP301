@@ -12,3 +12,12 @@ export interface Payment{
     // private String transCode;
 
 }
+
+export interface GetPaymentJava {
+    paymentId : number,
+    amount : number,
+    transCode : string,
+    userId : number,
+    createdAt : string,
+    status : string,
+}
