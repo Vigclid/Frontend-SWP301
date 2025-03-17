@@ -2,6 +2,16 @@ import axios from "axios";
 
 const adminurl = "http://localhost:7233/admin";
 
+export async function GetListArtistForm() {
+  try {
+    const response = await axios.get(adminurl + "/GetListArtistForm");
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
 export async function GetListReportsUnfinished() {
   try {
     const response = await axios.get(adminurl + "/ListReportsUnfinished");
