@@ -7,7 +7,7 @@ const creatonobackgroundimageurl = `http://localhost:7233/api/Creator/NotBackgro
 const accountemailurl = "http://localhost:7233/api/Account/email/";
 const countcreatorurl = "http://localhost:7233/api/Creator/CountCreators";
 const creatorvipstatusurl = `http://localhost:7233/api/Creator/GetID/UserName/Vip`;
-const gettotalartworklikesbycreatorurl = `http://localhost:7233/api/artworks/total-likes/`;
+const gettotalartworklikesbycreatorurl = `http://localhost:7233/api/artworks/total-likes/`; //day
 const top10UsersUrl = "http://localhost:7233/api/Creator/top-popular";
 const checkFollow = "http://localhost:7233/api/Follow/checkFollow";
 

@@ -85,10 +85,9 @@ export default function DashboardUser() {
   const savedUser: Creator = savedAuth ? JSON.parse(savedAuth) : null;
   const [value, setValue] = useState(0);
   useEffect(() => {
-    //const getArtworks
     const getArtworks = async () => {
       let getArtworks: Artwork[] | undefined = await GetArtsNoImageByCreatorId(savedUser.creatorID);
-      setArtworkDatas(getArtworks ?? []);  //nullish coalescing operator (??) 
+      setArtworkDatas(getArtworks ?? []);
     }
     const getCreator = async () => {
       let totalLikes = await GetTotalLikeByCreatorID(savedUser.creatorID)

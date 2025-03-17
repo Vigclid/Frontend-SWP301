@@ -2,8 +2,8 @@ import { ICommissionForm, IExtraCommissionForm } from "../../Interfaces/Commissi
 import axios from 'axios'
 
 const getcommssionformurl = "https://localhost:7233/api/CommissionForm"
-const getcommissionrequestorurl = `https://localhost:7233/api/CommissionForm/ByRequestorIDAddEmailAndPhone/`
-const getcommissionrecieverurl = `https://localhost:7233/api/CommissionForm/ByReceiverIDAddEmailAndPhone/`
+const getcommissionrequestorurl = `https://localhost:7233/api/CommissionForm/ByRequestorIDAddEmailAndPhone/` //day
+const getcommissionrecieverurl = `https://localhost:7233/api/CommissionForm/ByReceiverIDAddEmailAndPhone/` //day 
 
 export async function GetCommissionRequestorById(id:string) {
     try{
