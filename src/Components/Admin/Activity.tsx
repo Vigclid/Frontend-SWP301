@@ -38,12 +38,12 @@ interface Transaction {
 }
 
 interface Payment {
-  PaymentID: number;
-  Amount: number;
-  CreatedAt: string;
-  UserID: number;
-  Status: string;
-  TransCode: string;
+  paymentId: number;
+  amount: number;
+  createdAt: string;
+  userId: number;
+  status: number;
+  transCode: string;
   userInfo?: any;
 }
 
@@ -115,7 +115,7 @@ export default function Activity() {
         const paymentsData = await GetListPayment();
         const paymentsWithUsers = await Promise.all(
           paymentsData.map(async (payment: Payment) => {
-            const userInfo = await fetchUserInfo(payment.UserID);
+            const userInfo = await fetchUserInfo(payment.userId);
             return { ...payment, userInfo };
           })
         );
@@ -126,6 +126,7 @@ export default function Activity() {
         setLoading(false);
       }
     };
+    console.log("fetching data", payments);
 
     fetchData();
   }, []);
@@ -315,8 +316,8 @@ export default function Activity() {
               </TableHead>
               <TableBody>
                 {payments.slice(paymentPage * rowsPerPage, paymentPage * rowsPerPage + rowsPerPage).map((payment) => (
-                  <TableRow key={payment.PaymentID}>
-                    <TableCell>{payment.PaymentID}</TableCell>
+                  <TableRow key={payment.paymentId}>
+                    <TableCell>{payment.paymentId}</TableCell>
                     <TableCell>
                       <Box
                         onClick={() => handleUserClick(payment.userInfo?.accountId)}
@@ -331,10 +332,14 @@ export default function Activity() {
                         {payment.userInfo?.firstName} {payment.userInfo?.lastName}
                       </Box>
                     </TableCell>
-                    <TableCell>${payment.Amount}</TableCell>
-                    <TableCell>{payment.Status}</TableCell>
-                    <TableCell>{payment.TransCode}</TableCell>
-                    <TableCell>{moment(payment.CreatedAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
+                    <TableCell>${payment.amount}</TableCell>
+                    <TableCell>
+                      <Typography color={payment.status === 1 ? "success.main" : "warning.main"}>
+                        {payment.status === 1 ? "Success" : "Pending"}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>{payment.transCode}</TableCell>
+                    <TableCell>{moment(payment.createdAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
