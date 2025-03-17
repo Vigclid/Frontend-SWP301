@@ -137,17 +137,12 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
         return (
           <>
 
-            <BottomNavigation sx={{ width: 500 , backgroundColor : theme.backgroundColor }} value={value} onChange={handleChange} showLabels>
+          <BottomNavigation key={'botttt'} sx={{ width: 500 , backgroundColor : theme.backgroundColor }} value={value} onChange={handleChange} showLabels>
             <BottomNavigationAction
+              key={'bottt'}
               label="All"
               value="All"
               icon={<AllInboxIcon />}
-              sx={{ color: theme.color }} // Đổi màu chữ và icon
-            />
-            <BottomNavigationAction
-              label="Messages"
-              value="Messages"
-              icon={<ChatIcon />}
               sx={{ color: theme.color }} // Đổi màu chữ và icon
             />
           </BottomNavigation>
@@ -159,10 +154,11 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
             return (
               <Link to={`profile/${profile?.accountId}`}>
                 <ListItemButton key={index}>
-                  <ListItemAvatar>
+                  <ListItemAvatar key={profile?.accountId}>
                     <Avatar alt="Profile Picture" src={profile?.profilePicture} />
                   </ListItemAvatar>
                   <ListItemText 
+
                     primary={`Hello ${user.firstName} ${user.lastName}`} 
                     secondary={`${notification.message} | ${profile?.firstName} ${profile?.lastName}`}
                     primaryTypographyProps={{ sx: { color: theme.color } }}

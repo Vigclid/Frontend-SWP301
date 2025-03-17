@@ -165,8 +165,8 @@ export default function CreateAccount() {
       .max(20,"Must be at least 8 and no more than 20 numbers")
       .matches(/^\d+$/, "That doesn't look like a phone number"),
       address: Yup.string().max(255,"@.@ Shipper will really pissed off by this, 255 characters please!"),
-      firstName : Yup.string().max(255,"255 characters only, please!"),
-      lastName : Yup.string().max(255,"255 characters only, please!"),
+      firstName : Yup.string().max(255,"255 characters only, please!").required("Tell the community your first name!"),
+      lastName : Yup.string().max(255,"255 characters only, please!").required("Tell the community your last name!"),
     }),
   });
 
@@ -310,7 +310,7 @@ export default function CreateAccount() {
                 <Grid item xs={6}>
                   <CustomizedTextField
                     id="firstName"
-                    label="First Name (Optional)"
+                    label="First Name"
                     name="firstName"
                     autoComplete="email"
                     fullWidth
@@ -326,7 +326,7 @@ export default function CreateAccount() {
                 <Grid item xs={6}>
                   <CustomizedTextField
                     id="lastName"
-                    label="Last Name (Optional)"
+                    label="Last Name"
                     name="lastName"
                     autoComplete="email"
                     fullWidth

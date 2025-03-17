@@ -46,10 +46,14 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
       }
       storeUserData(creatorWithoutTheImages);
         window.dispatchEvent(new Event('userLoggedIn'));
-        if (sessionStorage.getItem('userRole') === "AD") {
-          navigate('/admin');
+        if (foundAccount.status !== 0) {
+          if (sessionStorage.getItem('userRole') === "AD") {
+            navigate('/admin');
+          } else {
+            navigate('/characters');
+          }
         } else {
-          navigate('/characters');
+          alert("Banned Account");
         }
       } else {
          let account= {

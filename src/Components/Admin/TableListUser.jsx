@@ -1,131 +1,201 @@
-import React, { useEffect } from 'react'
-import { useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
-import { ListofUsers } from '../../share/ListofUsers';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import VerifiedIcon from '@mui/icons-material/Verified';
-import { green } from '@mui/material/colors';
-import Button from '@mui/material/Button';
-import WarningIcon from '@mui/icons-material/Warning';
-import TablePagination from '@mui/material/TablePagination';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import DialogActions from '@mui/material/DialogActions';
-import { GetCreatorListNoImage } from '../../API/UserAPI/GET.tsx';
+import React, { useEffect, useState } from "react";
+import {
+  Container,
+  Typography,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Box,
+  Paper,
+  Avatar,
+  CircularProgress,
+} from "@mui/material";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import { useNavigate } from "react-router-dom";
+import { GetListUser } from "../../API/AdminAPI/GET.tsx";
+import { LockAccount, UnlockAccount } from "../../API/AdminAPI/PUT.tsx";
+import { GetCreatorByAccountID } from "../../API/UserAPI/GET.tsx";
+
 export default function TableListUser() {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(4);
-  const [userList,setUserList] = useState([])
-  useEffect(() =>{
-    const getUserList = async() =>{
-      let userList = await GetCreatorListNoImage()
-      setUserList(userList)
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const navigate = useNavigate();
+
+  const fetchUsersWithInfo = async () => {
+    setLoading(true);
+    try {
+      const userList = await GetListUser();
+      const usersWithAvatars = await Promise.all(
+        userList.map(async (user) => {
+          try {
+            const userInfo = await GetCreatorByAccountID(user.accountID.toString());
+            return {
+              ...user,
+              profilePicture: userInfo?.profilePicture,
+            };
+          } catch (error) {
+            console.error(`Error fetching avatar for user ${user.accountID}:`, error);
+            return user;
+          }
+        })
+      );
+      setUsers(usersWithAvatars);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
     }
-    getUserList()
-  },[])
-  // Handle change page
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
   };
 
-  // Handle change rows per page
-  const handleChangeRowsPerPage = event => {
-    setRowsPerPage(+event.target.value);
-    setPage(0); // Reset page number back to 0 when changing rows per page
+  useEffect(() => {
+    fetchUsersWithInfo();
+  }, []);
+
+  const handleUserClick = (accountId) => {
+    navigate(`/characters/profile/${accountId}`);
   };
 
-  // Calculate the portion of users to display based on pagination
-  const paginatedUsers = userList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const showConfirmDialog = (action, params) => {
+    setConfirmAction({ action, params });
+    setDialogOpen(true);
+  };
 
-  const [open, setOpen] = useState(false);
-  const handleClose = () => {setOpen(false);};
+  const handleConfirmAction = async () => {
+    if (!confirmAction) return;
 
+    try {
+      if (confirmAction.action === "lock") {
+        await LockAccount(confirmAction.params.accountId);
+      } else {
+        await UnlockAccount(confirmAction.params.accountId);
+      }
+      await fetchUsersWithInfo();
+    } catch (error) {
+      console.error(`Error performing ${confirmAction.action}:`, error);
+    }
+    setDialogOpen(false);
+    setConfirmAction(null);
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ height: 'auto', width: '100%', marginTop: '40px'}}>
-   
-       <TableContainer component={Paper} style={{marginBottom:'70px'}}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table" >
-        <TableHead>
-          <TableRow style={{backgroundColor:'#0b81ff'}}>
-            <TableCell style={{color:'white'}}>ID</TableCell>
-            <TableCell  style={{color:'white'}} align="left">User Name</TableCell>
-            <TableCell style={{color:'white',width:'350px'}} align="left">Email</TableCell>
-            <TableCell style={{color:'white'}} align="left">Phone</TableCell>
-            <TableCell style={{color:'white'}} align="left">Vip</TableCell>
-            <TableCell style={{color:'white',width:'100px'}} align="left">Ban Account</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {paginatedUsers.map((user) => (
-            <TableRow
-              key={user.creatorID}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {user.creatorID}
+    <Container style={{ marginLeft: "300px" }}>
+      <Typography variant="h4" gutterBottom style={{ fontWeight: "bold", marginTop: "40px" }}>
+        Users Management
+      </Typography>
+
+      <TableContainer
+        component={Paper}
+        style={{
+          marginBottom: "50px",
+          marginTop: "40px",
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        }}>
+        <Table>
+          <TableHead>
+            <TableRow style={{ backgroundColor: "#0b81ff" }}>
+              <TableCell style={{ color: "white" }}>
+                <strong>ID</strong>
               </TableCell>
-              {/* user.User là user Name */}
-              <TableCell align="left">{user.firstName} {user.lastName}</TableCell>
-              <TableCell align="left">{user.email}</TableCell>
-              <TableCell align="left">{user.phone}</TableCell>
-              <TableCell align="left">
-                  {user.vip ? <VerifiedIcon color="success"/> : null}
-                </TableCell>
-              <TableCell align="left">
-                 <Button variant="contained" color="error" onClick={ ()=>{setOpen(true)}}>
-                 <WarningIcon/>
-               </Button></TableCell>
+              <TableCell style={{ color: "white" }}>
+                <strong>User Name</strong>
+              </TableCell>
+              <TableCell style={{ color: "white" }}>
+                <strong>Email</strong>
+              </TableCell>
+              <TableCell style={{ color: "white" }}>
+                <strong>Phone Number</strong>
+              </TableCell>
+              <TableCell style={{ color: "white" }}>
+                <strong>Rank</strong>
+              </TableCell>
+              <TableCell style={{ color: "white" }}>
+                <strong>Behavior</strong>
+              </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <Dialog
-    open={open}
-    onClose={handleClose}
-    aria-labelledby="alert-dialog-title"
-    aria-describedby="alert-dialog-description"
-    >
-    <DialogTitle id="alert-dialog-title">
-      {"Congraturation"}
-    </DialogTitle>
-    <DialogContent>
-      <DialogContentText id="alert-dialog-description">
-      <Alert severity="success">
-    <AlertTitle>You want to ban this account ?</AlertTitle>
-    </Alert>
-      </DialogContentText>
-    </DialogContent>
-    <DialogActions>
-      {/* chỗ này gắn hàm vô : onClick={()=>handleDelete()}*/}
-      <Button  >yes</Button>
-      <Button autoFocus onClick={handleClose}>
-       No
-      </Button>
-    </DialogActions>
-  </Dialog>
-    
-      <TablePagination
-          rowsPerPageOptions={3}
-          component="div"
-          count={userList.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-    </TableContainer>
-    
-  </div>
-  )
+          </TableHead>
+          <TableBody>
+            {users.map((user) => (
+              <TableRow key={user.accountID}>
+                <TableCell>{user.accountID}</TableCell>
+                <TableCell>
+                  <Box
+                    onClick={() => handleUserClick(user.accountID)}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      cursor: "pointer",
+                      "&:hover": { textDecoration: "underline" },
+                    }}>
+                    <Avatar src={user.profilePicture} />
+                    {user.userName}
+                  </Box>
+                </TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.phoneNumber || "N/A"}</TableCell>
+                <TableCell>{user.nameOfRank}</TableCell>
+                <TableCell>
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    {user.status === 1 ? (
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => showConfirmDialog("lock", { accountId: user.accountID })}>
+                        Lock Account
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        color="success"
+                        onClick={() => showConfirmDialog("unlock", { accountId: user.accountID })}>
+                        Unlock Account
+                      </Button>
+                    )}
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+        <DialogTitle>Confirmation</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to{" "}
+            {confirmAction?.action === "lock" ? (
+              <strong>lock this user's account</strong>
+            ) : (
+              <strong>unlock this user's account</strong>
+            )}
+            ?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleConfirmAction} variant="contained" color="primary">
+            Accept
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
+  );
 }

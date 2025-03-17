@@ -21,6 +21,8 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
@@ -39,6 +41,8 @@ function CommissionStepper({ currentCommission }: { currentCommission: IExtraCom
   const [activeStep, setActiveStep] = useState(currentCommission.progress);
   const [loading, setLoading] = useState(false);
   const [artworkURL, setArtworkURL] = useState(currentCommission.artworkURL || "");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
 
 
   const updateProgress = async (commissionId, progress, artworkURL = null) => {
@@ -72,12 +76,10 @@ function CommissionStepper({ currentCommission }: { currentCommission: IExtraCom
       setLoading(true);
       const newProgress = activeStep + 1;
 
-      // Nếu chuyển sang progress = 3, bật ô nhập Artwork URL
       if (newProgress === 3) {
         setShowArtworkInput(true);
       }
 
-      // Nếu đang ở progress = 3 mà Artwork URL trống, cảnh báo lỗi
       if (activeStep === 3 && !artworkURL) {
         alert("Please enter the Artwork URL before proceeding.");
         setLoading(false);
@@ -87,6 +89,10 @@ function CommissionStepper({ currentCommission }: { currentCommission: IExtraCom
       await updateProgress(currentCommission.commissionID, newProgress, artworkURL);
       setActiveStep(newProgress);
 
+      // ✅ Hiển thị thông báo khi hoàn thành mission
+      if (newProgress === steps.length) {
+        setOpenSnackbar(true);
+      }
     } catch (err) {
       console.error(err.message);
       setActiveStep(currentCommission.progress);
@@ -94,6 +100,7 @@ function CommissionStepper({ currentCommission }: { currentCommission: IExtraCom
       setLoading(false);
     }
   };
+
 
 
 
@@ -167,6 +174,17 @@ function CommissionStepper({ currentCommission }: { currentCommission: IExtraCom
           </Box>
         </React.Fragment>
       )}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000} // Tự động đóng sau 3 giây
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <MuiAlert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
+          Your mission is complete.
+        </MuiAlert>
+      </Snackbar>
+
     </Box>
   );
 }

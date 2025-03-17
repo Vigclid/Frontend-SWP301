@@ -68,19 +68,19 @@ export default function CommissionForm({ onClose }) {
 
 
   useEffect(() => {
-      const getReciever = async () => {
-        try {
-          const fetchedReciever = await GetCreatorByAccountID(id ?? "0");
-          console.log("🟢 Người nhận request (Full Data):", fetchedReciever);
+    const getReciever = async () => {
+      try {
+        const fetchedReciever = await GetCreatorByAccountID(id ?? "0");
+        console.log("🟢 Người nhận request (Full Data):", fetchedReciever);
 
-          if (fetchedReciever) {
-            setReciever(fetchedReciever);
-            formik.setFieldValue("receiver", fetchedReciever.userId);
-          }
-        } catch (error) {
-          console.error("❌ Lỗi khi lấy dữ liệu người nhận:", error);
+        if (fetchedReciever) {
+          setReciever(fetchedReciever);
+          formik.setFieldValue("receiver", fetchedReciever.userId);
         }
-      };
+      } catch (error) {
+        console.error("❌ Lỗi khi lấy dữ liệu người nhận:", error);
+      }
+    };
 
     const fetchCommissionID = async () => {
       try {
@@ -98,10 +98,10 @@ export default function CommissionForm({ onClose }) {
 
   const formik = useFormik({
     initialValues: {
-      requestor: user?.userId ?? "", // Lấy ID người gửi từ session
-      receiver: reciever?.userId ?? "", // Lấy ID người nhận từ profile
-      phoneNumber: user?.phoneNumber ?? "", // Lấy số điện thoại từ user
-      email: user?.email ?? "", // Lấy email từ user
+      requestor: user?.userId ?? "", 
+      receiver: reciever?.userId ?? "", 
+      phoneNumber: user?.phoneNumber ?? "",
+      email: user?.email ?? "",
       description: "",
     },
     validationSchema: Yup.object({
@@ -110,7 +110,7 @@ export default function CommissionForm({ onClose }) {
       description: Yup.string().required("Describe your commission request"),
     }),
     onSubmit: async (values) => {
-      console.log("🔍 Dữ liệu gửi lên API:", values); // Kiểm tra dữ liệu trước khi gửi API
+      console.log("🔍 Dữ liệu gửi lên API:", values); 
 
       if (!values.requestor || !values.receiver) {
         console.error("❌ requestor hoặc receiver bị rỗng! Kiểm tra lại dữ liệu.");
@@ -120,7 +120,7 @@ export default function CommissionForm({ onClose }) {
       try {
         setLoading(true);
         const response = await CreateCommissionForm(values);
-        console.log("📨 Phản hồi từ API:", response); // Kiểm tra phản hồi từ API
+        console.log("📨 Phản hồi từ API:", response); 
         if (response) {
           setSendCompleted(true);
           handleOpenSnackbar();
@@ -211,12 +211,25 @@ export default function CommissionForm({ onClose }) {
                 {formik.errors.description && (<Typography variant="body2" color="red">{formik.errors.description}</Typography>)}
               </Grid>
 
-              {/* Submit Button */}
-              <Grid item xs={12}>
-                <Button variant="contained" type='submit' style={{ marginBottom: '20px' }} fullWidth>
+              <Grid item xs={6}>
+                <Button
+                  variant="contained"
+                  type="submit"
+                  style={{ marginBottom: '20px', width: '100%' }}
+                >
                   Submit
                 </Button>
               </Grid>
+              <Grid item xs={6}>
+                <Button
+                  variant="outlined"
+                  style={{ marginBottom: '20px', width: '100%' }}
+                  onClick={onClose}
+                >
+                  Cancel
+                </Button>
+              </Grid>
+
             </Grid>
           </form>
 

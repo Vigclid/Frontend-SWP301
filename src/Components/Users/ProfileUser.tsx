@@ -9,7 +9,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import ChatIcon from "@mui/icons-material/Chat";
-import PropTypes from "prop-types";
+import PropTypes, { number } from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
@@ -68,6 +68,8 @@ import { Follow } from "../../Interfaces/FollowingInterface";
 import { DeleteFollowUser } from "../../API/UserAPI/DELETE.tsx";
 import { CheckFollowStatus } from "../../API/UserAPI/GET.tsx";
 import CommissionForm from "./CommissionForm.tsx";
+import { Chat, Message } from "../../Interfaces/ChatInterfaces.ts";
+import { createChat } from "../../API/ChatAPT/POST.tsx";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -262,10 +264,15 @@ export default function ProfileUser() {
     setValue(newValue);
   };
 
-  // Cái này để chuyển tab profile từ profile người khác sang profile mình.
   useEffect(() => {
     const getUserProfile = async () => {
       const userProfile = await GetCreatorByAccountID(id ? id : "0");
+      console.log("🟢 Dữ liệu User từ API:", userProfile);
+
+      if (userProfile) {
+        console.log(`🔍 Kiểm tra typeID trước khi setState:`, userProfile.typeId);
+      }      
+      
       setUser(userProfile);
 
       if ( userInSession.userId &&  userProfile?.userId && userInSession.userId !== userProfile.userId) {
@@ -491,6 +498,23 @@ export default function ProfileUser() {
     }
   };
 
+
+
+  // HANDLE CHATTING
+
+  const handleChatting = () => {
+      const newChat : Chat = {
+        chatId : 0,
+        user1Id : Number(user?.userId),
+        user2Id : Number(userInSession.userId),
+        status : 0,
+      }
+
+      createChat(newChat);
+  }
+
+
+
   return (
       <div className="">
         <div className="headeruser">
@@ -620,6 +644,13 @@ export default function ProfileUser() {
                           Follow
                         </Button>
                     )}
+                    <Button
+                           style={{ width: "120px", height: "40px" , marginLeft : '10px' }}
+                           variant="contained"
+                           onClick={() => handleChatting()}
+                           >
+                        Chat
+                    </Button>
                   </div>
               ) : (
                   ""
@@ -654,7 +685,7 @@ export default function ProfileUser() {
                 </div>
                 <div className="buttonSubcribe">
                   {/* Kiểm tra RankID chính xác dựa vào API trả về */}
-                  {user?.rankId === 2 ? (
+                  {userInSession.accountId !== user?.accountId ? user?.typeId !== 1 ? (
                       <Button variant="contained" onClick={() => setShowCommissionForm(true)}>
                         <ShoppingBagIcon style={{ marginRight: "5px" }} />
                         Request an Custom Art
@@ -667,11 +698,12 @@ export default function ProfileUser() {
                         <ShoppingBagIcon color="inherit" style={{ marginRight: "5px" }} />
                         This person cannot receive commission
                       </Button>
-                  )}
+                  ) : ""}
 
                   {/* Hiển thị form request khi nhấn nút */}
                   {showCommissionForm && <CommissionForm onClose={() => setShowCommissionForm(false)}/>}
                   {userInSession.accountId !== user?.accountId ? (
+                    
                       <Button
                           onClick={handleClickOpen}
                           variant="contained"
@@ -681,12 +713,18 @@ export default function ProfileUser() {
                         Report
                       </Button>
                       
+                     
                   ) : (
                       ""
                   )}
 
                   {/* Popup Report */}
-                  <Dialog open={open} onClose={handleClose}>
+                  <Dialog open={open} onClose={handleClose} className="dialog-custom" // Áp dụng class từ ArtPost.css
+                          BackdropProps={{
+                            sx: {
+                              backgroundColor: "rgba(0, 0, 0, 0.5)", // Lớp phủ mờ
+                            },
+                          }}>
                     <ReportForm
                         reporterId={Number(userInSession.userId)}
                         reportedId={Number(user?.userId)}
