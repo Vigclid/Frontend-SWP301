@@ -136,17 +136,7 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
         };
         return (
           <>
-
-          <BottomNavigation key={'botttt'} sx={{ width: 500 , backgroundColor : theme.backgroundColor }} value={value} onChange={handleChange} showLabels>
-            <BottomNavigationAction
-              key={'bottt'}
-              label="All"
-              value="All"
-              icon={<AllInboxIcon />}
-              sx={{ color: theme.color }} // Đổi màu chữ và icon
-            />
-          </BottomNavigation>
-          {(value === "All") && (
+          {(
             <List>
             {notifications.map((notification, index) => {
             const profile = notification.followID ? profiles[notification.followID] : null;

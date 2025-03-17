@@ -21,3 +21,12 @@ export interface GetPaymentJava {
     createdAt : string,
     status : string,
 }
+
+
+export interface MoneyTransfer {
+    transferId: number,
+    senderUserId: number,
+    receiverUserId: number,
+    amount: number,
+    transferDate: string,
+}

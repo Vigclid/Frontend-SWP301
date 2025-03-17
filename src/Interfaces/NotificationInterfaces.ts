@@ -6,4 +6,5 @@ export interface Notification {
     artworkNoti: number | undefined
     isRead : number 
     followID : number | undefined
+    amount : number | undefined
 }

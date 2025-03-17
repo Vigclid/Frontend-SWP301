@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Payment } from "../../Interfaces/PaymentIntrerfaces";
+import { MoneyTransfer, Payment } from "../../Interfaces/PaymentIntrerfaces";
 
 const paymenturl="http://localhost:7233/api/Payment"
 const headers = {
@@ -15,3 +15,14 @@ const headers = {
     }catch(err){
       console.log(err)
     }}
+
+
+export const saveNewMoneyTransfer = async(value: MoneyTransfer) => {
+  try{
+        let response = await axios.post(paymenturl+"/",value,{headers}).then(response => response.data)
+        return response
+        
+    }catch(err){
+      console.log(err)
+    }
+}
