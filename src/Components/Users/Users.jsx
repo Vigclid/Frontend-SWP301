@@ -34,6 +34,7 @@ import ThreadPage from "./ThreadPage.tsx";
 import ThreadUpload from "./ThreadUpload.tsx";
 import ChatButton from "../ChatButton.jsx";
 import ArtShopConfirm from "./ArtShopConfirm.jsx";
+import DevToolsBlocker from "../../ProtectedRoutes/DevToolsBlocker.jsx";
 
 export default function Users() {
   return (
@@ -45,11 +46,13 @@ export default function Users() {
           <Route path={`/`} element={<HomePage />} />
           <Route path={`creatorform`} element={<UserInfoForm />} />
           <Route path={`profile/:id`} element={<ProfileUser />} />
-          <Route path={`artwork/:id`} element={<ArtPost />} />
           <Route path={`artwork/update/:id`} element={<UpdateArtwork />} />
           <Route path={`/SearchHome/Tags/:tagName`} element={<SearchHome />} />
 
           <Route element={<ProtectedRoute allowedRoles={["AT", "AD"]} />}></Route>
+
+          <Route path={`artwork/:id`} element={<ArtPost />} />
+          <Route path={`profile/:id/artwork/:id`} element={<ArtPost />} />
 
           <Route path={`artwork/:id/payment`} element={<Payment />} />
           <Route path={`Depositecoin`} element={<DepositeCoin />} />
@@ -58,7 +61,6 @@ export default function Users() {
           <Route path={`dashboarduser`} element={<DashboardUser />} />
           <Route path={`artshop`} element={<ArtShop />} />
           <Route path={`package`} element={<PackagePage />} />
-          <Route path={`profile/:id/artwork/:id`} element={<ArtPost />} />
           <Route path={`transaction`} element={<TransactionHistory />} />
           <Route path={`artworkform`} element={<UploadArtwork />} />
           <Route path={`profile/:id/commission`} element={<CommissionForm />} />
