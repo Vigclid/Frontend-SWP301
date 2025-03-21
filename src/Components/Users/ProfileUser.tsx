@@ -177,7 +177,7 @@ export default function ProfileUser() {
   // EDIT PROFILE
 
   const F4k = useFormik({
-    validateOnChange: true,
+    validateOnChange: false,
     validateOnBlur: false,
     initialValues: {
       firstName: userInSession?.firstName,
@@ -622,7 +622,7 @@ export default function ProfileUser() {
                 </div>{" "}
               </div>
 
-              {userInSession.accountId !== user?.accountId ? (
+              {userInSession.accountId !== user?.accountId ? userInSession && (
                   <div className="buttonheaderuser">
                     {isFollowing == true && (
                         <Button
@@ -644,13 +644,16 @@ export default function ProfileUser() {
                           Follow
                         </Button>
                     )}
-                    <Button
+                    
+                      <Button
                            style={{ width: "120px", height: "40px" , marginLeft : '10px' }}
                            variant="contained"
                            onClick={() => handleChatting()}
                            >
                         Chat
                     </Button>
+                 
+                    
                   </div>
               ) : (
                   ""
@@ -685,7 +688,7 @@ export default function ProfileUser() {
                 </div>
                 <div className="buttonSubcribe">
                   {/* Kiểm tra RankID chính xác dựa vào API trả về */}
-                  {userInSession.accountId !== user?.accountId ? user?.typeId !== 1 ? (
+                  {userInSession.accountId !== user?.accountId ? user?.typeId !== 1 ? userInSession && (
                       <Button variant="contained" onClick={() => setShowCommissionForm(true)}>
                         <ShoppingBagIcon style={{ marginRight: "5px" }} />
                         Request an Custom Art
@@ -702,7 +705,7 @@ export default function ProfileUser() {
 
                   {/* Hiển thị form request khi nhấn nút */}
                   {showCommissionForm && <CommissionForm onClose={() => setShowCommissionForm(false)}/>}
-                  {userInSession.accountId !== user?.accountId ? (
+                  {userInSession.accountId !== user?.accountId ? userInSession && (
                     
                       <Button
                           onClick={handleClickOpen}

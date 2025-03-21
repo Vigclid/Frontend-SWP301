@@ -62,9 +62,9 @@ function ArtShop() {
   };
 
   function formatMoney(amount) {
-    amount *= 1000;
-    return amount.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
-  }
+    return amount.toLocaleString("en-US", { style: "currency", currency: "USD" });
+ }
+
 
   const downloadSectionAsImage = async (elementId) => {
     const element = document.getElementById(elementId);

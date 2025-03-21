@@ -53,6 +53,9 @@ const ThreadPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const savedAuth = sessionStorage.getItem("auth");
+  const savedUser: Creator = savedAuth ? JSON.parse(savedAuth) : null;
+
   useEffect(() => {
     const loadThreadAndCreator = async () => {
       try {
@@ -148,7 +151,7 @@ const ThreadPage = () => {
               {thread.likes}
             </Typography> */}
 
-            <LikeIconThread userID={creator?.userId} threadID={thread.threadID} />
+            {savedUser ? (<LikeIconThread userID={creator?.userId} threadID={thread.threadID} />) : "" }
           </div>
           <div className="thread-stat-item">
             <Typography className="thread-stat-label" sx={{ color: theme.color }}>

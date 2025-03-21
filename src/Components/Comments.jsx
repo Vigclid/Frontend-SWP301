@@ -7,38 +7,41 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import "../css/Comment.css"; // Import CSS file
-import { Typography } from "@mui/material";
+import { Alert, Typography } from "@mui/material";
 
 export default function Comments() {
   const [comments, setComments] = useState([]);
   const [creators, setCreators] = useState([]);
   const [artworkID, setArtworkID] = useState(null);
   const [replyComments, setReplyComments] = useState([]);
+  const [artworkState, setArtworkState] = useState(false);
+
+
 
   useEffect(() => {
     // Get artworkID from URL
     const pathParts = window.location.pathname.split("/");
     const id = pathParts[pathParts.length - 1];
     setArtworkID(id); // Set the artworkID
-
-    // Fetch comments data
-    fetch("http://localhost:7233/api/comments/")
-      .then((response) => response.json())
-      .then((data) => setComments(data))
-      .catch((error) => setComments([]));
-
-    // Fetch reply comments data
-    fetch("http://localhost:7233/api/replycomment")
-      .then((response) => response.json())
-      .then((data) => setReplyComments(data))
-      .catch((error) => setReplyComments([]));
-
-    // Fetch creators data
-    fetch("http://localhost:7233/api/Creator")
-      .then((response) => response.json())
-      .then((data) => setCreators(data))
-      .catch((error) => setCreators([]));
-  }, [comments]);
+  
+    // Fetch all data asynchronously using Promise.all
+    Promise.all([
+      fetch("http://localhost:7233/api/comments/").then((response) => response.json()),
+      fetch("http://localhost:7233/api/replycomment").then((response) => response.json()),
+      fetch("http://localhost:7233/api/Creator").then((response) => response.json()),
+    ])
+      .then(([commentsData, replyCommentsData, creatorsData]) => {
+        setComments(commentsData);
+        setReplyComments(replyCommentsData);
+        setCreators(creatorsData);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setComments([]);
+        setReplyComments([]);
+        setCreators([]);
+      });
+  }, [artworkState]);
 
   const getUserNameById = (userID) => {
     const creator = creators.find((creator) => creator.userId === userID);
@@ -54,7 +57,10 @@ export default function Comments() {
     <div className="comments-container">
       <h2>Comments</h2>
       <div className="inputcomment">
-        <CommentInput onComment={onComment} artworkID={artworkID} />
+        <CommentInput onComment={onComment} artworkID={artworkID}  
+        setArtworkState = {setArtworkState}
+            artworkState = {artworkState}
+            />
       </div>
       <div className="comments-list">
         {filteredComments.map((comment, index) => (
@@ -63,6 +69,8 @@ export default function Comments() {
             comment={comment}
             getUserNameById={getUserNameById}
             getReplyCommentsByCommentID={getReplyCommentsByCommentID}
+            setArtworkState = {setArtworkState}
+            artworkState = {artworkState}
           />
         ))}
       </div>
@@ -70,7 +78,7 @@ export default function Comments() {
   );
 }
 
-const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID }) => {
+const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID , setArtworkState , artworkState}) => {
   const [isReplying, setIsReplying] = useState(false);
   const [newReply, setNewReply] = useState("");
   const [replyComments, setReplyComments] = useState([]);
@@ -82,11 +90,13 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID }) 
 
   const onReplyComment = () => {
     const authData = sessionStorage.getItem("auth");
-    console.log("Auth data:", authData);
     const user = authData ? JSON.parse(authData) : null;
-    console.log("User:", user);
     let newReplyData = {};
-    console.log("user: ", user);
+    
+    if (user === null) {
+      alert("You need to be logged in to comment.");
+      return;
+    }
     if (user) {
       newReplyData = {
         body: newReply,
@@ -126,6 +136,8 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID }) 
       };
       _Func();
     }
+
+    setArtworkState(!artworkState);
   };
 
   return (
@@ -178,8 +190,8 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID }) 
   );
 };
 
-function CommentInput({ artworkID }) {
-  const [commentBody, setCommentBody] = useState("");
+function CommentInput({ artworkID , setArtworkState , artworkState }) {
+  
 
   const formik = useFormik({
     initialValues: {
@@ -192,6 +204,10 @@ function CommentInput({ artworkID }) {
       const authData = sessionStorage.getItem("auth");
 
       const user = authData ? JSON.parse(authData) : null;
+      if (user === null) {
+        alert("You need to be logged in to comment.");
+        return;
+      }
 
       if (user) {
         const commentData = {
@@ -232,8 +248,10 @@ function CommentInput({ artworkID }) {
         };
         _Func();
       } else {
-        console.log("User not logged in");
+        Alert("Please login to continue...")
       }
+
+      setArtworkState(!artworkState);
     },
   });
 

@@ -14,9 +14,11 @@ export default function FavouritesIcon({ userID, artworkID }) {
   useEffect(() => {
     // Cái này để handle cho Click
     const handleClick = async () => {
-      const result = await ToggleFavourite(userID, artworkID);
-      if (result) {
-        setIsClicked((prev) => !prev);
+      if (userID === null || userID === undefined) {alert("Please log in to continue")} else {
+        const result = await ToggleFavourite(userID, artworkID);
+        if (result) {
+          setIsClicked((prev) => !prev);
+        }
       }
     };
 

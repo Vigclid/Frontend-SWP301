@@ -370,9 +370,9 @@ export default function PostWork() {
             ) : (
               <div style={{ margin: "auto 5px" }}>
                 {/* check status of art */}
-                {artwork?.purchasable === true && status === false ? (
+                {artwork?.purchasable === true && status === false ?  (
                   <Chip
-                    label={formatMoney(artwork?.price)}
+                    label={formatMoney(artwork?.price)+"$"}
                     onClick={handleOpenArtShopConfirm}
                     style={{
                       fontSize: "20px",
@@ -381,7 +381,7 @@ export default function PostWork() {
                       backgroundColor: "#61dafb",
                     }}
                   />
-                ) : (
+                ) : savedUser && (
                   <>
                     <Button
                       sx={{ minWidth: "40%", marginBottom: "5px", height: "40px" }}
@@ -394,6 +394,9 @@ export default function PostWork() {
                     </Button>
                   </>
                 )}
+                {savedUser && (
+
+                
                 <Button
                   sx={{ minWidth: "20%", marginBottom: "5px", height: "40px" }}
                   onClick={handleOpenReport}
@@ -403,6 +406,7 @@ export default function PostWork() {
                   style={{ marginLeft: "20px" }}>
                   Report
                 </Button>
+                )}
               </div>
             )}
             {/* {userInSession.accountId !== creator?.userId ? (
@@ -412,6 +416,8 @@ export default function PostWork() {
             )} */}
 
             {/* Popup Report */}
+
+            {savedUser && (
             <Dialog
               open={openReport}
               onClose={handleClose}
@@ -428,6 +434,8 @@ export default function PostWork() {
                 onClose={() => setOpenReport(false)}
               />
             </Dialog>
+            )}
+
           </div>
           <div id='"#comment"'>
             <Comments />
