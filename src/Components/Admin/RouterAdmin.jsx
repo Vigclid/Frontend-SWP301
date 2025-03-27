@@ -7,6 +7,7 @@ import Report from "./Report";
 import ManageOrders from "./ManageOrders.tsx";
 import Activity from "./Activity.tsx";
 import RequestToUpgrade from "./RequestToUpgrade.tsx";
+import WithdrawManagement from "./WithdrawManagement.tsx";
 export default function RouterAdmin() {
   return (
     <div>
@@ -17,6 +18,7 @@ export default function RouterAdmin() {
         <Route path={`report`} element={<Report />} />
         <Route path={`request-upgrade`} element={<RequestToUpgrade />} />
         <Route path={`manageorders`} element={<ManageOrders />} />
+        <Route path={`withdraw-management`} element={<WithdrawManagement />} />
         <Route path={`activity`} element={<Activity />} />
       </Routes>
       <Outlet />

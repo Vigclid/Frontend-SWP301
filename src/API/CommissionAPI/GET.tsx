@@ -11,13 +11,13 @@ export async function GetCommissionRequestorById(id: string) {
     const response = await axios.get(getcommissionrequestorurl + id);
     console.log("🟢 API trả về danh sách commission:", response.data);
 
-    // 🛠 Duyệt từng commission và gọi API lấy tên requestor
+    // Duyệt từng commission và thêm artworkURL
     const formattedData: IExtraCommissionForm[] = await Promise.all(
       response.data.map(async (comm: any) => {
         let userName = "Unknown User"; // Giá trị mặc định
 
         try {
-          userName = await GetUserNameById(comm.requestor); // ✅ Gọi API lấy username từ firstName + lastName
+          userName = await GetUserNameById(comm.requestor); // Gọi API lấy username từ firstName + lastName
         } catch (error) {
           console.error(`⚠️ Không lấy được userName cho requestorID: ${comm.requestor}`, error);
         }
@@ -27,14 +27,15 @@ export async function GetCommissionRequestorById(id: string) {
           receiverID: comm.receiver,
           requestorID: comm.requestor,
           description: comm.description,
-          accept: comm.accept,
+          accept: comm.accept !== undefined ? comm.accept : null,
           progress: comm.progress,
           requestorEmail: comm.email,
           requestorPhone: comm.phoneNumber,
-          requestorUserName: userName, // ✅ Đã lấy từ API
+          requestorUserName: userName, // Đã lấy từ API
           creationDate: comm.creationDate,
           acceptanceDate: comm.acceptanceDate,
           completionDate: comm.completionDate,
+          artworkURL: comm.artworkURL || null, // Đảm bảo artworkURL có giá trị hợp lệ
         };
       })
     );
@@ -45,6 +46,7 @@ export async function GetCommissionRequestorById(id: string) {
     return [];
   }
 }
+
 
 
 export async function GetCommissionRecieverById(id: string) {

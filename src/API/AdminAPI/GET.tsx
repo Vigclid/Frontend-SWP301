@@ -91,3 +91,23 @@ export async function GetListPayment() {
     return [];
   }
 }
+
+export const GetListWithdrawInProgress = async () => {
+  try {
+    const response = await axios.get(adminurl + "/GetListWithdrawInProgress");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching withdrawals in progress:", error);
+    throw error;
+  }
+};
+
+export const GetListWithdrawBeAccept = async () => {
+  try {
+    const response = await axios.get(adminurl + "/GetListWithdrawBeAccept");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching accepted withdrawals:", error);
+    throw error;
+  }
+};

@@ -27,13 +27,15 @@ export default function LikeIconComponent({ userID, artworkID }) {
 
   // Xử lý sự kiện click like
   const handleLikeClick = async () => {
-    const response = await ToggleLike(userID, artworkID);
-    console.log("ToggleLike response:", response); // Kiểm tra dữ liệu trả về từ API
-    if (response) {
-      setIsLikeClicked(response.isLike);
-      setLikeCount(response.likeCount);
-      console.log("Updated isLikeClicked:", response.isLike); // Giá trị trạng thái mới
-      console.log("Updated likeCount:", response.likeCount); // Giá trị số like mới
+    if (userID === null || userID === undefined) {alert("Please log in to continue")} else {
+      const response = await ToggleLike(userID, artworkID);
+      console.log("ToggleLike response:", response); // Kiểm tra dữ liệu trả về từ API
+      if (response) {
+        setIsLikeClicked(response.isLike);
+        setLikeCount(response.likeCount);
+        console.log("Updated isLikeClicked:", response.isLike); // Giá trị trạng thái mới
+        console.log("Updated likeCount:", response.likeCount); // Giá trị số like mới
+      }
     }
   };
 

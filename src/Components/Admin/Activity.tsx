@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Typography } from "@mui/material";
+import { Chip, Container, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -18,6 +18,8 @@ import { GetListActivity, GetListAllTransactions, GetListPayment } from "../../A
 import { GetCreatorByID } from "../../API/UserAPI/GET.tsx";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import {GetPaymentJava, Payment} from "../../Interfaces/PaymentIntrerfaces.ts";
+import { Creator } from "../../Interfaces/UserInterface.ts";
 
 interface Activity {
   ownerName: string;
@@ -37,15 +39,7 @@ interface Transaction {
   buyerInfo?: any;
 }
 
-interface Payment {
-  PaymentID: number;
-  Amount: number;
-  CreatedAt: string;
-  UserID: number;
-  Status: string;
-  TransCode: string;
-  userInfo?: any;
-}
+
 
 function TabPanel(props: { children?: React.ReactNode; index: number; value: number }) {
   const { children, value, index } = props;
@@ -56,7 +50,8 @@ export default function Activity() {
   const [value, setValue] = useState(0);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [payments, setPayments] = useState<Payment[]>([]);
+  const [payments, setPayments] = useState<GetPaymentJava[]>([]);
+  const [userPayment, setUserPayment] = useState<Creator[]>([]);
   const [loading, setLoading] = useState(true);
   const [activityPage, setActivityPage] = useState(0);
   const [transactionPage, setTransactionPage] = useState(0);
@@ -113,13 +108,16 @@ export default function Activity() {
         setTransactions(transactionsWithUsers);
 
         const paymentsData = await GetListPayment();
-        const paymentsWithUsers = await Promise.all(
-          paymentsData.map(async (payment: Payment) => {
-            const userInfo = await fetchUserInfo(payment.UserID);
-            return { ...payment, userInfo };
+        const usersData = await Promise.all(
+          paymentsData.map(async (payment) => {
+
+            const userData = await GetCreatorByID(payment.userId);
+            return userData;
           })
         );
-        setPayments(paymentsWithUsers);
+        setPayments(paymentsData);
+        setUserPayment(usersData);
+
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -294,7 +292,10 @@ export default function Activity() {
               <TableHead>
                 <TableRow style={{ backgroundColor: "#0b81ff" }}>
                   <TableCell style={{ color: "white" }}>
-                    <strong>Payment ID</strong>
+                    <strong>Payment ID </strong>
+                  </TableCell>
+                  <TableCell style={{ color: "white" }}>
+                    <strong>Transaction code </strong>
                   </TableCell>
                   <TableCell style={{ color: "white" }}>
                     <strong>User</strong>
@@ -306,20 +307,21 @@ export default function Activity() {
                     <strong>Status</strong>
                   </TableCell>
                   <TableCell style={{ color: "white" }}>
-                    <strong>Transaction Code</strong>
-                  </TableCell>
-                  <TableCell style={{ color: "white" }}>
                     <strong>Created At</strong>
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {payments.slice(paymentPage * rowsPerPage, paymentPage * rowsPerPage + rowsPerPage).map((payment) => (
-                  <TableRow key={payment.PaymentID}>
-                    <TableCell>{payment.PaymentID}</TableCell>
+                {payments.slice(paymentPage * rowsPerPage, paymentPage * rowsPerPage + rowsPerPage).map((payment, index) => { 
+                
+                  return (
+              
+                  <TableRow key={payment.transCode}>
+                    <TableCell>{payment.paymentId}</TableCell>
+                    <TableCell>{payment.transCode}</TableCell>
                     <TableCell>
                       <Box
-                        onClick={() => handleUserClick(payment.userInfo?.accountId)}
+                        onClick={() => handleUserClick(Number(userPayment[index].accountId))}
                         sx={{
                           display: "flex",
                           alignItems: "center",
@@ -327,16 +329,23 @@ export default function Activity() {
                           cursor: "pointer",
                           "&:hover": { textDecoration: "underline" },
                         }}>
-                        <Avatar src={payment.userInfo?.profilePicture} />
-                        {payment.userInfo?.firstName} {payment.userInfo?.lastName}
+                        <Avatar src={userPayment[index].profilePicture} />
+                        {userPayment[index].firstName} {userPayment[index].lastName}
                       </Box>
                     </TableCell>
-                    <TableCell>${payment.Amount}</TableCell>
-                    <TableCell>{payment.Status}</TableCell>
-                    <TableCell>{payment.TransCode}</TableCell>
-                    <TableCell>{moment(payment.CreatedAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
+                    <TableCell>${payment.amount}</TableCell>
+                    <TableCell align="left">
+                              <Chip
+                                label={String(payment.status) === '1' ? 'Success' : 'Failed'}
+                                color={String(payment.status) === '1' ? 'success' : 'error'}
+                                variant="outlined"
+                                sx={{ fontWeight: 'bold' }}
+                              />
+                            </TableCell>
+                    <TableCell>{moment(payment.createdAt).format("YYYY-MM-DD hh:mm:ss ")}</TableCell>
                   </TableRow>
-                ))}
+
+                )})}
               </TableBody>
             </Table>
             <TablePagination

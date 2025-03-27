@@ -27,14 +27,16 @@ export default function LikeIconComponent({ userID, threadID }) {
 
   // Xử lý sự kiện click like
   const handleLikeClick = async () => {
-    const response = await ToggleLike(userID, threadID);
-    console.log("ToggleLike response:", response); // Kiểm tra dữ liệu trả về từ API
-    if (response) {
-      setIsLikeClicked(response.isLike);
-      setLikeCount(response.likeCount);
-      console.log("Updated isLikeClicked:", response.isLike); // Giá trị trạng thái mới
-      console.log("Updated likeCount:", response.likeCount); // Giá trị số like mới
-    }
+   
+      const response = await ToggleLike(userID, threadID);
+      console.log("ToggleLike response:", response); // Kiểm tra dữ liệu trả về từ API
+      if (response) {
+        setIsLikeClicked(response.isLike);
+        setLikeCount(response.likeCount);
+        console.log("Updated isLikeClicked:", response.isLike); // Giá trị trạng thái mới
+        console.log("Updated likeCount:", response.likeCount); // Giá trị số like mới
+      }
+    
   };
 
   return (

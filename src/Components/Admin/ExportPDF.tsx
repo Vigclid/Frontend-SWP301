@@ -180,7 +180,7 @@ export const generateAdminReport = async () => {
               ${createTable(
                 payments,
                 ["Payment ID", "User ID", "Amount", "Status", "Transaction Code", "Created At"],
-                ["PaymentID", "UserID", "Amount", "Status", "TransCode", "CreatedAt"]
+                ["paymentId", "userId", "amount", "status", "transCode", "createdAt"]
               )}
             </div>
           </div>

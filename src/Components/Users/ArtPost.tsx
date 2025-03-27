@@ -40,7 +40,7 @@ import "../../css/ArtPost.css";
 import Dialog from "@mui/material/Dialog";
 import ReportForm from "./UserForms/ReportForm.tsx";
 import FavouritesIcon from "../FavouritesIcon.jsx";
-
+import DevToolsBlocker from "../../ProtectedRoutes/DevToolsBlocker.jsx";
 
 export default function PostWork() {
   const colors = ["#82c87e", "#c07ec8", "#c89c7e", "#7E8DC8", "#C07EC8", "#C87E8A"];
@@ -131,36 +131,38 @@ export default function PostWork() {
     setOpenArtShopConfirm(false);
     setOpenDownload(false);
     setOpenReport(false);
+    setOpenDowload(false); // Add this to close the download dialog
   };
 
-  const downloadSectionAsImage = async (elementId) => {
-    const element = document.getElementById(elementId);
+  const downloadImage = async () => {
+    if (!artwork?.imageFile) return;
 
-    if (element) {
-      const canvas = await html2canvas(element);
-      const imageUrl = canvas.toDataURL("image/png");
+    try {
+      setLoading(true);
+      const response = await fetch(artwork.imageFile);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = imageUrl;
-      link.download = "image.png";
+      link.href = url;
+      link.download = `${artwork.artworkName || "artwork"}.png`;
+      document.body.appendChild(link);
       link.click();
-      handleClose();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      setOpenDowload(false);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error downloading image:", error);
     }
   };
 
   const handleYesClick = async () => {
-    await downloadSectionAsImage(artwork?.idDowLoad);
+    if (!artwork?.artworkID) return;
+    await downloadImage();
   };
 
-  const handleDownload = async (id: string) => {
-    if (!artwork?.artworkID) return; // Nếu artworkID không có, không tiếp tục
-
-    const downloadArtwork: DownloadArtwork = {
-      ...artwork,
-      idDowLoad: id,
-      artworkID: artwork.artworkID ?? "", // Nếu artworkID là undefined, gán một giá trị mặc định
-    };
-
-    setArtwork(downloadArtwork);
+  const handleDownload = () => {
+    if (!artwork?.artworkID) return;
     setOpenDowload(true);
   };
 
@@ -368,9 +370,9 @@ export default function PostWork() {
             ) : (
               <div style={{ margin: "auto 5px" }}>
                 {/* check status of art */}
-                {artwork?.purchasable === true && status === false ? (
+                {artwork?.purchasable === true && status === false ?  (
                   <Chip
-                    label={formatMoney(artwork?.price)}
+                    label={formatMoney(artwork?.price)+"$"}
                     onClick={handleOpenArtShopConfirm}
                     style={{
                       fontSize: "20px",
@@ -379,19 +381,22 @@ export default function PostWork() {
                       backgroundColor: "#61dafb",
                     }}
                   />
-                ) : (
+                ) : savedUser && (
                   <>
                     <Button
                       sx={{ minWidth: "40%", marginBottom: "5px", height: "40px" }}
                       variant="contained"
                       size="small"
                       title="Dowload"
-                      onClick={() => handleDownload(`img-${artwork?.artworkID}`)}
+                      onClick={handleDownload}
                       endIcon={<Download />}>
                       Download Artwork
                     </Button>
                   </>
                 )}
+                {savedUser && (
+
+                
                 <Button
                   sx={{ minWidth: "20%", marginBottom: "5px", height: "40px" }}
                   onClick={handleOpenReport}
@@ -401,6 +406,7 @@ export default function PostWork() {
                   style={{ marginLeft: "20px" }}>
                   Report
                 </Button>
+                )}
               </div>
             )}
             {/* {userInSession.accountId !== creator?.userId ? (
@@ -410,6 +416,8 @@ export default function PostWork() {
             )} */}
 
             {/* Popup Report */}
+
+            {savedUser && (
             <Dialog
               open={openReport}
               onClose={handleClose}
@@ -426,6 +434,8 @@ export default function PostWork() {
                 onClose={() => setOpenReport(false)}
               />
             </Dialog>
+            )}
+
           </div>
           <div id='"#comment"'>
             <Comments />
