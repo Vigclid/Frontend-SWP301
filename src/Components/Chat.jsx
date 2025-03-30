@@ -8,8 +8,9 @@ import ListItem from "@mui/material/ListItem";
 import Typography from "@mui/material/Typography";
 import Popover from "@mui/material/Popover";
 import { ThemeContext } from "./Themes/ThemeProvider.tsx";
-import { Button } from "@mui/material";
+import { Avatar, Button, Chip } from "@mui/material";
 import { sendMessage } from "../API/ChatAPT/POST.tsx";
+import { saveNewMoneyTransfer } from "../API/PaymentAPI/POST.tsx";
 
 const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }) => {
   const chatRef = useRef(null);
@@ -29,6 +30,8 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
   const [anchorEl, setAnchorEl] = useState(null);
   const [previewChat, setPreviewChat] = useState(null);
   const { theme } = useContext(ThemeContext);
+  const [previewInput, setPreviewInput] = useState(false);
+
 
   // Cập nhật selectedUser dựa trên chatProfile
   useEffect(() => {
@@ -114,6 +117,47 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
         : []
     );
   };
+
+
+
+  // Xử lý hiển thị input coin
+  const handlePreviewInputSendCoint = () => {
+    setPreviewInput(prev => !prev);
+  }
+
+  const handleSendCoin = async (e) => {
+    e.preventDefault();
+    const _inputCoin = newMessage; 
+    if (isNaN(_inputCoin)) {
+      alert("This is not number!");
+    } else {
+      const _coin = Number(_inputCoin);
+      if (_coin > userInSession.coins) {
+        alert("You don't have enough coins!");
+      } else {
+        const _objectMoneyTransfer = {
+          transferId: 0,
+          senderUserId: userInSession.userId,
+          receiverUserId: selectedUser.userId,
+          amount: _coin, // sử dụng số đã chuyển đổi
+          transferDate: null,
+        };
+        try {
+          const response = await saveNewMoneyTransfer(_objectMoneyTransfer);
+          
+          
+            alert("Transfer coin successful!");
+            setPreviewInput((prev) => !prev);
+          
+        } catch (error) {
+          console.error(error);
+          alert("Transfer failed!");
+        }
+      }
+    }
+  };
+  
+  
 
   return (
     <Box
@@ -252,20 +296,62 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
               p: 1,
               borderTop: "1px solid #ccc",
             }}
-            onSubmit={handleSendMessage}
+            onSubmit={previewInput ? handleSendCoin : handleSendMessage}
           >
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Nhập tin nhắn..."
-              style={{
-                flexGrow: 1,
-                padding: "8px",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-              }}
-            />
+             <Chip
+               avatar={<Avatar alt="Coins" src="/icons/coin.gif" 
+                          sx={{ bgcolor: 'transparent' ,
+                          }}
+                      />}
+                    onClick={handlePreviewInputSendCoint}
+                    label= {previewInput ? "chat" : "send"}
+                    variant = "outlined"
+                    sx={{
+                      '& .MuiChip-avatar': {
+                        bgcolor: 'transparent !important', // ghi đè style của container avatar trong Chip
+                        },
+                        marginRight: "10px",
+                        '& .MuiChip-label': {
+                        color: theme.color5,      
+                        fontWeight: 'normal', 
+                        fontSize: '1rem', 
+                        transition: theme.transition,
+                        },
+                        transition: 'padding 0.3s ease', 
+                        '&:hover': {
+                          padding: '3.2px', 
+                          cursor: 'pointer',
+                        },
+                    }}
+                    color = "secondary"
+                    />     
+
+                    <input
+                      type="text"
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      placeholder={previewInput ? "Input coins..." : "Input the message..."}
+                      style={{
+                        flexGrow: 1,
+                        padding: "8px",
+                        border: "1px solid #ccc",
+                        borderRadius: "4px",
+                        outline: "2px solid transparent",
+                        transition: "outline 0.3s ease-in-out, border-color 0.3s ease-in-out",
+                      }}
+                      onFocus={(e) => { 
+                        e.target.style.borderColor = previewInput ? "#cd05f5" : "cyan" ;
+                        e.target.style.outline = previewInput ?  "2px solid #cd05f5" : "2px solid cyan" ;
+                      }}
+                      
+                      onBlur={(e) => {
+                        e.target.style.borderColor = "#ccc";
+                        e.target.style.outline = "2px solid transparent";
+                      }}
+                      
+                    />
+
+             
             <Button
               type="submit"
               style={{
@@ -277,7 +363,8 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
                 background: "none",
               }}
             >
-              <SendIcon />
+              <SendIcon sx={{color : previewInput ? '#cd05f5' : 'cyan', 
+                transition: "0.3s ease-in-out, border-color 0.3s ease-in-out",}}/>
             </Button>
           </Box>
         </Box>

@@ -40,7 +40,7 @@ import "../../css/ArtPost.css";
 import Dialog from "@mui/material/Dialog";
 import ReportForm from "./UserForms/ReportForm.tsx";
 import FavouritesIcon from "../FavouritesIcon.jsx";
-
+import DevToolsBlocker from "../../ProtectedRoutes/DevToolsBlocker.jsx";
 
 export default function PostWork() {
   const colors = ["#82c87e", "#c07ec8", "#c89c7e", "#7E8DC8", "#C07EC8", "#C87E8A"];
@@ -71,7 +71,7 @@ export default function PostWork() {
 
       try {
         const response = await axios.put(
-            `http://localhost:7233/api/artworks/increment-views/${artworkbyid.artworkID}/${savedUser.userId}`
+          `http://localhost:7233/api/artworks/increment-views/${artworkbyid.artworkID}/${savedUser.userId}`
         );
         console.log("View incremented on direct access:", response.data);
         // Đánh dấu đã gọi API tăng view cho artwork này trong session
@@ -131,36 +131,38 @@ export default function PostWork() {
     setOpenArtShopConfirm(false);
     setOpenDownload(false);
     setOpenReport(false);
+    setOpenDowload(false); // Add this to close the download dialog
   };
 
-  const downloadSectionAsImage = async (elementId) => {
-    const element = document.getElementById(elementId);
+  const downloadImage = async () => {
+    if (!artwork?.imageFile) return;
 
-    if (element) {
-      const canvas = await html2canvas(element);
-      const imageUrl = canvas.toDataURL("image/png");
+    try {
+      setLoading(true);
+      const response = await fetch(artwork.imageFile);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = imageUrl;
-      link.download = "image.png";
+      link.href = url;
+      link.download = `${artwork.artworkName || "artwork"}.png`;
+      document.body.appendChild(link);
       link.click();
-      handleClose();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      setOpenDowload(false);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error downloading image:", error);
     }
   };
 
   const handleYesClick = async () => {
-    await downloadSectionAsImage(artwork?.idDowLoad);
+    if (!artwork?.artworkID) return;
+    await downloadImage();
   };
 
-  const handleDownload = async (id: string) => {
-    if (!artwork?.artworkID) return; // Nếu artworkID không có, không tiếp tục
-
-    const downloadArtwork: DownloadArtwork = {
-      ...artwork,
-      idDowLoad: id,
-      artworkID: artwork.artworkID ?? "", // Nếu artworkID là undefined, gán một giá trị mặc định
-    };
-
-    setArtwork(downloadArtwork);
+  const handleDownload = () => {
+    if (!artwork?.artworkID) return;
     setOpenDowload(true);
   };
 
@@ -209,232 +211,240 @@ export default function PostWork() {
 
   function TagList() {
     return (
-        <>
-          {tags.map((tag, index) => (
-              <div key={tag.tagID} className="tag-item">
-                <Stack direction="row" spacing={1}>
-                  <Chip
-                      label={tag.tagName}
-                      variant="filled"
-                      onClick={handleClick}
-                      style={{
-                        backgroundColor: colors[index % colors.length],
-                        marginBottom: "5px",
-                        color: "white",
-                        fontSize: "1rem",
-                      }}
-                  />
-                </Stack>
-              </div>
-          ))}
-        </>
+      <>
+        {tags.map((tag, index) => (
+          <div key={tag.tagID} className="tag-item">
+            <Stack direction="row" spacing={1}>
+              <Chip
+                label={tag.tagName}
+                variant="filled"
+                onClick={handleClick}
+                style={{
+                  backgroundColor: colors[index % colors.length],
+                  marginBottom: "5px",
+                  color: "white",
+                  fontSize: "1rem",
+                }}
+              />
+            </Stack>
+          </div>
+        ))}
+      </>
     );
   }
   return (
-      <Box sx={{ paddingTop: "2%" }}>
-        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 100 }} open={loading}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-        {openDowload && <ArtShopDialog open={openDowload} handleClose={handleClose} handleYesClick={handleYesClick} />}
-        <div
-            className="poswork"
-            style={{
-              backgroundColor: theme.backgroundColor,
-              paddingBottom: "50px",
-              color: theme.color,
-            }}>
-          {/* thong tin nguoi dung */}
-          <div className="info-postwork">
-            {artwork?.purchasable ? <Watermark /> : ""}
-            <div className="imgpost" style={{ backgroundColor: theme.hoverBackgroundColor }}>
-              <img
-                  id={`img-${artwork?.artworkID}`}
-                  style={{ pointerEvents: artwork?.purchasable ? "none" : "auto" }}
-                  alt={artwork?.artworkName}
-                  src={artwork?.imageFile}
-              />
-            </div>
-            <Divider orientation="vertical" />
-            <div className="contentpost">
-              <Link to={`/characters/profile/${creator?.accountId}`} className="infor-user-post">
-                <div className="avatar-user-post">
-                  <Stack direction="row" spacing={2}>
-                    <Avatar src={creator?.profilePicture} sx={{ width: 50, height: 50 }} />
-                  </Stack>
-                </div>
-                <div className="name-user-post" style={{ color: "#1565C0" }}>
-                  {creator?.firstName + " " + creator?.lastName}
-                </div>
-              </Link>
+    <Box sx={{ paddingTop: "2%" }}>
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 100 }} open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      {openDowload && <ArtShopDialog open={openDowload} handleClose={handleClose} handleYesClick={handleYesClick} />}
+      <div
+        className="poswork"
+        style={{
+          backgroundColor: theme.backgroundColor,
+          paddingBottom: "50px",
+          color: theme.color,
+        }}>
+        {/* thong tin nguoi dung */}
+        <div className="info-postwork">
+          {artwork?.purchasable ? <Watermark /> : ""}
+          <div className="imgpost" style={{ backgroundColor: theme.hoverBackgroundColor }}>
+            <img
+              id={`img-${artwork?.artworkID}`}
+              style={{ pointerEvents: artwork?.purchasable ? "none" : "auto" }}
+              alt={artwork?.artworkName}
+              src={artwork?.imageFile}
+            />
+          </div>
+          <Divider orientation="vertical" />
+          <div className="contentpost">
+            <Link to={`/characters/profile/${creator?.accountId}`} className="infor-user-post">
+              <div className="avatar-user-post">
+                <Stack direction="row" spacing={2}>
+                  <Avatar src={creator?.profilePicture} sx={{ width: 50, height: 50 }} />
+                </Stack>
+              </div>
+              <div className="name-user-post" style={{ color: "#1565C0" }}>
+                {creator?.firstName + " " + creator?.lastName}
+              </div>
+            </Link>
 
-              <div className="content-post-img">
-                <div>
-                  <FontAwesomeIcon
-                      icon={faSignature}
-                      style={{ marginRight: "5px", fontSize: "18px", color: "#1565C0" }}
-                  />
-                  Name: {artwork?.artworkName}
-                </div>
-                <div>
-                  <FontAwesomeIcon
-                      icon={faCalendarDays}
-                      style={{ marginRight: "5px", fontSize: "18px", color: "#1565C0" }}
-                  />
-                  Posted date: {artwork?.dateCreated}
-                </div>
+            <div className="content-post-img">
+              <div>
+                <FontAwesomeIcon
+                  icon={faSignature}
+                  style={{ marginRight: "5px", fontSize: "18px", color: "#1565C0" }}
+                />
+                Name: {artwork?.artworkName}
+              </div>
+              <div>
+                <FontAwesomeIcon
+                  icon={faCalendarDays}
+                  style={{ marginRight: "5px", fontSize: "18px", color: "#1565C0" }}
+                />
+                Posted date: {artwork?.dateCreated}
+              </div>
 
-                <div>
-                  <FontAwesomeIcon icon={faEye} style={{ marginRight: "5px", fontSize: "18px", color: "#1565C0" }} />
-                  View: {artwork?.views}
-                </div>
+              <div>
+                <FontAwesomeIcon icon={faEye} style={{ marginRight: "5px", fontSize: "18px", color: "#1565C0" }} />
+                View: {artwork?.views}
+              </div>
 
-                <div>
-                  <FontAwesomeIcon icon={faHeart} style={{ marginRight: "5px", fontSize: "18px", color: "#E53935" }} />
-                  Like: {artwork?.likes}
-                </div>
+              <div>
+                <FontAwesomeIcon icon={faHeart} style={{ marginRight: "5px", fontSize: "18px", color: "#E53935" }} />
+                Like: {artwork?.likes}
+              </div>
 
-                <div>
-                  <FontAwesomeIcon icon={faComments} style={{ marginRight: "5px", fontSize: "18px", color: "#1565C0" }} />
-                  Comment: {artwork?.comments}
-                </div>
+              <div>
+                <FontAwesomeIcon icon={faComments} style={{ marginRight: "5px", fontSize: "18px", color: "#1565C0" }} />
+                Comment: {artwork?.comments}
+              </div>
 
-                <div>
-                  <FontAwesomeIcon
-                      icon={faMoneyBillWave}
-                      style={{ marginRight: "5px", fontSize: "18px", color: "#1565C0" }}
-                  />
-                  Price: {artwork?.price === 0 ? "Free" : formatMoney(artwork?.price)}
-                </div>
+              <div>
+                <FontAwesomeIcon
+                  icon={faMoneyBillWave}
+                  style={{ marginRight: "5px", fontSize: "18px", color: "#1565C0" }}
+                />
+                Price: {artwork?.price === 0 ? "Free" : formatMoney(artwork?.price)}
+              </div>
 
-                <h4 style={{ marginBottom: "5px", marginTop: "10px" }}>
-                  <FontAwesomeIcon icon={faTags} style={{ marginRight: "8px", fontSize: "18px", color: "#1565C0" }} />
-                  Tags:
-                </h4>
-                <div className="tag-container">{tags.length !== 0 ? <TagList /> : ""}</div>
+              <h4 style={{ marginBottom: "5px", marginTop: "10px" }}>
+                <FontAwesomeIcon icon={faTags} style={{ marginRight: "8px", fontSize: "18px", color: "#1565C0" }} />
+                Tags:
+              </h4>
+              <div className="tag-container">{tags.length !== 0 ? <TagList /> : ""}</div>
 
-                <div>
-                  <FontAwesomeIcon
-                      icon={faCircleInfo}
-                      style={{ marginRight: "5px", fontSize: "18px", color: "#1565C0" }}
-                  />
-                  Description: {artwork?.description}
-                </div>
+              <div>
+                <FontAwesomeIcon
+                  icon={faCircleInfo}
+                  style={{ marginRight: "5px", fontSize: "18px", color: "#1565C0" }}
+                />
+                Description: {artwork?.description}
               </div>
             </div>
           </div>
-          <Box className="comment-section">
-            <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "60%",
-                }}>
-              <LikeIcon userID={savedUser?.userId} artworkID={id} />
-              <FavouritesIcon userID={savedUser?.userId} artworkID={id} />
-              <div className="button-comment">
-                <a href="#comment" style={{ display: "flex" }}>
-                  <CommentIcon sx={{ color: theme.color, fontSize: 35, marginRight: "5px" }} />
-                  <h4 style={{ paddingTop: "5px" }} className="addfavourite">
-                    Comment
-                  </h4>
-                </a>
-              </div>
-              {creator?.accountId === savedUser?.accountId ? (
+        </div>
+        <Box className="comment-section">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "60%",
+            }}>
+            <LikeIcon userID={savedUser?.userId} artworkID={id} />
+            <FavouritesIcon userID={savedUser?.userId} artworkID={id} />
+            <div className="button-comment">
+              <a href="#comment" style={{ display: "flex" }}>
+                <CommentIcon sx={{ color: theme.color, fontSize: 35, marginRight: "5px" }} />
+                <h4 style={{ paddingTop: "5px" }} className="addfavourite">
+                  Comment
+                </h4>
+              </a>
+            </div>
+            {creator?.accountId === savedUser?.accountId ? (
+              <>
+                <Button
+                  onClick={handleDelete}
+                  color="error"
+                  variant="contained"
+                  style={{
+                    color: "white",
+                    height: "50px",
+                    margin: "10px",
+                  }}>
+                  Delete Artwork
+                </Button>
+                <Link to={`/characters/artwork/update/${artwork?.artworkID}`}>
+                  <Button
+                    variant="contained"
+                    style={{
+                      backgroundColor: "#5dbae5",
+                      color: "white",
+                      height: "50px",
+                      margin: "10px",
+                    }}>
+                    Update Artwork
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <div style={{ margin: "auto 5px" }}>
+                {/* check status of art */}
+                {artwork?.purchasable === true && status === false ?  (
+                  <Chip
+                    label={formatMoney(artwork?.price)+"$"}
+                    onClick={handleOpenArtShopConfirm}
+                    style={{
+                      fontSize: "20px",
+                      padding: "20px",
+                      fontWeight: "600",
+                      backgroundColor: "#61dafb",
+                    }}
+                  />
+                ) : savedUser && (
                   <>
                     <Button
-                        onClick={handleDelete}
-                        color="error"
-                        variant="contained"
-                        style={{
-                          color: "white",
-                          height: "50px",
-                          margin: "10px",
-                        }}>
-                      Delete Artwork
+                      sx={{ minWidth: "40%", marginBottom: "5px", height: "40px" }}
+                      variant="contained"
+                      size="small"
+                      title="Dowload"
+                      onClick={handleDownload}
+                      endIcon={<Download />}>
+                      Download Artwork
                     </Button>
-                    <Link to={`/characters/artwork/update/${artwork?.artworkID}`}>
-                      <Button
-                          variant="contained"
-                          style={{
-                            backgroundColor: "#5dbae5",
-                            color: "white",
-                            height: "50px",
-                            margin: "10px",
-                          }}>
-                        Update Artwork
-                      </Button>
-                    </Link>
                   </>
-              ) : (
-                  <div style={{ margin: "auto 5px" }}>
-                    {/* check status of art */}
-                    {artwork?.purchasable === true && status === false ? (
-                        <Chip
-                            label={formatMoney(artwork?.price)}
-                            onClick={handleOpenArtShopConfirm}
-                            style={{
-                              fontSize: "20px",
-                              padding: "20px",
-                              fontWeight: "600",
-                              backgroundColor: "#61dafb",
-                            }}
-                        />
-                    ) : (
-                        <>
-                          <Button
-                              sx={{ minWidth: "40%", marginBottom: "5px", height: "40px" }}
-                              variant="contained"
-                              size="small"
-                              title="Dowload"
-                              onClick={() => handleDownload(`img-${artwork?.artworkID}`)}
-                              endIcon={<Download />}>
-                            Download Artwork
-                          </Button>
-                        </>
-                    )}
-                    <Button
-                        sx={{ minWidth: "20%", marginBottom: "5px", height: "40px" }}
-                        onClick={handleOpenReport}
-                        variant="contained"
-                        color="error"
-                        href=""
-                        style={{ marginLeft: "20px" }}>
-                      Report
-                    </Button>
-                  </div>
-              )}
-              {/* {userInSession.accountId !== creator?.userId ? (
+                )}
+                {savedUser && (
+
+                
+                <Button
+                  sx={{ minWidth: "20%", marginBottom: "5px", height: "40px" }}
+                  onClick={handleOpenReport}
+                  variant="contained"
+                  color="error"
+                  href=""
+                  style={{ marginLeft: "20px" }}>
+                  Report
+                </Button>
+                )}
+              </div>
+            )}
+            {/* {userInSession.accountId !== creator?.userId ? (
 
             ) : (
               ""
             )} */}
 
-              {/* Popup Report */}
-              <Dialog
-                  open={openReport}
-                  onClose={handleClose}
-                  className="dialog-custom" // Áp dụng class từ ArtPost.css
-                  BackdropProps={{
-                    sx: {
-                      backgroundColor: "rgba(0, 0, 0, 0.5)", // Lớp phủ mờ
-                    },
-                  }}>
-                <ReportForm
-                    reporterId={Number(savedUser.userId)}
-                    reportedId={Number(creator?.userId)}
-                    artworkId={Number(artwork?.artworkID)}
-                    onClose={() => setOpenReport(false)}
-                />
-              </Dialog>
-            </div>
-            <div id='"#comment"'>
-              <Comments />
-            </div>
-          </Box>
-        </div>
-        {openArtShopConfirm && (
-            <ArtShopConfirm open={openArtShopConfirm} handleClose={handleOpenArtShopConfirm} item={artwork ?? null} />
-        )}
-      </Box>
+            {/* Popup Report */}
+
+            {savedUser && (
+            <Dialog
+              open={openReport}
+              onClose={handleClose}
+              className="dialog-custom" // Áp dụng class từ ArtPost.css
+              BackdropProps={{
+                sx: {
+                  backgroundColor: "rgba(0, 0, 0, 0.5)", // Lớp phủ mờ
+                },
+              }}>
+              <ReportForm
+                reporterId={Number(savedUser.userId)}
+                reportedId={Number(creator?.userId)}
+                artworkId={Number(artwork?.artworkID)}
+                onClose={() => setOpenReport(false)}
+              />
+            </Dialog>
+            )}
+
+          </div>
+          <div id='"#comment"'>
+            <Comments />
+          </div>
+        </Box>
+      </div>
+      {openArtShopConfirm && (
+        <ArtShopConfirm open={openArtShopConfirm} handleClose={handleOpenArtShopConfirm} item={artwork ?? null} />
+      )}
+    </Box>
   );
 }

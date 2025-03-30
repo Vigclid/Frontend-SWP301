@@ -77,11 +77,11 @@ const CommentItem = ({ comment, getReplyCommentsByCommentID, threadID }) => {
 
   const onReplyComment = () => {
     const authData = sessionStorage.getItem("auth");
-    console.log("Auth data:", authData);
     const user = authData ? JSON.parse(authData) : null;
-    console.log("User:", user);
     let newReplyData = {};
-    console.log("user: ", user);
+
+
+    if (user === null ) {alert("Please log in to continue...")}
     if (user) {
       newReplyData = {
         body: newReply,
@@ -188,7 +188,7 @@ function CommentInput({ threadID, setComments }) {
       const authData = sessionStorage.getItem("auth");
 
       const user = authData ? JSON.parse(authData) : null;
-
+      if (user === null ) {alert("Please log in to continue...")}
       if (user) {
         const commentData = {
           commentDetail: values.commentDetail,

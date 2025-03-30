@@ -26,6 +26,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.5",
     "chart.js": "^4.4.2",
+    "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "formik": "^2.4.5",
