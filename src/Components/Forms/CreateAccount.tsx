@@ -25,6 +25,7 @@ import LoadingScreen from "../LoadingScreens/LoadingScreenSpokes.jsx";
 import CustomizedTextField from "../StyledMUI/CustomizedTextField.tsx";
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckIcon from "@mui/icons-material/Check";
+import {getAllAccounts} from "../../API/AccountAPI/GET.tsx";
 
 let response;
 
@@ -188,9 +189,20 @@ export default function CreateAccount() {
   const [load, setLoad] = useState<boolean>(false);
 
   const handleSendCode = async () => {
+    const emailList: Account[] = await getAllAccounts();
+    console.log("list email", emailList);
     const emailValue = formik.values.email;
+
     if (emailValue) {
-      // Thực hiện xử lý với mã OTP 6 số đã nhập
+      const emailExists = emailList.some((item) => item.email === emailValue);
+
+      if (emailExists) {
+        alert("Email already exists!");
+        setLoad(false);
+        setActiveOTP(false);
+        setOtpButton(true);
+        return; 
+      }
 
       const headers = {
         "Content-Type": "application/json",
@@ -198,12 +210,16 @@ export default function CreateAccount() {
 
       if (otpButton) {
         setLoad(true);
-        response = await axios.post(`${getOTPURL}`, { email: emailValue }, { headers }); //GET OTP FROM SERVER
-
-        setOtpButton(false);
-        setLoad(false);
+        try {
+          const response = await axios.post(`${getOTPURL}`, { email: emailValue }, { headers }); // GET OTP FROM SERVER
+          setOtpButton(false);
+        } catch (error) {
+          console.error("Error sending OTP:", error);
+        } finally {
+          setLoad(false); // Đảm bảo tắt chế độ tải dù có lỗi hay không
+        }
       } else {
-        if (String(response.data) === String(otp)) {
+        if (String(response?.data) === String(otp)) {
           setActiveOTP(true);
         } else {
           formik.setErrors({ email: "Wrong OTP!" });
@@ -213,8 +229,6 @@ export default function CreateAccount() {
           }, 2000);
         }
       }
-
-      // Gọi các hàm khác hoặc thực hiện các thao tác cần thiết
     } else {
       formik.setErrors({ email: "Email is required" });
       // Xóa lỗi sau 5 giây

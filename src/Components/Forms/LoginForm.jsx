@@ -14,6 +14,7 @@ import { useAuth } from "../../Components/AuthenContext.tsx";
 import LoadingScreen from "../LoadingScreens/LoadingScreenSpokes.jsx";
 import { useNavigate } from "react-router-dom";
 
+
 export default function LoginForm({ disableOutsideClick, handleClick, backdrop, alternative }) {
   const [isLoading, setIsloading] = useState(false);
   const { storeUserData } = useAuth();
