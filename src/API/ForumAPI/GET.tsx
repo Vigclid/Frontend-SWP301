@@ -1,10 +1,10 @@
 import { Account, Creator } from "../../Interfaces/UserInterface.tsx";
 import axios from "axios";
 
-const typeoftopicurl = "http://localhost:7233/api/Forum/typeTopic";
-const topicurl = "http://localhost:7233/api/Forum/topic/";
-const forumurl = "http://localhost:7233/api/Forum/";
-const threadurl = "http://localhost:7233/api/Forum/thread/";
+const typeoftopicurl = `${process.env.REACT_APP_API_URL}/Forum/typeTopic`;
+const topicurl = `${process.env.REACT_APP_API_URL}/Forum/topic/`;
+const forumurl = `${process.env.REACT_APP_API_URL}/Forum/`;
+const threadurl = `${process.env.REACT_APP_API_URL}/Forum/thread/`;
 
 export interface APITypeOfTopic {
   typeName: string;

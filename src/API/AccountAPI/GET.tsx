@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Account } from "../../Interfaces/UserInterface.tsx";
 import axios from "axios";
 
-const getaccountbyaccountid = `http://localhost:7233/api/Account/`;
+const getaccountbyaccountid = `${process.env.REACT_APP_API_URL}/Account/`;
 
 export async function getAccountByAccountId(AccountId: string | number) {
   try {

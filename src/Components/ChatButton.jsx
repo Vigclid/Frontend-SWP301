@@ -57,7 +57,7 @@ const ChatButton = () => {
         }
         _getChattingUser();
         // Tạo kết nối WebSocket để xử lý Chat!
-        const socket = new SockJS('http://localhost:7233/ws');
+        const socket = new SockJS(`http://${process.env.REACT_APP_DNS}/ws`);
         const stompClient = Stomp.over(socket);
 
         stompClient.connect({}, () => {

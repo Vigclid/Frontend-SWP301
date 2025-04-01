@@ -1,9 +1,8 @@
 import { Payment } from "../../Interfaces/PaymentIntrerfaces";
 import axios from 'axios'
 
-const getpaymentadminurl="http://localhost:7233/api/Payment/admin-qr"
-const getpaymentaccounturl=`http://localhost:7233/api/Payment/account-qr/`
-const paymenturl=`http://localhost:7233/api/Payment/`
+const getpaymentaccounturl=`${process.env.REACT_APP_API_URL}/Payment/account-qr/`
+const paymenturl=`${process.env.REACT_APP_API_URL}/Payment/`
 
 export async function GetPaymentAdmin() {
     try{

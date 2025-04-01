@@ -71,7 +71,7 @@ export default function PostWork() {
 
       try {
         const response = await axios.put(
-          `http://localhost:7233/api/artworks/increment-views/${artworkbyid.artworkID}/${savedUser.userId}`
+          `${process.env.REACT_APP_API_URL}/artworks/increment-views/${artworkbyid.artworkID}/${savedUser.userId}`
         );
         console.log("View incremented on direct access:", response.data);
         // Đánh dấu đã gọi API tăng view cho artwork này trong session

@@ -1,9 +1,9 @@
   import axios from "axios";
 import { Package, CurrentPackage } from "../../Interfaces/Package";
 
-const packageUrl = "http://localhost:7233/api/Rank/";
-const currentPackage = `http://localhost:7233/api/Rank/Current/`;
-const allcurrentPackage = `http://localhost:7233/api/CurrentPackage/`;
+const packageUrl = `${process.env.REACT_APP_API_URL}/Rank/`;
+const currentPackage = `${process.env.REACT_APP_API_URL}/Rank/Current/`;
+const allcurrentPackage = `${process.env.REACT_APP_API_URL}/CurrentPackage/`;
 
 export async function GetPackage() {
   try {

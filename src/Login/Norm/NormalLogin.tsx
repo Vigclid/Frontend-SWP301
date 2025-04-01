@@ -2,9 +2,9 @@ import axios from "axios";
 import React from "react";
 import { Creator } from "../../Interfaces/UserInterface";
 
-const accounturl = "http://localhost:7233/api/Account";
-const creatorurl = "http://localhost:7233/api/Creator/";
-const roleurl = "http://localhost:7233/api/Role/";
+const accounturl = `${process.env.REACT_APP_API_URL}/Account`;
+const creatorurl = `${process.env.REACT_APP_API_URL}/Creator/`;
+const roleurl = `${process.env.REACT_APP_API_URL}/Role/`;
 
 type initialUser = {
   accountId: number;

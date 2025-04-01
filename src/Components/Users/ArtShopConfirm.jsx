@@ -19,7 +19,7 @@ export default function ArtShopConfirm(props) {
     const fetchUserCoins = async () => {
       try {
         if (auth?.accountId) {
-          const response = await axios.get("http://localhost:7233/api/Creator/" + auth.accountId);
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/Creator/` + auth.accountId);
           setUserCoins(response.data?.coins || 0);
         }
       } catch (error) {

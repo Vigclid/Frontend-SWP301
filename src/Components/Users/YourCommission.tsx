@@ -44,7 +44,7 @@ function CommissionStepper({ currentCommission }: { currentCommission: IExtraCom
   const updateProgress = async (commissionId, progress, artworkURL = null) => {
     try {
       const response = await axios.put(
-        `http://localhost:7233/api/commissions/${commissionId}/progress`,
+        `${process.env.REACT_APP_API_URL}/commissions/${commissionId}/progress`,
         null,
         {
           params: {
@@ -222,7 +222,7 @@ export default function YourCommission() {
     const getCommissionForm = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('http://localhost:7233/api/commissions');
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/commissions`);
         console.log('Commission response:', response.data);
         const commissions: IExtraCommissionForm[] = response.data
           .map((commission: any) => ({
@@ -258,7 +258,7 @@ export default function YourCommission() {
     setLoading(true);
     try {
       const response = await axios.put(
-        `http://localhost:7233/api/commissions/${commission.commissionID}/accept`,
+        `${process.env.REACT_APP_API_URL}/commissions/${commission.commissionID}/accept`,
         null,
         {
           params: {
@@ -293,7 +293,7 @@ export default function YourCommission() {
     setLoading(true);
     try {
       const response = await axios.put(
-        `http://localhost:7233/api/commissions/${selectedCommission.commissionID}/accept`,
+        `${process.env.REACT_APP_API_URL}/commissions/${selectedCommission.commissionID}/accept`,
         null,
         {
           params: {

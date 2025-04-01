@@ -99,7 +99,7 @@ export default function CustomizedSearchBar() {
 
     const fetchCreator = async (value) => {
         try {
-            const response = await axios.get(`http://localhost:7233/api/Creator`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/Creator`);
             const creators = response.data;
             const creatorsWithAccount = await Promise.all(
                 creators.map(async (creator) => {
@@ -127,7 +127,7 @@ export default function CustomizedSearchBar() {
 
     const fetchArt = async (value) => {
         try {
-            const response = await axios.get(`http://localhost:7233/api/artworks/`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/artworks/`);
             if (!value) {
                 setDataArt([]);
                 return;
@@ -145,7 +145,7 @@ export default function CustomizedSearchBar() {
 
     const fetchTag = async (value) => {
         try {
-            const response = await axios.get(`http://localhost:7233/api/Tag/`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/Tag/`);
             const tags = response.data;
             const filteredTags = tags.filter((tag) =>
                 value && tag?.tagName?.toLowerCase().includes(value.toLowerCase())

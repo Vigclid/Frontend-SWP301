@@ -21,7 +21,7 @@ export default function RecommendedWords({ artworkList, user }) {
   useEffect(() => {
     const fetchCreators = async () => {
       try {
-        const response = await axios.get("http://localhost:7233/api/Creator");
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/Creator`);
         setCreators(response.data);
       } catch (error) {
         console.error("Error fetching creators:", error);

@@ -3,7 +3,7 @@ import { ICommissionForm, IExtraCommissionForm } from "../../Interfaces/Commissi
 import axios from 'axios'
 
 
-const getcommssionformurl = "https://localhost:7233/api/CommissionForm/"
+const getcommssionformurl = `${process.env.REACT_APP_API_URL}/CommissionForm/`
 
 
 const headers = {

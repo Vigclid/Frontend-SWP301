@@ -3,10 +3,10 @@ import axios from 'axios'
 import { Account, Creator } from '../../Interfaces/UserInterface';
 import {Follow} from '../../Interfaces/FollowingInterface';
 
-const postcreatorurl = 'http://localhost:7233/api/Creator/'
-const postaccounturl = 'http://localhost:7233/api/Account/CreateAccount'
-const changePasswordURL = 'http://localhost:7233/api/Account/changepassword'
-const followUser = "http://localhost:7233/api/Creator/followers";
+const postcreatorurl = `${process.env.REACT_APP_API_URL}/Creator/`
+const postaccounturl = `${process.env.REACT_APP_API_URL}/Account/CreateAccount`
+const changePasswordURL = `${process.env.REACT_APP_API_URL}/Account/changepassword`
+const followUser = `${process.env.REACT_APP_API_URL}/Creator/followers`;
 
 export async function PostUserAccount(values:Account) {
   try {

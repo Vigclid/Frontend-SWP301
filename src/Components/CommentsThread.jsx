@@ -24,7 +24,7 @@ export default function Comments() {
 
     if (id) {
       // Fetch comments data for specific thread
-      fetch(`http://localhost:7233/api/Forum/thread/comments/${id}`)
+      fetch(`${process.env.REACT_APP_API_URL}/Forum/thread/comments/${id}`)
         .then((response) => response.json())
         .then((data) => setComments(data))
         .catch((error) => {
@@ -33,7 +33,7 @@ export default function Comments() {
         });
 
       // Fetch reply comments data
-      fetch("http://localhost:7233/api/replycomment")
+      fetch(`${process.env.REACT_APP_API_URL}/replycomment`)
         .then((response) => response.json())
         .then((data) => setReplyComments(data))
         .catch((error) => setReplyComments([]));
@@ -91,7 +91,7 @@ const CommentItem = ({ comment, getReplyCommentsByCommentID, threadID }) => {
         dateOfInteract: new Date().toISOString(),
       };
 
-      fetch("http://localhost:7233/api/replycomment/add", {
+      fetch(`${process.env.REACT_APP_API_URL}/replycomment/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -105,7 +105,7 @@ const CommentItem = ({ comment, getReplyCommentsByCommentID, threadID }) => {
           const _updateInteractData = async (threadId) => {
             try {
               console.log("Calling /api/Forum/update...");
-              return await axios.put(`http://localhost:7233/api/Forum/update-comment-count/${threadID}`);
+              return await axios.put(`${process.env.REACT_APP_API_URL}/Forum/update-comment-count/${threadID}`);
             } catch (error) {
               console.error("Error updating interact data:", error);
             }
@@ -117,7 +117,7 @@ const CommentItem = ({ comment, getReplyCommentsByCommentID, threadID }) => {
           console.error("Error posting reply comment:", error);
         });
       const _Func = async () => {
-        return await axios.put(`http://localhost:7233/api/Forum/update-comment-count/${threadID}`);
+        return await axios.put(`${process.env.REACT_APP_API_URL}/Forum/update-comment-count/${threadID}`);
       };
       _Func();
     }
@@ -200,7 +200,7 @@ function CommentInput({ threadID, setComments }) {
         formik.values.commentDetail = "";
         console.log("Comment data:", commentData);
 
-        fetch("http://localhost:7233/api/Forum/thread/comments/", {
+        fetch(`${process.env.REACT_APP_API_URL}/Forum/thread/comments/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(commentData),
@@ -208,11 +208,11 @@ function CommentInput({ threadID, setComments }) {
           .then((response) => {
             if (response.ok) {
               // Update interactions after successful comment
-              fetch(`http://localhost:7233/api/Forum/update-comment-count/${threadID}`, {
+              fetch(`${process.env.REACT_APP_API_URL}/Forum/update-comment-count/${threadID}`, {
                 method: "PUT",
               });
               // Fetch updated comments
-              return fetch(`http://localhost:7233/api/Forum/thread/comments/${threadID}`);
+              return fetch(`${process.env.REACT_APP_API_URL}/Forum/thread/comments/${threadID}`);
             }
             throw new Error("Failed to post comment");
           })

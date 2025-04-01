@@ -1,19 +1,18 @@
 import { Artwork, ArtworkPaymentStatus } from "../../Interfaces/ArtworkInterfaces";
 import axios from "axios";
 
-const arturl = "http://localhost:7233/api/artworks/";
-const top10arturl = `http://localhost:7233/api/artworks/`;
-const random10arturl = `http://localhost:7233/api/artworks/`;
-const artworkbycreatorurl = `http://localhost:7233/api/artworks/accountID/`;
-const numberartworkurl = `http://localhost:7233/api/artworks/`;
-const nearest7artworkurl = `http://localhost:7233/api/artworks/`;
-const artworkbycreatornoimageurl = `http://localhost:7233/api/artworks/`;
-const recentartworks = "http://localhost:7233/api/artworks/";
-const artworkyidnoimageurl = "http://localhost:7233/api/artworks/";
-const artworkPAymentStatus = "http://localhost:7233/api/artworks/";
-const artworkByTagName = "http://localhost:7233/api/artworks/Tag";
-const API_URL = "http://localhost:7233/api/interact";
-const transactionurl = "http://localhost:7233/api/transaction";
+const arturl = `${process.env.REACT_APP_API_URL}/artworks/`;
+const top10arturl = `${process.env.REACT_APP_API_URL}/artworks/`;
+const random10arturl = `${process.env.REACT_APP_API_URL}/artworks/`;
+const artworkbycreatorurl = `${process.env.REACT_APP_API_URL}/artworks/accountID/`;
+const numberartworkurl = `${process.env.REACT_APP_API_URL}/artworks/`;
+const nearest7artworkurl = `${process.env.REACT_APP_API_URL}/artworks/`;
+const artworkbycreatornoimageurl = `${process.env.REACT_APP_API_URL}/artworks/`;
+const recentartworks = `${process.env.REACT_APP_API_URL}/artworks/`;
+const artworkyidnoimageurl = `${process.env.REACT_APP_API_URL}/artworks/`;
+const artworkByTagName = `${process.env.REACT_APP_API_URL}/artworks/Tag`;
+const API_URL = `${process.env.REACT_APP_API_URL}/interact`;
+const transactionurl = `${process.env.REACT_APP_API_URL}/transaction`;
 
 export async function GetArtsPaymentStatus(creatorId: string, artworkId: string): Promise<ArtworkPaymentStatus | null> {
   try {

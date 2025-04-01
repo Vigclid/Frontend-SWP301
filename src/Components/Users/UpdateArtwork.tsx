@@ -29,7 +29,7 @@ function UpdateArtwork() {
   const [blobImage, setBlobImage] = useState();
   const { artworkID } = useParams();
   const navigate = useNavigate();
-  const url = `http://localhost:7233/api/artworks/update`; // GET & PUT theo id
+  const url = `${process.env.REACT_APP_API_URL}/artworks/update`; // GET & PUT theo id
 
   // Giả sử thông tin người dùng được lưu trong sessionStorage
   const authData = sessionStorage.getItem("auth");

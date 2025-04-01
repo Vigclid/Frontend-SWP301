@@ -2,8 +2,8 @@ import { Tag } from '../../Interfaces/TagInterface'
 import axios from 'axios'
 
 
-const tagurl = "http://localhost:7233/api/Tag/"
-const tagsbyarturl = "http://localhost:7233/api/artworks/"
+const tagurl = `${process.env.REACT_APP_API_URL}/Tag/`
+const tagsbyarturl = `${process.env.REACT_APP_API_URL}/artworks/`
 export async function GetTagList() {
         try{
             let tagList:Tag[] = await axios.get(tagurl).then(response => response.data)

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const threadurl = "http://localhost:7233/api/Forum/thread/";
+const threadurl = `${process.env.REACT_APP_API_URL}/Forum/thread/`;
 
 interface ThreadUploadData {
   titleThread: string;
@@ -38,7 +38,7 @@ export const UploadThread = async (data: ThreadUploadData) => {
 
     console.log("Sending request with data:", requestData);
 
-    const response = await axios.post("http://localhost:7233/api/Forum/thread", requestData, {
+    const response = await axios.post(`${process.env.REACT_APP_API_URL}/Forum/thread`, requestData, {
       headers: {
         "Content-Type": "application/json",
       },

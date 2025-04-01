@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const adminurl = "http://localhost:7233/admin";
+const adminurl = `http://${process.env.REACT_APP_DNS}/admin`;
 
 export async function DeleteArtwork(artworkId: number) {
   try {

@@ -28,7 +28,7 @@ import CheckIcon from "@mui/icons-material/Check";
 
 let response;
 
-const getOTPURL = "http://localhost:7233/api/Account/send-token";
+const getOTPURL = `${process.env.REACT_APP_API_URL}/Account/send-token`;
 
 function LoginAsGuest() {
   const { theme } = useContext(ThemeContext);
@@ -295,6 +295,7 @@ export default function CreateAccount() {
                     id="passwword"
                     label="Password"
                     name="password"
+                    type="password"
                     autoComplete="password"
                     fullWidth
                     value={formik.values.password}

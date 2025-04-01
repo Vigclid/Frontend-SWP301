@@ -2,9 +2,9 @@ import { ICommissionForm, IExtraCommissionForm } from "../../Interfaces/Commissi
 import axios from 'axios'
 import { GetUserNameById } from "../UserAPI/GET.tsx"
 
-const getcommssionformurl = "https://localhost:7233/api/CommissionForm"
-const getcommissionrequestorurl = `http://localhost:7233/api/commissions/requestor/`;
-const getcommissionrecieverurl = `http://localhost:7233/api/CommissionForm/ByReceiverIDAddEmailAndPhone/`
+
+const getcommissionrequestorurl = `${process.env.REACT_APP_API_URL}/commissions/requestor/`;
+const getcommissionrecieverurl = `${process.env.REACT_APP_API_URL}/CommissionForm/ByReceiverIDAddEmailAndPhone/`
 
 export async function GetCommissionRequestorById(id: string) {
   try {

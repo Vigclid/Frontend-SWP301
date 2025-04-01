@@ -2,16 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Account, Creator } from "../../Interfaces/UserInterface.tsx";
 import axios from "axios";
 
-const creatorurl = "http://localhost:7233/api/Creator/";
-const creatonobackgroundimageurl = `http://localhost:7233/api/Creator/NotBackground`;
-const accountemailurl = "http://localhost:7233/api/Account/email/";
-const countcreatorurl = "http://localhost:7233/api/Creator/CountCreators";
-const creatorvipstatusurl = `http://localhost:7233/api/Creator/GetID/UserName/Vip`;
-const gettotalartworklikesbycreatorurl = `http://localhost:7233/api/artworks/total-likes/`;
-const top10UsersUrl = "http://localhost:7233/api/Creator/top-popular";
-const checkFollow = "http://localhost:7233/api/Follow/checkFollow";
-const getUserByIdUrl = "http://localhost:7233/api/Creator/userID/";
+const creatorurl = `${process.env.REACT_APP_API_URL}/Creator/`;
 
+const accountemailurl = `${process.env.REACT_APP_API_URL}/Account/email/`;
+const countcreatorurl = `${process.env.REACT_APP_API_URL}/Creator/CountCreators`;
+
+const gettotalartworklikesbycreatorurl = `${process.env.REACT_APP_API_URL}/artworks/total-likes/`;
+const top10UsersUrl = `${process.env.REACT_APP_API_URL}/Creator/top-popular`;
+const checkFollow = `${process.env.REACT_APP_API_URL}/Follow/checkFollow`;
+const getUserByIdUrl = `${process.env.REACT_APP_API_URL}/Creator/userID/`;
 
 export async function GetUserNameById(userId: string | number) {
   try {
