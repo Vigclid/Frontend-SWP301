@@ -177,12 +177,8 @@ export async function CheckLikeStatus(userID: number, artworkID: number) {
 
 export const GetLikeCount = async (artworkID: number) => {
   try {
-    const response = await fetch(`${API_URL}/like/count/${artworkID}`);
-    if (response.ok) {
-      return await response.json(); // số lượng like
-    }
-    console.error("Failed to get like count");
-    return 0;
+    const response = await axios.get(`${API_URL}/like/count/${artworkID}`).then(res => res.data);
+    return await response;
   } catch (error) {
     console.error("Error getting like count:", error);
     return 0;

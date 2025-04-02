@@ -31,6 +31,7 @@ export async function CheckLogin(checkAccount: initialUser, storeUserData: any) 
     // const foundAccount:initialUser = listOfAccounts.find((account: { email: string; password: string }) => account.email === checkAccount.email && account.password === checkAccount.password);
     try {
       const response = await axios.get(`${accounturl}/${checkAccount.email}/${checkAccount.password}`);
+      console.log(response);
       foundAccount = response.data;
     } catch (error: any) {
       if (error.response && error.response.status === 404) {

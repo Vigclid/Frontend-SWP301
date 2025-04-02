@@ -19,21 +19,19 @@ export default function Comments() {
 
 
   useEffect(() => {
-    // Get artworkID from URL
+    
     const pathParts = window.location.pathname.split("/");
     const id = pathParts[pathParts.length - 1];
-    setArtworkID(id); // Set the artworkID
-  
-    // Fetch all data asynchronously using Promise.all
+    setArtworkID(id);
     Promise.all([
-      fetch(`${process.env.REACT_APP_API_URL}/comments/`).then((response) => response.json()),
-      fetch(`${process.env.REACT_APP_API_URL}/replycomment`).then((response) => response.json()),
-      fetch(`${process.env.REACT_APP_API_URL}/Creator`).then((response) => response.json()),
+      axios.get(`${process.env.REACT_APP_API_URL}/comments/`),
+      axios.get(`${process.env.REACT_APP_API_URL}/replycomment`),
+      axios.get(`${process.env.REACT_APP_API_URL}/Creator`)
     ])
-      .then(([commentsData, replyCommentsData, creatorsData]) => {
-        setComments(commentsData);
-        setReplyComments(replyCommentsData);
-        setCreators(creatorsData);
+      .then(([commentsResponse, replyCommentsResponse, creatorsResponse]) => {
+        setComments(commentsResponse.data);
+        setReplyComments(replyCommentsResponse.data);
+        setCreators(creatorsResponse.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);

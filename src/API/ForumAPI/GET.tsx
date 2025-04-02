@@ -110,12 +110,8 @@ export async function CheckLikeStatus(userID: number, threadID: number) {
 
 export const GetLikeCount = async (threadID: number) => {
   try {
-    const response = await fetch(`${threadurl}likecount/${threadID}`);
-    if (response.ok) {
-      return await response.json(); // số lượng like
-    }
-    console.error("Failed to get like count");
-    return 0;
+    const response = await axios.get(`${threadurl}likecount/${threadID}`).then(res => res.data);
+    return await response; // số lượng like
   } catch (error) {
     console.error("Error getting like count:", error);
     return 0;

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const adminurl = `http://${process.env.REACT_APP_DNS}/admin`;
+const adminurl = `${process.env.REACT_APP_DNS}/admin`;
 
 export async function GetListArtistForm() {
   try {

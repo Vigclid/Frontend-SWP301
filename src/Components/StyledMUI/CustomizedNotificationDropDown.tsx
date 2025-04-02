@@ -64,7 +64,7 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
       }
       _getNotificationsByUserId();
       // Tạo kết nối WebSocket
-      const socket = new SockJS(`http://${process.env.REACT_APP_DNS}/ws`);
+      const socket = new SockJS(`${process.env.REACT_APP_DNS}/ws`);
       const stompClient = Stomp.over(socket);
   
       stompClient.connect({}, () => {
