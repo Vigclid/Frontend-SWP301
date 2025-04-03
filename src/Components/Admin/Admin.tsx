@@ -416,7 +416,7 @@ export default function Admin() {
                         <div
                           className="namework"
                           key={index}
-                          onClick={() => navigate(`/characters/artwork/${id}`)}
+                          onClick={() => window.open(`/characters/artwork/${id}`)}
                           style={{ cursor: "pointer", padding: "10px" }}>
                           <span>{id}</span> <span>{name}</span>
                         </div>

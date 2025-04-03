@@ -16,9 +16,9 @@ import Tabs from "@mui/material/Tabs";
 import AdminNavbar from "./NavigationAd";
 import { GetListActivity, GetListAllTransactions, GetListPayment } from "../../API/AdminAPI/GET.tsx";
 import { GetCreatorByID } from "../../API/UserAPI/GET.tsx";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import moment from "moment";
-import {GetPaymentJava, Payment} from "../../Interfaces/PaymentIntrerfaces.ts";
+import { GetPaymentJava, Payment } from "../../Interfaces/PaymentIntrerfaces.ts";
 import { Creator } from "../../Interfaces/UserInterface.ts";
 
 interface Activity {
@@ -38,8 +38,6 @@ interface Transaction {
   sellerInfo?: any;
   buyerInfo?: any;
 }
-
-
 
 function TabPanel(props: { children?: React.ReactNode; index: number; value: number }) {
   const { children, value, index } = props;
@@ -110,14 +108,12 @@ export default function Activity() {
         const paymentsData = await GetListPayment();
         const usersData = await Promise.all(
           paymentsData.map(async (payment) => {
-
             const userData = await GetCreatorByID(payment.userId);
             return userData;
           })
         );
         setPayments(paymentsData);
         setUserPayment(usersData);
-
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -129,11 +125,11 @@ export default function Activity() {
   }, []);
 
   const handleUserClick = (accountId: number) => {
-    navigate(`/characters/profile/${accountId}`);
+    window.open(`/characters/profile/${accountId}`);
   };
 
   const handleArtworkClick = (artworkId: number) => {
-    navigate(`/characters/artwork/${artworkId}`);
+    window.open(`/characters/artwork/${artworkId}`);
   };
 
   if (loading) {
@@ -312,40 +308,40 @@ export default function Activity() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {payments.slice(paymentPage * rowsPerPage, paymentPage * rowsPerPage + rowsPerPage).map((payment, index) => { 
-                
-                  return (
-              
-                  <TableRow key={payment.transCode}>
-                    <TableCell>{payment.paymentId}</TableCell>
-                    <TableCell>{payment.transCode}</TableCell>
-                    <TableCell>
-                      <Box
-                        onClick={() => handleUserClick(Number(userPayment[index].accountId))}
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                          cursor: "pointer",
-                          "&:hover": { textDecoration: "underline" },
-                        }}>
-                        <Avatar src={userPayment[index].profilePicture} />
-                        {userPayment[index].firstName} {userPayment[index].lastName}
-                      </Box>
-                    </TableCell>
-                    <TableCell>${payment.amount}</TableCell>
-                    <TableCell align="left">
-                              <Chip
-                                label={String(payment.status) === '1' ? 'Success' : 'Failed'}
-                                color={String(payment.status) === '1' ? 'success' : 'error'}
-                                variant="outlined"
-                                sx={{ fontWeight: 'bold' }}
-                              />
-                            </TableCell>
-                    <TableCell>{moment(payment.createdAt).format("YYYY-MM-DD hh:mm:ss ")}</TableCell>
-                  </TableRow>
-
-                )})}
+                {payments
+                  .slice(paymentPage * rowsPerPage, paymentPage * rowsPerPage + rowsPerPage)
+                  .map((payment, index) => {
+                    return (
+                      <TableRow key={payment.transCode}>
+                        <TableCell>{payment.paymentId}</TableCell>
+                        <TableCell>{payment.transCode}</TableCell>
+                        <TableCell>
+                          <Box
+                            onClick={() => handleUserClick(Number(userPayment[index].accountId))}
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                              cursor: "pointer",
+                              "&:hover": { textDecoration: "underline" },
+                            }}>
+                            <Avatar src={userPayment[index].profilePicture} />
+                            {userPayment[index].firstName} {userPayment[index].lastName}
+                          </Box>
+                        </TableCell>
+                        <TableCell>${payment.amount}</TableCell>
+                        <TableCell align="left">
+                          <Chip
+                            label={String(payment.status) === "1" ? "Success" : "Failed"}
+                            color={String(payment.status) === "1" ? "success" : "error"}
+                            variant="outlined"
+                            sx={{ fontWeight: "bold" }}
+                          />
+                        </TableCell>
+                        <TableCell>{moment(payment.createdAt).format("YYYY-MM-DD hh:mm:ss ")}</TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
             <TablePagination
