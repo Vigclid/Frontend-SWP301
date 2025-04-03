@@ -454,19 +454,19 @@ function UploadArtwork() {
               Welcome To The Wolrd!
             </CustomizedButton>
             <Dialog open={showInsufficientFunds} aria-labelledby="insufficient-funds-dialog" className="dialog-custom">
-              <div className="insufficient-funds-dialog status-dialog">
-                <h2>Insufficient Funds</h2>
-                <p>You will be redirected to deposit page...</p>
-              </div>
-            </Dialog>
+                <div className="insufficient-funds-dialog status-dialog">
+                  <h2>Photo Posting Limit in This month, Upgrade Rank Please</h2>
+                  <p>You will be redirected to Package page...</p>
+                </div>
+              </Dialog>
 
-            {/* Success popup */}
-            <Dialog open={showSuccess} aria-labelledby="success-dialog" className="dialog-custom">
-              <div className="success-dialog status-dialog">
-                <h2>Purchase Successful!</h2>
-                <p>You will be redirected to artwork page...</p>
-              </div>
-            </Dialog>
+              {/* Success popup */}
+              <Dialog open={showSuccess} aria-labelledby="success-dialog" className="dialog-custom">
+                <div className="success-dialog status-dialog">
+                  <h2>Upload Successful!</h2>
+                  <p>You will be redirected to artwork page...</p>
+                </div>
+              </Dialog>
           </form>
         </div>
       </div>

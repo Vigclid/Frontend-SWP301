@@ -265,8 +265,11 @@ export default function ProfileUser() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
+  const navigate = useNavigate();
   useEffect(() => {
+    if (!sessionStorage.getItem("userRole")) {
+      navigate("/");
+    }
     const getUserProfile = async () => {
       const userProfile = await GetCreatorByAccountID(id ? id : "0");
       console.log("🟢 Dữ liệu User từ API:", userProfile);
@@ -299,11 +302,12 @@ export default function ProfileUser() {
           const response = await axios.get(
             `${process.env.REACT_APP_API_URL}/Follow/checkFollow?followerID=${userInSession.userId}&followingID=${userProfile.userId}`
           );
+          console.log("Data F : " + response.data.isFollowing)
           setIsFollowing(response.data.isFollowing);
         }
       } else {
         setUser(userProfile);
-      }
+      } 
     };
     const getUserArtworks = async () => {
       const userArtworks = await GetArtsByAccountId(id ? id : "0");

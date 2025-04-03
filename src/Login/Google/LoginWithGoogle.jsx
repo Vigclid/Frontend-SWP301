@@ -18,7 +18,8 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
   const navigate = useNavigate();
 
   //This Method will able you to fetch Google Authentication Token and use Google API to fetch user gmail account info without needing a Backend
-  const googleAPI = 'https://www.googleapis.com/oauth2/v3/userinfo' // URL to googleapis to authenticate user token
+  // const googleAPI = 'https://www.googleapis.com/oauth2/v3/userinfo' 
+  // URL to googleapis to authenticate user token
   
   const onClick = useGoogleLogin({
     onSuccess: async response => {
@@ -27,7 +28,11 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
       //Using Axios to fetch API from Google
       //Async await to synchonize fetching data
       //TODO: Remove console.log when finish testing
-     const ggAccount = await axios.get(googleAPI, { headers: { Authorization: `Bearer ${token}` } }).then(response => response.data)
+     const ggAccount = await axios.post(`${process.env.REACT_APP_API_URL}/google-user`, { token })
+     .then(res => res.data)
+     .catch(error => {
+       console.error('Error fetching user info:', error);
+     });
      const listOfAccounts = await axios.get(accounturl).then(response => response.data)
      const foundAccount = listOfAccounts.find((account) => account.email === ggAccount.email);
      
@@ -69,7 +74,7 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
                 accountId: "0",
                 coins: 0,
                 userName: "",
-                profilePicture: "",
+                profilePicture: ggAccount.picture,
                 backgroundPicture: "",
                 firstName: "",
                 lastName: undefined,

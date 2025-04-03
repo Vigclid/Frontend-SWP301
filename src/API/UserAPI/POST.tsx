@@ -62,6 +62,8 @@ export async function PostFollowUser(values:Follow) {
       // Optionally, add additional headers such as Authorization if required
       // 'Authorization': 'Bearer your-token',
     };
+    console.log("FUCK")
+    console.log(values)
     const response = await axios.post(followUser, values, { headers });
     console.log('Follow Complete:', response.data);
   } catch (err) {
