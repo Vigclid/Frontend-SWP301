@@ -43,4 +43,5 @@ export interface Creator {
   vip: boolean;
   TypeOfRank: string;
   nameOfRank: string;
+  amountArtworks: number;
 } // This is the Object Creator, having all the infomation.

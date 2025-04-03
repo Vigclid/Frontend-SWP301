@@ -81,7 +81,7 @@ function UpdateArtwork() {
           <CustomizedTextField
             sx={{ float: "right" }}
             name="price"
-            label="Price *1000 (Unit is VND)"
+            label="Price"
             value={formik.values.price}
             onChange={formik.handleChange}
             fullWidth
