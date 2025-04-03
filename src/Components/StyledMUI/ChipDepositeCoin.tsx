@@ -6,11 +6,12 @@ import '../../css/Package.css';
 import React, { useContext , useEffect, useState } from 'react';
 import {ThemeContext} from '../Themes/ThemeProvider.tsx'
 import axios from 'axios'
+import { Creator } from '../../Interfaces/UserInterface.ts';
 
 
 function ChipDepositeCoin({user}) {
   const {theme} = useContext(ThemeContext)
-  const [creator, setCreator] = useState(null);
+  const [creator, setCreator] = useState<Creator>();
 
   useEffect(() => {
     const fetchCreatorCoins = async () => {

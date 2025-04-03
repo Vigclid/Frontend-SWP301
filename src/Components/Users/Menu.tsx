@@ -102,7 +102,7 @@ export default function Menu({ onCurrentPackageChange }) {
 
               <Link to={`depositecoin`}>
                 <Button>
-                  <ChipDepositeCoin user={ user}  />
+                  <ChipDepositeCoin user={ user} />
                 </Button>
               </Link>
               <CustomizedDropdown handleClickAsGuest={handleClick} user={user} pack={pack} />

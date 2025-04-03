@@ -8,12 +8,17 @@ import ListItem from "@mui/material/ListItem";
 import Typography from "@mui/material/Typography";
 import Popover from "@mui/material/Popover";
 import { ThemeContext } from "./Themes/ThemeProvider.tsx";
-import { Avatar, Button, Chip } from "@mui/material";
+import { Avatar, Backdrop, Button, Chip, CircularProgress, Dialog, Grid, TextField } from "@mui/material";
 import { sendMessage } from "../API/ChatAPT/POST.tsx";
 import { saveNewMoneyTransfer } from "../API/PaymentAPI/POST.tsx";
+import '../css/ArtConfirm.css'
+import axios from "axios";
 
+const getOTPURL = `${process.env.REACT_APP_API_URL}/Account/send-token`;
 const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }) => {
   const chatRef = useRef(null);
+  const childDialogRef = useRef(null);
+
   const messagesEndRef = useRef(null);
   const [messages, setMessages] = useState(() => {
     if (!message || !chatProfile || !chatProfile[0]) {
@@ -32,6 +37,13 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
   const { theme } = useContext(ThemeContext);
   const [previewInput, setPreviewInput] = useState(false);
 
+  const [res, setRes] = useState(null)
+  const [previewOtpInput, setPreviewOtpInput] = useState(false);
+  const [previewDialog, setPreviewDialog] = useState(false);
+  const [otp, setOtp] = useState("")
+
+  const [dialogSuccess, setDialogSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Cập nhật selectedUser dựa trên chatProfile
   useEffect(() => {
@@ -68,7 +80,11 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
   // Đóng chat khi click bên ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (chatRef.current && !chatRef.current.contains(event.target)) {
+      if (
+        chatRef.current &&
+        !chatRef.current.contains(event.target) &&
+        !(childDialogRef.current && childDialogRef.current.contains(event.target))
+      ) {
         onClose();
       }
     };
@@ -110,10 +126,10 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
     setMessages(
       message
         ? message.filter(
-            (msg) =>
-              (msg.senderId === userInSession.userId || msg.receiverId === userInSession.userId) &&
-              (msg.senderId === user.userId || msg.receiverId === user.userId)
-          )
+          (msg) =>
+            (msg.senderId === userInSession.userId || msg.receiverId === userInSession.userId) &&
+            (msg.senderId === user.userId || msg.receiverId === user.userId)
+        )
         : []
     );
   };
@@ -127,7 +143,7 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
 
   const handleSendCoin = async (e) => {
     e.preventDefault();
-    const _inputCoin = newMessage; 
+    const _inputCoin = newMessage;
     if (isNaN(_inputCoin)) {
       alert("This is not number!");
     } else {
@@ -143,12 +159,19 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
           transferDate: null,
         };
         try {
-          const response = await saveNewMoneyTransfer(_objectMoneyTransfer);
-          
-          
-            alert("Transfer coin successful!");
-            setPreviewInput((prev) => !prev);
-          
+
+          setPreviewOtpInput(true);
+          const headers = {
+            "Content-Type": "application/json",
+          };
+
+          setLoading(true);
+          const response = await axios.post(`${getOTPURL}`, { email: userInSession.email }, { headers }); //GET OTP FROM SERVER
+          setRes(response.data);
+          setLoading(false);
+
+          setPreviewInput((prev) => !prev);
+
         } catch (error) {
           console.error(error);
           alert("Transfer failed!");
@@ -156,8 +179,36 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
       }
     }
   };
-  
-  
+
+  const handleSubmitOtp = async () => {
+
+    const _otp = otp;
+    if (_otp.toString().trim() === res.toString().trim()) {
+      try {
+        const _objectMoneyTransfer = {
+          transferId: 0,
+          senderUserId: userInSession.userId,
+          receiverUserId: selectedUser.userId,
+          amount: Number(newMessage),
+          transferDate: null,
+        };
+        const response = await saveNewMoneyTransfer(_objectMoneyTransfer);
+        setDialogSuccess(true);
+
+        setTimeout(() => {
+          setDialogSuccess(false);
+          setPreviewOtpInput(false);
+          setOtp("");
+        }, 2000)
+      } catch (error) {
+
+        console.error(error);
+      }
+    } else {
+      alert("Wrong OTP!");
+    }
+  }
+
 
   return (
     <Box
@@ -176,6 +227,9 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
         display: "flex",
       }}
     >
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 100 }} open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       {/* Danh sách người dùng */}
       <Box sx={{ width: "200px", borderRight: "1px solid #ccc" }}>
         {chatProfile && chatProfile.length > 0 ? (
@@ -298,60 +352,61 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
             }}
             onSubmit={previewInput ? handleSendCoin : handleSendMessage}
           >
-             <Chip
-               avatar={<Avatar alt="Coins" src="/icons/coin.gif" 
-                          sx={{ bgcolor: 'transparent' ,
-                          }}
-                      />}
-                    onClick={handlePreviewInputSendCoint}
-                    label= {previewInput ? "chat" : "send"}
-                    variant = "outlined"
-                    sx={{
-                      '& .MuiChip-avatar': {
-                        bgcolor: 'transparent !important', // ghi đè style của container avatar trong Chip
-                        },
-                        marginRight: "10px",
-                        '& .MuiChip-label': {
-                        color: theme.color5,      
-                        fontWeight: 'normal', 
-                        fontSize: '1rem', 
-                        transition: theme.transition,
-                        },
-                        transition: 'padding 0.3s ease', 
-                        '&:hover': {
-                          padding: '3.2px', 
-                          cursor: 'pointer',
-                        },
-                    }}
-                    color = "secondary"
-                    />     
+            <Chip
+              avatar={<Avatar alt="Coins" src="/icons/coin.gif"
+                sx={{
+                  bgcolor: 'transparent',
+                }}
+              />}
+              onClick={handlePreviewInputSendCoint}
+              label={previewInput ? "chat" : "send"}
+              variant="outlined"
+              sx={{
+                '& .MuiChip-avatar': {
+                  bgcolor: 'transparent !important',
+                },
+                marginRight: "10px",
+                '& .MuiChip-label': {
+                  color: theme.color5,
+                  fontWeight: 'normal',
+                  fontSize: '1rem',
+                  transition: theme.transition,
+                },
+                transition: 'padding 0.3s ease',
+                '&:hover': {
+                  padding: '3.2px',
+                  cursor: 'pointer',
+                },
+              }}
+              color="secondary"
+            />
 
-                    <input
-                      type="text"
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      placeholder={previewInput ? "Input coins..." : "Input the message..."}
-                      style={{
-                        flexGrow: 1,
-                        padding: "8px",
-                        border: "1px solid #ccc",
-                        borderRadius: "4px",
-                        outline: "2px solid transparent",
-                        transition: "outline 0.3s ease-in-out, border-color 0.3s ease-in-out",
-                      }}
-                      onFocus={(e) => { 
-                        e.target.style.borderColor = previewInput ? "#cd05f5" : "cyan" ;
-                        e.target.style.outline = previewInput ?  "2px solid #cd05f5" : "2px solid cyan" ;
-                      }}
-                      
-                      onBlur={(e) => {
-                        e.target.style.borderColor = "#ccc";
-                        e.target.style.outline = "2px solid transparent";
-                      }}
-                      
-                    />
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder={previewInput ? "Input coins..." : "Input the message..."}
+              style={{
+                flexGrow: 1,
+                padding: "8px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                outline: "2px solid transparent",
+                transition: "outline 0.3s ease-in-out, border-color 0.3s ease-in-out",
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = previewInput ? "#cd05f5" : "cyan";
+                e.target.style.outline = previewInput ? "2px solid #cd05f5" : "2px solid cyan";
+              }}
 
-             
+              onBlur={(e) => {
+                e.target.style.borderColor = "#ccc";
+                e.target.style.outline = "2px solid transparent";
+              }}
+
+            />
+
+
             <Button
               type="submit"
               style={{
@@ -363,8 +418,10 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
                 background: "none",
               }}
             >
-              <SendIcon sx={{color : previewInput ? '#cd05f5' : 'cyan', 
-                transition: "0.3s ease-in-out, border-color 0.3s ease-in-out",}}/>
+              <SendIcon sx={{
+                color: previewInput ? '#cd05f5' : 'cyan',
+                transition: "0.3s ease-in-out, border-color 0.3s ease-in-out",
+              }} />
             </Button>
           </Box>
         </Box>
@@ -385,6 +442,54 @@ const Chat = ({ onClose, chat, chatProfile, message, userInSession, setMessage }
           {previewChat ? previewChat.content : "Chưa có tin nhắn"}
         </Typography>
       </Popover>
+
+      <Dialog ref={childDialogRef} open={previewOtpInput} aria-labelledby="success-dialog" className="dialog-custom">
+        <div className={dialogSuccess ? "success-dialog status-dialog" : "inputForm-dialog status-dialog"}>
+          {dialogSuccess ? <h2>Money trasnfer successfully!</h2> :
+            <><h2>OTP sent to your email!</h2>
+              <Grid xs={12} mb={3}>
+                <TextField
+                  id="outlined-basic"
+                  label="Enter OTP"
+                  variant="outlined"
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="Enter OTP"
+                  InputLabelProps={{
+                    style: { color: 'white' },
+                  }}
+                  InputProps={{
+                    style: { color: 'white' },
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'white',
+                      },
+                      '& input::placeholder': {
+                        color: 'white',
+                      },
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: 'white',
+                    },
+                  }}
+                />
+
+              </Grid>
+              <Grid xs={12}>
+                <Button onClick={() => handleSubmitOtp()} variant="outlined" color="inherit">
+                  Send!
+                </Button>
+              </Grid>
+            </>}
+        </div>
+      </Dialog>
     </Box>
   );
 };

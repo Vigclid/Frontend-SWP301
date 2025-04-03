@@ -19,6 +19,7 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
 
   //This Method will able you to fetch Google Authentication Token and use Google API to fetch user gmail account info without needing a Backend
   const googleAPI = 'https://www.googleapis.com/oauth2/v3/userinfo' // URL to googleapis to authenticate user token
+  
   const onClick = useGoogleLogin({
     onSuccess: async response => {
       console.log(response);

@@ -152,6 +152,10 @@
   background: linear-gradient(135deg, #00c853 0%, #009624 100%) !important;
 }
 
+.inputForm-dialog {
+  background: linear-gradient(135deg, #363636 0%, #444444 100%) !important;
+}
+
 .success-dialog h2 {
   display: flex;
   align-items: center;
