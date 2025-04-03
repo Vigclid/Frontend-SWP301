@@ -50,14 +50,15 @@ export default function Users() {
           <Route path={`/SearchHome/Tags/:tagName`} element={<SearchHome />} />
 
           <Route element={<ProtectedRoute allowedRoles={["AT", "AD"]} />}>
-            <Route path={`yourcommision`} element={<YourCommission />} />
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["Users"]} />}>
             <Route path={`profile/:id`} element={<ProfileUser />} />
-            <Route path={`yourrequest`} element={<YourRequest />} />
-            <Route path={`transaction`} element={<TransactionHistory />} />
           </Route>
+          <Route path={`yourcommision`} element={<YourCommission />} />
+
+          <Route path={`yourrequest`} element={<YourRequest />} />
+          <Route path={`transaction`} element={<TransactionHistory />} />
           <Route path={`artwork/:id`} element={<ArtPost />} />
           <Route path={`profile/:id/artwork/:id`} element={<ArtPost />} />
           <Route path={`artwork/:id/payment`} element={<Payment />} />
