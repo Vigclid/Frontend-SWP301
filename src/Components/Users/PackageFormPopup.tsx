@@ -46,7 +46,7 @@ export default function PackageFormPopup({ open, handleClose }: PackageFormPopup
     console.log("Sending data to API:", payload);
 
     try {
-      const response = await fetch("http://localhost:7233/api/artist-form/create", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/artist-form/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

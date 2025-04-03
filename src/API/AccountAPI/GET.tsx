@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Account } from "../../Interfaces/UserInterface.tsx";
 import axios from "axios";
 
-const getaccountbyaccountid = `http://localhost:7233/api/Account/`;
-const getallaccounts = `http://localhost:7233/api/Account`
+const getaccountbyaccountid = `${process.env.REACT_APP_DNS}/Account/checkExistEmail`;
 
 export async function getAccountByAccountId(AccountId: string | number) {
   try {
@@ -16,11 +15,11 @@ export async function getAccountByAccountId(AccountId: string | number) {
   }
 }
 
-export async function getAllAccounts() {
+export async function getCheckExistEmail(email: string): Promise<boolean> {
   try {
-    let account: Account[] = await axios.get(getallaccounts)
-        .then((response) => response.data);
-    return account;
+    let checkExistEmail = await axios.get(getaccountbyaccountid + email)
+    return checkExistEmail.data;
+    return
   } catch (err) {
     console.log(err);
   }

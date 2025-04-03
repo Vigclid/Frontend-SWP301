@@ -9,9 +9,9 @@ import { PostCreator, PostUserAccount } from '../../API/UserAPI/POST.tsx';
 
 
 export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
-  const accounturl = 'http://localhost:7233/api/Account'
-  const creatorurl = 'http://localhost:7233/api/Creator/'
-  const roleurl = 'http://localhost:7233/api/Role/'
+  const accounturl = `${process.env.REACT_APP_API_URL}/Account`
+  const creatorurl = `${process.env.REACT_APP_API_URL}/Creator/`
+  const roleurl = `${process.env.REACT_APP_API_URL}/Role/`
 
   const { storeUserData } = useAuth();
   //Call the custom hook to store user login information

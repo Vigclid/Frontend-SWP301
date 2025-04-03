@@ -8,6 +8,11 @@ import { ThemeProvider } from "./Components/Themes/ThemeProvider.tsx";
 import { AuthProvider } from "./Components/AuthenContext.tsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./SessionUtility/sessionUtils.js";
+import axios from "axios";
+
+// axios.defaults.baseURL = "https://next-hawk-incredibly.ngrok-free.app"; 
+// axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>

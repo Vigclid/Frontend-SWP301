@@ -61,7 +61,7 @@ export default function ExpandingSearchBarAdmin() {
 
     
     const fetchCreator = (value) => {
-        axios.get(`https://localhost:7233/api/Creator`)
+        axios.get(`${process.env.REACT_APP_API_URL}/Creator`)
             .then(response => {
                 const filteredResults = response.data.filter(user => {
                     return (

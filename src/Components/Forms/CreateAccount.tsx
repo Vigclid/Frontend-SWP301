@@ -25,11 +25,11 @@ import LoadingScreen from "../LoadingScreens/LoadingScreenSpokes.jsx";
 import CustomizedTextField from "../StyledMUI/CustomizedTextField.tsx";
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckIcon from "@mui/icons-material/Check";
-import {getAllAccounts} from "../../API/AccountAPI/GET.tsx";
+import {GetCheckExistEmail} from "../../API/AccountAPI/GET.tsx";
 
 let response;
 
-const getOTPURL = "http://localhost:7233/api/Account/send-token";
+const getOTPURL = `${process.env.REACT_APP_API_URL}/Account/send-token`;
 
 function LoginAsGuest() {
   const { theme } = useContext(ThemeContext);
@@ -189,14 +189,13 @@ export default function CreateAccount() {
   const [load, setLoad] = useState<boolean>(false);
 
   const handleSendCode = async () => {
-    const emailList: Account[] = await getAllAccounts();
-    console.log("list email", emailList);
     const emailValue = formik.values.email;
+    const check = GetCheckExistEmail(emailValue);
 
     if (emailValue) {
-      const emailExists = emailList.some((item) => item.email === emailValue);
 
-      if (emailExists) {
+
+      if (check === true) {
         alert("Email already exists!");
         setLoad(false);
         setActiveOTP(false);
@@ -309,6 +308,7 @@ export default function CreateAccount() {
                     id="passwword"
                     label="Password"
                     name="password"
+                    type="password"
                     autoComplete="password"
                     fullWidth
                     value={formik.values.password}

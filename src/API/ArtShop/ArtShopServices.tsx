@@ -1,8 +1,8 @@
 import axios from "axios";
 import { ArtworkTransaction } from "../../Interfaces/ArtworkInterfaces.ts";
 
-const arturl = "http://localhost:7233/api/artworks";
-const transactionurl = "http://localhost:7233/api/transaction";
+const arturl = `${process.env.REACT_APP_API_URL}/artworks`;
+const transactionurl = `${process.env.REACT_APP_API_URL}/transaction`;
 
 export const getArtWithStatus = (userId, pageNumber) => {
   return axios.get(

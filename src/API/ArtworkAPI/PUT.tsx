@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Artwork } from "../../Interfaces/ArtworkInterfaces.ts";
 
-const updateurl = "http://localhost:7233/api/artworks/update"; // API cập nhật
+const updateurl = `${process.env.REACT_APP_API_URL}/artworks/update`; 
 
 export async function UpdateArtwork(updatedArtwork: Artwork) {
   try {

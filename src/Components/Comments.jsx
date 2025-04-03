@@ -19,21 +19,19 @@ export default function Comments() {
 
 
   useEffect(() => {
-    // Get artworkID from URL
+    
     const pathParts = window.location.pathname.split("/");
     const id = pathParts[pathParts.length - 1];
-    setArtworkID(id); // Set the artworkID
-  
-    // Fetch all data asynchronously using Promise.all
+    setArtworkID(id);
     Promise.all([
-      fetch("http://localhost:7233/api/comments/").then((response) => response.json()),
-      fetch("http://localhost:7233/api/replycomment").then((response) => response.json()),
-      fetch("http://localhost:7233/api/Creator").then((response) => response.json()),
+      axios.get(`${process.env.REACT_APP_API_URL}/comments/`),
+      axios.get(`${process.env.REACT_APP_API_URL}/replycomment`),
+      axios.get(`${process.env.REACT_APP_API_URL}/Creator`)
     ])
-      .then(([commentsData, replyCommentsData, creatorsData]) => {
-        setComments(commentsData);
-        setReplyComments(replyCommentsData);
-        setCreators(creatorsData);
+      .then(([commentsResponse, replyCommentsResponse, creatorsResponse]) => {
+        setComments(commentsResponse.data);
+        setReplyComments(replyCommentsResponse.data);
+        setCreators(creatorsResponse.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -106,7 +104,7 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID , s
         dateOfInteract: new Date().toISOString(),
       };
 
-      fetch("http://localhost:7233/api/replycomment/add", {
+      fetch(`${process.env.REACT_APP_API_URL}/replycomment/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +118,7 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID , s
           const _updateInteractData = async () => {
             try {
               console.log("Calling /api/interact/update...");
-              return await axios.put("http://localhost:7233/api/interact/update");
+              return await axios.put(`${process.env.REACT_APP_API_URL}/interact/update`);
             } catch (error) {
               console.error("Error updating interact data:", error);
             }
@@ -132,7 +130,7 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID , s
           console.error("Error posting reply comment:", error);
         });
       const _Func = async () => {
-        return await axios.put("http://localhost:7233/api/artworks/update-comments-count");
+        return await axios.put(`${process.env.REACT_APP_API_URL}/artworks/update-comments-count`);
       };
       _Func();
     }
@@ -219,7 +217,7 @@ function CommentInput({ artworkID , setArtworkState , artworkState }) {
 
         formik.values.commentDetail = "";
 
-        fetch("http://localhost:7233/api/comments/", {
+        fetch(`${process.env.REACT_APP_API_URL}/comments/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(commentData),
@@ -229,7 +227,7 @@ function CommentInput({ artworkID , setArtworkState , artworkState }) {
             console.log("Comment saved successfully:", data);
             const _updateInteractData = async () => {
               try {
-                const response = await axios.put("http://localhost:7233/api/interact/update");
+                const response = await axios.put(`${process.env.REACT_APP_API_URL}/interact/update`);
                 console.log("Interact data updated successfully:", response.data);
               } catch (error) {
                 console.error("Error updating interact data:", error);
@@ -244,7 +242,7 @@ function CommentInput({ artworkID , setArtworkState , artworkState }) {
           });
 
         const _Func = async () => {
-          return await axios.put("http://localhost:7233/api/artworks/update-comments-count");
+          return await axios.put(`${process.env.REACT_APP_API_URL}/artworks/update-comments-count`);
         };
         _Func();
       } else {

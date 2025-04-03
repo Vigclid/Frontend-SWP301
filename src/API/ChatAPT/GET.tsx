@@ -2,8 +2,8 @@ import axios from "axios";
 import { Creator } from "../../Interfaces/UserInterface";
 import { Chat, Message } from "../../Interfaces/ChatInterfaces";
 
-const chatURL = `http://localhost:7233/api/chat/`;
-const messagesURL = `http://localhost:7233/api/message/`;
+const chatURL = `${process.env.REACT_APP_API_URL}/chat/`;
+const messagesURL = `${process.env.REACT_APP_API_URL}/message/`;
 
 export const getChatProfileByUserId = async(id : number) => {
     try {

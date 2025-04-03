@@ -26,7 +26,7 @@ export default function WithdrawForm({ onClose }: WithdrawFormProps) {
     const fetchBalance = async () => {
       if (!user?.userId) return;
       try {
-        const response = await axios.get("http://localhost:7233/api/Creator/" + user.accountId);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/Creator/` + user.accountId);
         setUserBalance(response.data.coins || 0);
       } catch (error) {
         console.error("Error fetching balance:", error);

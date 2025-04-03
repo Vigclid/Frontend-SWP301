@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { MoneyTransfer, Payment } from "../../Interfaces/PaymentIntrerfaces";
 
-const paymenturl="http://localhost:7233/api/Payment"
+const paymenturl=`${process.env.REACT_APP_API_URL}/Payment`
 const headers = {
     'Content-Type': 'application/json',
     // Optionally, add additional headers such as Authorization if required

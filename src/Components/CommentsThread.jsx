@@ -21,22 +21,30 @@ export default function Comments() {
     const pathParts = window.location.pathname.split("/");
     const id = pathParts[pathParts.length - 1];
     setThreadID(id); // Set the threadID
-
+  
     if (id) {
-      // Fetch comments data for specific thread
-      fetch(`http://localhost:7233/api/Forum/thread/comments/${id}`)
-        .then((response) => response.json())
-        .then((data) => setComments(data))
-        .catch((error) => {
+      const fetchComments = async () => {
+        try {
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/Forum/thread/comments/${id}`);
+          setComments(response.data);
+        } catch (error) {
           console.error("Error fetching comments:", error);
           setComments([]);
-        });
-
-      // Fetch reply comments data
-      fetch("http://localhost:7233/api/replycomment")
-        .then((response) => response.json())
-        .then((data) => setReplyComments(data))
-        .catch((error) => setReplyComments([]));
+        }
+      };
+  
+      const fetchReplyComments = async () => {
+        try {
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/replycomment`);
+          setReplyComments(response.data);
+        } catch (error) {
+          console.error("Error fetching reply comments:", error);
+          setReplyComments([]);
+        }
+      };
+  
+      fetchComments();
+      fetchReplyComments();
     }
   }, []);
 
@@ -75,51 +83,37 @@ const CommentItem = ({ comment, getReplyCommentsByCommentID, threadID }) => {
     setReplyComments(replies);
   }, [comment.commentID]);
 
-  const onReplyComment = () => {
+  const onReplyComment = async () => {
     const authData = sessionStorage.getItem("auth");
     const user = authData ? JSON.parse(authData) : null;
-    let newReplyData = {};
-
-
-    if (user === null ) {alert("Please log in to continue...")}
-    if (user) {
-      newReplyData = {
-        body: newReply,
-        commentID: comment.commentID,
-        replierID: user.userId,
-        commentDetail: newReply,
-        dateOfInteract: new Date().toISOString(),
-      };
-
-      fetch("http://localhost:7233/api/replycomment/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newReplyData),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setReplyComments((prevReplies) => [data, ...prevReplies]);
-          setNewReply("");
-          const _updateInteractData = async (threadId) => {
-            try {
-              console.log("Calling /api/Forum/update...");
-              return await axios.put(`http://localhost:7233/api/Forum/update-comment-count/${threadID}`);
-            } catch (error) {
-              console.error("Error updating interact data:", error);
-            }
-          };
-          console.log("Now call _updateInteractData with threadID:", threadID);
-          _updateInteractData(threadID);
-        })
-        .catch((error) => {
-          console.error("Error posting reply comment:", error);
-        });
-      const _Func = async () => {
-        return await axios.put(`http://localhost:7233/api/Forum/update-comment-count/${threadID}`);
-      };
-      _Func();
+  
+    if (!user) {
+      alert("Please log in to continue...");
+      return;
+    }
+  
+    const newReplyData = {
+      body: newReply,
+      commentID: comment.commentID,
+      replierID: user.userId,
+      commentDetail: newReply,
+      dateOfInteract: new Date().toISOString(),
+    };
+  
+    try {
+      // Gửi phản hồi bình luận
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/replycomment/add`, newReplyData, {
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      // Cập nhật danh sách phản hồi
+      setReplyComments((prevReplies) => [response.data, ...prevReplies]);
+      setNewReply("");
+  
+      // Cập nhật số lượng bình luận
+      await axios.put(`${process.env.REACT_APP_API_URL}/Forum/update-comment-count/${threadID}`);
+    } catch (error) {
+      console.error("Error posting reply comment:", error);
     }
   };
 
@@ -184,48 +178,42 @@ function CommentInput({ threadID, setComments }) {
     validationSchema: Yup.object({
       commentDetail: Yup.string().required("Comment cannot be empty"),
     }),
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       const authData = sessionStorage.getItem("auth");
-
       const user = authData ? JSON.parse(authData) : null;
-      if (user === null ) {alert("Please log in to continue...")}
-      if (user) {
-        const commentData = {
-          commentDetail: values.commentDetail,
-          threadID: threadID,
-          userID: user.userId,
-          createdDate: new Date().toISOString(),
-        };
-
-        formik.values.commentDetail = "";
-        console.log("Comment data:", commentData);
-
-        fetch("http://localhost:7233/api/Forum/thread/comments/", {
-          method: "POST",
+    
+      if (!user) {
+        alert("Please log in to continue...");
+        return;
+      }
+    
+      const commentData = {
+        commentDetail: values.commentDetail,
+        threadID: threadID,
+        userID: user.userId,
+        createdDate: new Date().toISOString(),
+      };
+    
+      formik.values.commentDetail = "";
+      console.log("Comment data:", commentData);
+    
+      try {
+        // Gửi bình luận
+        await axios.post(`${process.env.REACT_APP_API_URL}/Forum/thread/comments/`, commentData, {
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(commentData),
-        })
-          .then((response) => {
-            if (response.ok) {
-              // Update interactions after successful comment
-              fetch(`http://localhost:7233/api/Forum/update-comment-count/${threadID}`, {
-                method: "PUT",
-              });
-              // Fetch updated comments
-              return fetch(`http://localhost:7233/api/Forum/thread/comments/${threadID}`);
-            }
-            throw new Error("Failed to post comment");
-          })
-          .then((response) => response.json())
-          .then((updatedComments) => {
-            setComments(updatedComments);
-            formik.resetForm();
-          })
-          .catch((error) => {
-            console.error("Error posting comment:", error);
-          });
-      } else {
-        console.log("User not logged in");
+        });
+    
+        // Cập nhật số lượng bình luận
+        await axios.put(`${process.env.REACT_APP_API_URL}/Forum/update-comment-count/${threadID}`);
+    
+        // Lấy danh sách bình luận cập nhật
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/Forum/thread/comments/${threadID}`);
+        setComments(response.data);
+    
+        // Reset form sau khi gửi bình luận thành công
+        formik.resetForm();
+      } catch (error) {
+        console.error("Error posting comment:", error);
       }
     },
   });

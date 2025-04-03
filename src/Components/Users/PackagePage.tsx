@@ -80,6 +80,10 @@ export default function PackagePage({ onCurrentPackageChange }) {
   const renderPackageCard = (service: Package, rankImage: string, isCurrent: boolean) => {
     const benefits = benefitsMap[service.typeId] || [];
 
+
+    console.log(currentPackage?.typeID === service.typeId);
+    console.log("Current package:"+ currentPackage);
+    console.log("Service: " + service.typeId);
     return (
       <Card
         className="cardRank"
@@ -151,6 +155,7 @@ export default function PackagePage({ onCurrentPackageChange }) {
             }}
             onClick={() => handleOpen(service)}
             size="small">
+              
             {currentPackage?.typeID === service.typeId ? "You're Using This Package" : "Purchase"}
           </Button>
           {currentPackage?.typeID === service.typeId && (

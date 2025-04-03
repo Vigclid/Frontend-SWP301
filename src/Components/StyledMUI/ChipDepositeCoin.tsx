@@ -15,7 +15,7 @@ function ChipDepositeCoin({user}) {
   useEffect(() => {
     const fetchCreatorCoins = async () => {
       try {
-        const response = await axios.get("http://localhost:7233/api/Creator/" + user.accountId);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/Creator/` + user.accountId);
         setCreator(response.data);
       } catch (error) {
         console.error("Error fetching creator data:", error);

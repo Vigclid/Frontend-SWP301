@@ -1,21 +1,21 @@
 import axios from 'axios'
 import { OrderDetails, OrderDetailsExtended, OrderHeader, OrderHeaderExtended } from '../../Interfaces/OrderInterfaces';
 
-const getordernoImageurl = `https://localhost:7233/api/OrderDetail/GetNotImage`
+const getordernoImageurl = `${process.env.REACT_APP_API_URL}/OrderDetail/GetNotImage`
 
-const getorderlisturl = `https://localhost:7233/api/OrderDetail/`
+const getorderlisturl = `${process.env.REACT_APP_API_URL}/OrderDetail/`
 
-const orderheaderurl = `https://localhost:7233/api/Orders/`
+const orderheaderurl = `${process.env.REACT_APP_API_URL}/Orders/`
 
-const orderheaderextendrurl = `https://localhost:7233/api/Orders/HaveAccount/`
+const orderheaderextendrurl = `${process.env.REACT_APP_API_URL}/Orders/HaveAccount/`
 
-const getorderdetailpaymenturl =`https://localhost:7233/api/OrderDetail/PurchaseConfirmationImage/`
+const getorderdetailpaymenturl =`${process.env.REACT_APP_API_URL}/OrderDetail/PurchaseConfirmationImage/`
 
-const getextendedorderdetail = `https://localhost:7233/api/OrderDetail/All`
+const getextendedorderdetail = `${process.env.REACT_APP_API_URL}/OrderDetail/All`
 
-const getorderbysellerurl =`https://localhost:7233/api/OrderDetail/BySeller/`
+const getorderbysellerurl =`${process.env.REACT_APP_API_URL}/OrderDetail/BySeller/`
 
-const getorderbybuyerurl =`https://localhost:7233/api/OrderDetail/ByBuyer/`
+const getorderbybuyerurl =`${process.env.REACT_APP_API_URL}/OrderDetail/ByBuyer/`
 
 export async function GetOrderDetailBySeller(id:string) {
     

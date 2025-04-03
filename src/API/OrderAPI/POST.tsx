@@ -2,9 +2,9 @@
 import axios from 'axios'
 import { OrderDetails, OrderHeader } from '../../Interfaces/OrderInterfaces';
 
-const createorderheaderurl = `https://localhost:7233/api/Orders`
+const createorderheaderurl = `${process.env.REACT_APP_API_URL}/Orders`
 
-const createorderbodyurl = `https://localhost:7233/api/OrderDetail`
+const createorderbodyurl = `${process.env.REACT_APP_API_URL}/OrderDetail`
 
 const headers = {
     'Content-Type': 'application/json',

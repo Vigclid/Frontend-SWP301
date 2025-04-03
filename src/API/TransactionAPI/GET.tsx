@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "http://localhost:7233/api/transaction";
+const BASE_URL = `${process.env.REACT_APP_API_URL}/transaction`;
 
 export const GetBuyerTransactions = async (buyerId: number) => {
   try {

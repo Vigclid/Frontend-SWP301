@@ -60,7 +60,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ reporterId, reportedId, artwork
     console.log("📤 Sending Report Data:", reportData);
 
     try {
-      const response = await axios.post("http://localhost:7233/api/Report/Form", reportData);
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/Report/Form`, reportData);
       console.log("✅ Report submitted successfully:", response.data);
       alert("Report submitted successfully.");
       onClose();

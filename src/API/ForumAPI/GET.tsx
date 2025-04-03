@@ -1,10 +1,10 @@
 import { Account, Creator } from "../../Interfaces/UserInterface.tsx";
 import axios from "axios";
 
-const typeoftopicurl = "http://localhost:7233/api/Forum/typeTopic";
-const topicurl = "http://localhost:7233/api/Forum/topic/";
-const forumurl = "http://localhost:7233/api/Forum/";
-const threadurl = "http://localhost:7233/api/Forum/thread/";
+const typeoftopicurl = `${process.env.REACT_APP_API_URL}/Forum/typeTopic`;
+const topicurl = `${process.env.REACT_APP_API_URL}/Forum/topic/`;
+const forumurl = `${process.env.REACT_APP_API_URL}/Forum/`;
+const threadurl = `${process.env.REACT_APP_API_URL}/Forum/thread/`;
 
 export interface APITypeOfTopic {
   typeName: string;
@@ -110,12 +110,8 @@ export async function CheckLikeStatus(userID: number, threadID: number) {
 
 export const GetLikeCount = async (threadID: number) => {
   try {
-    const response = await fetch(`${threadurl}likecount/${threadID}`);
-    if (response.ok) {
-      return await response.json(); // số lượng like
-    }
-    console.error("Failed to get like count");
-    return 0;
+    const response = await axios.get(`${threadurl}likecount/${threadID}`).then(res => res.data);
+    return await response; // số lượng like
   } catch (error) {
     console.error("Error getting like count:", error);
     return 0;

@@ -2,10 +2,10 @@
 import axios from 'axios'
 
 
-const profilecreatorurl = 'http://localhost:7233/api/Creator/'
-const backgroundcreatorurl = 'http://localhost:7233/api/Creator/'
-const changePasswordURL = 'http://localhost:7233/api/Account/changepassword'
-const creatorurl = 'http://localhost:7233/api/Creator/'
+const profilecreatorurl = `${process.env.REACT_APP_API_URL}/Creator/`
+const backgroundcreatorurl = `${process.env.REACT_APP_API_URL}/Creator/`
+const changePasswordURL = `${process.env.REACT_APP_API_URL}/Account/changepassword`
+const creatorurl = `${process.env.REACT_APP_API_URL}/Creator/`
 
 
 

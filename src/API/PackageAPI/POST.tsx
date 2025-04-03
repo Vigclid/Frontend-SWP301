@@ -4,7 +4,7 @@ import {CurrentPackage, Package} from '../../Interfaces/Package';
 import {Account} from "../../Interfaces/UserInterface";
 
 
-const insertRank = "http://localhost:7233/api/Rank/Packages/";
+const insertRank = `${process.env.REACT_APP_API_URL}/Rank/Packages/`;
 
 
 export async function PostRankToUser(data: CurrentPackage) {

@@ -1,7 +1,7 @@
 import { Artwork } from "../../Interfaces/ArtworkInterfaces";
 import axios from "axios";
 
-const arturl = "http://localhost:7233/api/artworks/";
+const arturl = `${process.env.REACT_APP_API_URL}/artworks/`;
 export async function DeleteArtById(id: string) {
   try {
     let artwork = await axios

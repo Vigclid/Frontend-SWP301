@@ -38,7 +38,7 @@ export default function SearchHome({ user }) {
         return (
             <ImageList variant="masonry" cols={4} className="artwork-grid">
                 {art.map((work: Artwork) => (
-                    <Link key={work.artworkID} to={`http://localhost:3000/characters/artwork/${work.artworkID}`}>
+                    <Link key={work.artworkID} to={`http://${process.env.REACT_APP_DNS}:3000/characters/artwork/${work.artworkID}`}>
                         <ImageListItem key={work.artworkID}>
                             {work.purchasable && (
                                 <AttachMoneyIcon

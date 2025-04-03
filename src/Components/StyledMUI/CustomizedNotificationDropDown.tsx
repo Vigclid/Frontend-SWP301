@@ -19,8 +19,8 @@ import { Stomp } from '@stomp/stompjs';
 import { Notification } from '../../Interfaces/NotificationInterfaces.ts';
 import axios from "axios";
 import { useAuth } from '../AuthenContext.tsx';
-const notificationsURL = "http://localhost:7233/api/notification/"
-const followingUserByFollowId = "http://localhost:7233/api/Follow/user/"
+const notificationsURL = `${process.env.REACT_APP_API_URL}/notification/`
+const followingUserByFollowId = `${process.env.REACT_APP_API_URL}/Follow/user/`
 interface CustomizedDropdownProps {
   user: Creator;
   handleClickAsGuest: any;
@@ -64,7 +64,7 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
       }
       _getNotificationsByUserId();
       // Tạo kết nối WebSocket
-      const socket = new SockJS('http://localhost:7233/ws');
+      const socket = new SockJS(`${process.env.REACT_APP_DNS}/ws`);
       const stompClient = Stomp.over(socket);
   
       stompClient.connect({}, () => {
@@ -100,7 +100,7 @@ function CustomizedNotificationDropDown({user,handleClickAsGuest } : CustomizedD
           }
           
           if (notification.transferID && !profiles[notification.notificationId]) { // Sử dụng followID làm key
-            const response = await axios.get(`http://localhost:7233/api/Payment/trans/sender/${notification.transferID}`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/Payment/trans/sender/${notification.transferID}`);
             return { userId: notification.notificationId, profile: response.data };
           }
 

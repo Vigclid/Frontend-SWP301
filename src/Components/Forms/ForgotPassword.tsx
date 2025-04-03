@@ -29,7 +29,7 @@ import CheckIcon from '@mui/icons-material/Check';
 
 let response;
 
-const getOTPURL = 'http://localhost:7233/api/Account/send-token'
+const getOTPURL = `${process.env.REACT_APP_API_URL}/Account/send-token`
 
 
 function LoginAsGuest() {
@@ -254,6 +254,7 @@ export default function ForgotPassword() {
                       label="New Password"
                       name="password"
                       autoComplete="password"
+                      type="password"
                       fullWidth
                       value={formik.values.password} onChange={formik.handleChange}
                     />
@@ -268,6 +269,7 @@ export default function ForgotPassword() {
                       label="Confirm Password"
                       name="firstName"
                       autoComplete="email"
+                      type="password"
                       fullWidth
                       value={formik.values.firstName} onChange={formik.handleChange}
                     />
