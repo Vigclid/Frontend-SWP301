@@ -81,11 +81,11 @@ export default function Report() {
   };
 
   const handleUserClick = (accountId) => {
-    navigate(`/characters/profile/${accountId}`);
+    window.open(`/characters/profile/${accountId}`);
   };
 
   const handleArtworkClick = (artworkId) => {
-    navigate(`/characters/artwork/${artworkId}`);
+    window.open(`/characters/artwork/${artworkId}`);
   };
 
   const showConfirmDialog = (action, params) => {

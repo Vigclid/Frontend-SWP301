@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { GetCreatorByID } from "../API/UserAPI/GET.tsx";
+import { GetCurrentPackageByAccountID } from "../API/PackageAPI/GET.tsx";
 import { Link } from "react-router-dom";
 import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
@@ -10,6 +11,8 @@ import * as Yup from "yup";
 import axios from "axios";
 import "../css/Comment.css"; // Import CSS file
 import { Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import { RankEffect } from "./StyledMUI/RankEffect.tsx";
 
 export default function Comments() {
   const [comments, setComments] = useState([]);
@@ -21,7 +24,7 @@ export default function Comments() {
     const pathParts = window.location.pathname.split("/");
     const id = pathParts[pathParts.length - 1];
     setThreadID(id); // Set the threadID
-  
+
     if (id) {
       const fetchComments = async () => {
         try {
@@ -32,7 +35,7 @@ export default function Comments() {
           setComments([]);
         }
       };
-  
+
       const fetchReplyComments = async () => {
         try {
           const response = await axios.get(`${process.env.REACT_APP_API_URL}/replycomment`);
@@ -42,7 +45,7 @@ export default function Comments() {
           setReplyComments([]);
         }
       };
-  
+
       fetchComments();
       fetchReplyComments();
     }
@@ -86,12 +89,12 @@ const CommentItem = ({ comment, getReplyCommentsByCommentID, threadID }) => {
   const onReplyComment = async () => {
     const authData = sessionStorage.getItem("auth");
     const user = authData ? JSON.parse(authData) : null;
-  
+
     if (!user) {
       alert("Please log in to continue...");
       return;
     }
-  
+
     const newReplyData = {
       body: newReply,
       commentID: comment.commentID,
@@ -99,17 +102,17 @@ const CommentItem = ({ comment, getReplyCommentsByCommentID, threadID }) => {
       commentDetail: newReply,
       dateOfInteract: new Date().toISOString(),
     };
-  
+
     try {
       // Gửi phản hồi bình luận
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/replycomment/add`, newReplyData, {
         headers: { "Content-Type": "application/json" },
       });
-  
+
       // Cập nhật danh sách phản hồi
       setReplyComments((prevReplies) => [response.data, ...prevReplies]);
       setNewReply("");
-  
+
       // Cập nhật số lượng bình luận
       await axios.put(`${process.env.REACT_APP_API_URL}/Forum/update-comment-count/${threadID}`);
     } catch (error) {
@@ -181,35 +184,35 @@ function CommentInput({ threadID, setComments }) {
     onSubmit: async (values) => {
       const authData = sessionStorage.getItem("auth");
       const user = authData ? JSON.parse(authData) : null;
-    
+
       if (!user) {
         alert("Please log in to continue...");
         return;
       }
-    
+
       const commentData = {
         commentDetail: values.commentDetail,
         threadID: threadID,
         userID: user.userId,
         createdDate: new Date().toISOString(),
       };
-    
+
       formik.values.commentDetail = "";
       console.log("Comment data:", commentData);
-    
+
       try {
         // Gửi bình luận
         await axios.post(`${process.env.REACT_APP_API_URL}/Forum/thread/comments/`, commentData, {
           headers: { "Content-Type": "application/json" },
         });
-    
+
         // Cập nhật số lượng bình luận
         await axios.put(`${process.env.REACT_APP_API_URL}/Forum/update-comment-count/${threadID}`);
-    
+
         // Lấy danh sách bình luận cập nhật
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/Forum/thread/comments/${threadID}`);
         setComments(response.data);
-    
+
         // Reset form sau khi gửi bình luận thành công
         formik.resetForm();
       } catch (error) {
@@ -247,6 +250,7 @@ const CommentUser = ({ userID, size = 40 }) => {
     name: "Loading...",
     avatar: "/images/anon.jpg",
     accountId: null,
+    package: null,
   });
 
   useEffect(() => {
@@ -254,11 +258,24 @@ const CommentUser = ({ userID, size = 40 }) => {
       try {
         const creator = await GetCreatorByID(userID);
         if (creator) {
-          setUserData({
-            name: `${creator.firstName} ${creator.lastName}`,
-            avatar: creator.profilePicture || "/images/anon.jpg",
-            accountId: creator.accountId,
-          });
+          const userPackage = await GetCurrentPackageByAccountID(creator.accountId);
+          console.log("Raw user package data for userID", userID, ":", userPackage); // Debug log
+
+          if (userPackage && typeof userPackage.typeID !== "undefined") {
+            const packageData = {
+              typeID: Number(userPackage.typeID), // Đảm bảo typeID là số
+            };
+            console.log("Processed package data:", packageData); // Debug log processed data
+
+            setUserData({
+              name: `${creator.firstName} ${creator.lastName}`,
+              avatar: creator.profilePicture || "/images/anon.jpg",
+              accountId: creator.accountId,
+              package: packageData,
+            });
+          } else {
+            console.log("No valid package type found for user", userID);
+          }
         }
       } catch (error) {
         console.error("Error loading user:", error);
@@ -266,6 +283,7 @@ const CommentUser = ({ userID, size = 40 }) => {
           name: "Unknown User",
           avatar: "/images/anon.jpg",
           accountId: null,
+          package: null,
         });
       }
     };
@@ -274,13 +292,18 @@ const CommentUser = ({ userID, size = 40 }) => {
 
   return (
     <div className="comment-header" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-      <Link to={`/characters/profile/${userData.accountId}`} style={{ textDecoration: "none" }}>
-        <img
-          src={userData.avatar}
-          alt="User avatar"
-          style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%", objectFit: "cover" }}
-        />
-      </Link>
+      <Box sx={{ position: "relative" }}>
+        <Link to={`/characters/profile/${userData.accountId}`} style={{ textDecoration: "none" }}>
+          <img
+            src={userData.avatar}
+            alt="User avatar"
+            style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%", objectFit: "cover" }}
+          />
+        </Link>
+        {userData.package?.typeID && [2, 3, 4, 5].includes(Number(userData.package.typeID)) && (
+          <RankEffect type={Number(userData.package.typeID)} />
+        )}
+      </Box>
       <div>
         <Link to={`/characters/profile/${userData.accountId}`} style={{ textDecoration: "none" }}>
           <Typography sx={{ color: "#FFFFFF", fontWeight: "Bold" }}>{userData.name}</Typography>

@@ -6,8 +6,11 @@ import CustomizedTextField from "./StyledMUI/CustomizedTextField.tsx";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import "../css/Comment.css"; // Import CSS file
-import { Alert, Typography } from "@mui/material";
+import "../css/Comment.css";
+import { Alert, Typography, Box } from "@mui/material";
+import { Link } from "react-router-dom";
+import { GetCurrentPackageByAccountID } from "../API/PackageAPI/GET.tsx";
+import { RankEffect } from "./StyledMUI/RankEffect.tsx";
 
 export default function Comments() {
   const [comments, setComments] = useState([]);
@@ -16,17 +19,14 @@ export default function Comments() {
   const [replyComments, setReplyComments] = useState([]);
   const [artworkState, setArtworkState] = useState(false);
 
-
-
   useEffect(() => {
-    
     const pathParts = window.location.pathname.split("/");
     const id = pathParts[pathParts.length - 1];
     setArtworkID(id);
     Promise.all([
       axios.get(`${process.env.REACT_APP_API_URL}/comments/`),
       axios.get(`${process.env.REACT_APP_API_URL}/replycomment`),
-      axios.get(`${process.env.REACT_APP_API_URL}/Creator`)
+      axios.get(`${process.env.REACT_APP_API_URL}/Creator`),
     ])
       .then(([commentsResponse, replyCommentsResponse, creatorsResponse]) => {
         setComments(commentsResponse.data);
@@ -55,10 +55,12 @@ export default function Comments() {
     <div className="comments-container">
       <h2>Comments</h2>
       <div className="inputcomment">
-        <CommentInput onComment={onComment} artworkID={artworkID}  
-        setArtworkState = {setArtworkState}
-            artworkState = {artworkState}
-            />
+        <CommentInput
+          onComment={onComment}
+          artworkID={artworkID}
+          setArtworkState={setArtworkState}
+          artworkState={artworkState}
+        />
       </div>
       <div className="comments-list">
         {filteredComments.map((comment, index) => (
@@ -67,8 +69,8 @@ export default function Comments() {
             comment={comment}
             getUserNameById={getUserNameById}
             getReplyCommentsByCommentID={getReplyCommentsByCommentID}
-            setArtworkState = {setArtworkState}
-            artworkState = {artworkState}
+            setArtworkState={setArtworkState}
+            artworkState={artworkState}
           />
         ))}
       </div>
@@ -76,7 +78,7 @@ export default function Comments() {
   );
 }
 
-const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID , setArtworkState , artworkState}) => {
+const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID, setArtworkState, artworkState }) => {
   const [isReplying, setIsReplying] = useState(false);
   const [newReply, setNewReply] = useState("");
   const [replyComments, setReplyComments] = useState([]);
@@ -90,7 +92,7 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID , s
     const authData = sessionStorage.getItem("auth");
     const user = authData ? JSON.parse(authData) : null;
     let newReplyData = {};
-    
+
     if (user === null) {
       alert("You need to be logged in to comment.");
       return;
@@ -141,10 +143,10 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID , s
   return (
     <div className="comment-card glass-card">
       <div className="comment-content">
-        <span>
-          <Typography sx={{ color: "#FFFFFF", fontWeight: "Bold" }}>{getUserNameById(comment.userID)}:</Typography>{" "}
-          <Typography>{comment.commentDetail}</Typography>
-        </span>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <CommentUserDisplay userID={comment.userID} getUserNameById={getUserNameById} />
+          <Typography style={{ marginLeft: "50px" }}>{comment.commentDetail}</Typography>
+        </div>
         {isReplying ? (
           <CustomizedButton
             variant="contained"
@@ -178,9 +180,10 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID , s
         )}
         {replyComments.map((reply, index) => (
           <div key={index} className="reply-card glass-card">
-            <span>
-              {getUserNameById(reply.replierID)}: {reply.commentDetail}
-            </span>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <CommentUserDisplay userID={reply.replierID} getUserNameById={getUserNameById} size={35} />
+              <Typography style={{ marginLeft: "45px" }}>{reply.commentDetail}</Typography>
+            </div>
           </div>
         ))}
       </div>
@@ -188,9 +191,7 @@ const CommentItem = ({ comment, getUserNameById, getReplyCommentsByCommentID , s
   );
 };
 
-function CommentInput({ artworkID , setArtworkState , artworkState }) {
-  
-
+function CommentInput({ artworkID, setArtworkState, artworkState }) {
   const formik = useFormik({
     initialValues: {
       commentDetail: "",
@@ -246,7 +247,7 @@ function CommentInput({ artworkID , setArtworkState , artworkState }) {
         };
         _Func();
       } else {
-        Alert("Please login to continue...")
+        Alert("Please login to continue...");
       }
 
       setArtworkState(!artworkState);
@@ -276,3 +277,55 @@ function CommentInput({ artworkID , setArtworkState , artworkState }) {
     </div>
   );
 }
+
+const CommentUserDisplay = ({ userID, getUserNameById, size = 40 }) => {
+  const [userData, setUserData] = useState({
+    name: getUserNameById(userID),
+    avatar: "/images/anon.jpg",
+    accountId: null,
+    package: null,
+  });
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/Creator/userID/${userID}`);
+        const user = response.data;
+        if (user) {
+          const userPackage = await GetCurrentPackageByAccountID(user.accountId);
+          setUserData({
+            name: `${user.firstName} ${user.lastName}`,
+            avatar: user.profilePicture || "/images/anon.jpg",
+            accountId: user.accountId,
+            package: userPackage,
+          });
+        }
+      } catch (error) {
+        console.error("Error loading user:", error);
+      }
+    };
+    loadUser();
+  }, [userID]);
+
+  return (
+    <div className="comment-header" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <Box sx={{ position: "relative" }}>
+        <Link to={`/characters/profile/${userData.accountId}`} style={{ textDecoration: "none" }}>
+          <img
+            src={userData.avatar}
+            alt="User avatar"
+            style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%", objectFit: "cover" }}
+          />
+        </Link>
+        {userData.package?.typeID && [2, 3, 4, 5].includes(Number(userData.package.typeID)) && (
+          <RankEffect type={Number(userData.package.typeID)} />
+        )}
+      </Box>
+      <div>
+        <Link to={`/characters/profile/${userData.accountId}`} style={{ textDecoration: "none" }}>
+          <Typography sx={{ color: "#FFFFFF", fontWeight: "Bold" }}>{userData.name}</Typography>
+        </Link>
+      </div>
+    </div>
+  );
+};

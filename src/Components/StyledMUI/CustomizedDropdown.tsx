@@ -1,4 +1,4 @@
-import React, { useContext, useState, useCallback } from "react";
+import React, { useContext, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -13,10 +13,9 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../AuthenContext.tsx";
 import { Creator } from "../../Interfaces/UserInterface";
 import { LightDarkSwitch } from "./CustomizedLightDarkSwitch.tsx";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGem } from "@fortawesome/free-solid-svg-icons";
 import { CurrentPackage } from "../../Interfaces/Package.ts";
 import WithdrawForm from "../Users/WithdrawForm.tsx";
+import { RankEffect } from "./RankEffect.tsx";
 
 interface CustomizedDropdownProps {
   user: Creator;
@@ -55,13 +54,25 @@ export default function CustomizedDropdown({ user, handleClickAsGuest, pack }: C
     setOpen(false);
   };
 
+  console.log("user check", user);
+
   const DropdownContent = () => (
     <>
       <Divider sx={{ "&::before, &::after": { backgroundColor: theme.color } }} variant="middle">
         <Typography variant="caption">Account</Typography>
       </Divider>
       <MenuItem>
-        <Link to={`profile/${user.accountId}`}>Profile</Link>
+        <Link
+          to={`profile/${user.accountId}`}
+          style={{
+            textDecoration: "none",
+            color: theme.color,
+            display: "flex",
+            alignItems: "center",
+            width: "100%",
+          }}>
+          Profile
+        </Link>
       </MenuItem>
       <MenuItem onClick={() => setWithdrawOpen(true)}>Withdraw</MenuItem>
       <Divider sx={{ "&::before, &::after": { backgroundColor: theme.color } }} variant="middle">
@@ -70,6 +81,26 @@ export default function CustomizedDropdown({ user, handleClickAsGuest, pack }: C
       <MenuItem>
         <LightDarkSwitch onClick={toggleTheme} checked={dark} />
       </MenuItem>
+      {user?.roleId === 1 && (
+        <>
+          <Divider sx={{ "&::before, &::after": { backgroundColor: theme.color } }} variant="middle">
+            <Typography variant="caption">Admin</Typography>
+          </Divider>
+          <MenuItem>
+            <Link
+              to="/admin"
+              style={{
+                textDecoration: "none",
+                color: theme.color,
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+              }}>
+              Admin Dashboard
+            </Link>
+          </MenuItem>
+        </>
+      )}
       <Divider sx={{ backgroundColor: theme.color }} variant="middle" />
       <MenuItem onClick={logout}>Logout</MenuItem>
 
@@ -88,129 +119,6 @@ export default function CustomizedDropdown({ user, handleClickAsGuest, pack }: C
     </>
   );
 
-  const artisanEffect = {
-    zIndex: 1000,
-    textAlign: "center" as const,
-    position: "absolute" as const,
-    bottom: 0,
-    right: 0,
-    bgcolor: "gold",
-    padding: "2px 6px",
-    borderRadius: "4px",
-    transform: "translate(0%, 25%)",
-    fontSize: "9px",
-    fontWeight: "bold",
-    color: "black",
-    display: "flex",
-    alignItems: "center",
-    gap: "2px",
-    animation: "blink-animation 1.5s infinite",
-    "@keyframes blink-animation": {
-      "0%, 100%": {
-        backgroundColor: "gold",
-        color: "black",
-        boxShadow: "0 0 8px rgba(255, 215, 0, 0.6)",
-      },
-      "50%": {
-        backgroundColor: "black",
-        color: "gold",
-        boxShadow: "0 0 8px rgba(0, 0, 0, 0.6)",
-      },
-    },
-  };
-
-  const artovatorEffect = {
-    zIndex: 1000,
-    textAlign: "center" as const,
-    position: "absolute" as const,
-    bottom: 0,
-    right: 0,
-    bgcolor: "#00BFFF",
-    padding: "2px 6px",
-    borderRadius: "4px",
-    transform: "translate(8%, 25%)",
-    fontSize: "9px",
-    fontWeight: "bold",
-    color: "black",
-    display: "flex",
-    alignItems: "center",
-    gap: "2px",
-    animation: "blink-animation 1.5s infinite",
-    "@keyframes blink-animation": {
-      "0%, 100%": {
-        backgroundColor: "#00BFFF",
-        color: "black",
-        boxShadow: "0 0 8px rgba(131, 220, 255, 0.6)",
-      },
-      "50%": {
-        backgroundColor: "black",
-        color: "#00BFFF",
-        boxShadow: "0 0 8px rgba(0, 0, 0, 0.6)",
-      },
-    },
-  };
-
-  const artmasterEffect = {
-    zIndex: 1000,
-    textAlign: "center" as const,
-    position: "absolute" as const,
-    bottom: 0,
-    right: 0,
-    bgcolor: "#e4f8ba",
-    padding: "2px 6px",
-    borderRadius: "4px",
-    transform: "translate(9%, 25%)",
-    fontSize: "9px",
-    fontWeight: "bold",
-    color: "black",
-    display: "flex",
-    alignItems: "center",
-    gap: "2px",
-    animation: "blink-animation 1.5s infinite",
-    "@keyframes blink-animation": {
-      "0%, 100%": {
-        backgroundColor: "#e4f8ba",
-        color: "black",
-        boxShadow: "0 0 8px rgba(148, 244, 158, 0.6)",
-      },
-      "50%": {
-        backgroundColor: "black",
-        color: "#e4f8ba",
-        boxShadow: "0 0 8px rgba(0, 0, 0, 0.6)",
-      },
-    },
-  };
-  const artistEffect = {
-    zIndex: 1000,
-    textAlign: "center" as const,
-    position: "absolute" as const,
-    bottom: 0,
-    right: 0,
-    bgcolor: "orange",
-    padding: "2px 6px",
-    borderRadius: "4px",
-    transform: "translate(-7%, 25%)",
-    fontSize: "9px",
-    fontWeight: "bold",
-    color: "black",
-    display: "flex",
-    alignItems: "center",
-    gap: "2px",
-    animation: "blink-animation 1.5s infinite",
-    "@keyframes blink-animation": {
-      "0%, 100%": {
-        backgroundColor: "orange",
-        color: "black",
-        boxShadow: "0 0 8px rgb(247, 87, 0)",
-      },
-      "50%": {
-        backgroundColor: "black",
-        color: "orange",
-        boxShadow: "0 0 8px rgb(247, 87, 0)",
-      },
-    },
-  };
-
   return (
     <Box sx={{ position: "relative", display: "inline-block" }}>
       <IconButton
@@ -223,30 +131,7 @@ export default function CustomizedDropdown({ user, handleClickAsGuest, pack }: C
         <Avatar src={user?.profilePicture} sx={{ width: 40, height: 40 }}>
           {user?.userName || ""}
         </Avatar>
-        {pack?.typeID === 2 && (
-          <Typography sx={artisanEffect}>
-            Artisan
-            <FontAwesomeIcon icon={faGem} />
-          </Typography>
-        )}
-        {pack?.typeID === 3 && (
-          <Typography sx={artovatorEffect}>
-            Artovator
-            <FontAwesomeIcon icon={faGem} />
-          </Typography>
-        )}
-        {pack?.typeID === 4 && (
-          <Typography sx={artmasterEffect}>
-            Artmaster
-            <FontAwesomeIcon icon={faGem} />
-          </Typography>
-        )}
-        {pack?.typeID === 5 && (
-          <Typography sx={artistEffect}>
-            Artist
-            <FontAwesomeIcon icon={faGem} />
-          </Typography>
-        )}
+        {pack?.typeID && [2, 3, 4, 5].includes(pack.typeID) && <RankEffect type={pack.typeID as 2 | 3 | 4 | 5} />}
       </IconButton>
       {user && (
         <CustomizedMenu
