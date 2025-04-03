@@ -3,6 +3,7 @@ import { Account, Creator } from "../../Interfaces/UserInterface.tsx";
 import axios from "axios";
 
 const creatorurl = "http://localhost:7233/api/Creator/";
+const getallcreator = "http://localhost:7233/api/Creator"
 const creatonobackgroundimageurl = `http://localhost:7233/api/Creator/NotBackground`;
 const accountemailurl = "http://localhost:7233/api/Account/email/";
 const countcreatorurl = "http://localhost:7233/api/Creator/CountCreators";
@@ -81,7 +82,7 @@ export async function GetCreatorListCount() {
 
 export async function GetCreatorList() {
   try {
-    let creatorList: Creator[] = await axios.get(creatorurl).then((response) => response.data);
+    let creatorList: Creator[] = await axios.get(getallcreator).then((response) => response.data);
     return creatorList;
   } catch (err) {
     console.log(err);
