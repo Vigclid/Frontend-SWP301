@@ -12,6 +12,7 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
   const accounturl = `${process.env.REACT_APP_API_URL}/Account`
   const creatorurl = `${process.env.REACT_APP_API_URL}/Creator/`
   const roleurl = `${process.env.REACT_APP_API_URL}/Role/`
+
   const { storeUserData } = useAuth();
   //Call the custom hook to store user login information
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ export default function LoginWithGoogle({ disableOutsideClick, handleClick }) {
     onSuccess: async response => {
       console.log(response);
       const token = (response.access_token);
+      //Using Axios to fetch API from Google
+      //Async await to synchonize fetching data
       //TODO: Remove console.log when finish testing
      const ggAccount = await axios.get(googleAPI, { headers: { Authorization: `Bearer ${token}` } }).then(response => response.data)
      const listOfAccounts = await axios.get(accounturl).then(response => response.data)
