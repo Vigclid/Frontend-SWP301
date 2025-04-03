@@ -829,6 +829,7 @@ export default function ProfileUser() {
                                   id="passwword"
                                   label="Old Password"
                                   name="OldPassword"
+                                  type="password"
                                   autoComplete="OldPassword"
                                   fullWidth
                                   value={formik.values.OldPassword}
@@ -846,6 +847,7 @@ export default function ProfileUser() {
                                   id="passwword"
                                   label="New Passwword"
                                   name="NewPassword"
+                                  type="password"
                                   autoComplete="password"
                                   fullWidth
                                   value={formik.values.NewPassword}
@@ -863,6 +865,7 @@ export default function ProfileUser() {
                                   id="firstName"
                                   label="Confirm Password"
                                   name="ConfirmPassword"
+                                  type="password"
                                   autoComplete="ConfirmPassword"
                                   fullWidth
                                   value={formik.values.ConfirmPassword}

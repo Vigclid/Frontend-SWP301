@@ -253,6 +253,7 @@ export default function ForgotPassword() {
                       id="passwword"
                       label="New Password"
                       name="password"
+                      type="password"
                       autoComplete="password"
                       fullWidth
                       value={formik.values.password} onChange={formik.handleChange}
@@ -267,6 +268,7 @@ export default function ForgotPassword() {
                       id="firstName"
                       label="Confirm Password"
                       name="firstName"
+                      type="password"
                       autoComplete="email"
                       fullWidth
                       value={formik.values.firstName} onChange={formik.handleChange}
@@ -283,7 +285,7 @@ export default function ForgotPassword() {
                      style={{ marginBottom: '20px' }} 
                      fullWidth
                      >
-                      ready to exlore!
+                      ready to explore!
                     </Button>
                   </Grid>
                 </Grid>

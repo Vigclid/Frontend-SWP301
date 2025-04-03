@@ -3,7 +3,8 @@ import axios from 'axios'
 import { GetUserNameById } from "../UserAPI/GET.tsx"
 
 const getcommssionformurl = "https://localhost:7233/api/CommissionForm"
-const getcommissionrequestorurl = `http://localhost:7233/api/commissions/requestor/`;
+const getcommissionrequestorurl = `http://localhost:7233/api/commissions/requestor/`
+const getAllCommission = `http://localhost:7233/api/commissions`
 const getcommissionrecieverurl = `http://localhost:7233/api/CommissionForm/ByReceiverIDAddEmailAndPhone/`
 
 export async function GetCommissionRequestorById(id: string) {
@@ -15,11 +16,13 @@ export async function GetCommissionRequestorById(id: string) {
     const formattedData: IExtraCommissionForm[] = await Promise.all(
       response.data.map(async (comm: any) => {
         let userName = "Unknown User"; // Giá trị mặc định
-
+        let receiverUserName = "Unknown User"; // Giá trị mặc định
         try {
-          userName = await GetUserNameById(comm.requestor); // Gọi API lấy username từ firstName + lastName
+          userName = await GetUserNameById(comm.receiver); // Gọi API lấy username từ firstName + lastName
+          receiverUserName = await GetUserNameById(comm.requestor); // Gọi API lấy username từ firstName + lastName
         } catch (error) {
           console.error(`⚠️ Không lấy được userName cho requestorID: ${comm.requestor}`, error);
+          console.error(`⚠️ Không lấy được userName cho requestorID: ${comm.receiver}`, error);
         }
 
         return {
@@ -31,10 +34,11 @@ export async function GetCommissionRequestorById(id: string) {
           progress: comm.progress,
           requestorEmail: comm.email,
           requestorPhone: comm.phoneNumber,
-          requestorUserName: userName, // Đã lấy từ API
+          receiverUserName: userName, // Đã lấy từ API
           creationDate: comm.creationDate,
           acceptanceDate: comm.acceptanceDate,
           completionDate: comm.completionDate,
+          requetorUserName: receiverUserName,
           artworkURL: comm.artworkURL || null, // Đảm bảo artworkURL có giá trị hợp lệ
         };
       })
@@ -49,12 +53,46 @@ export async function GetCommissionRequestorById(id: string) {
 
 
 
-export async function GetCommissionRecieverById(id: string) {
+export async function GetCommissionRecieverById() {
   try {
-    let form: IExtraCommissionForm[] = await axios.get(getcommissionrecieverurl + id).then(response => response.data)
-    return form
+    const response = await axios.get(getAllCommission);
+    console.log("🟢 API trả về danh sách commission:", response.data);
 
+    // Duyệt từng commission và thêm artworkURL
+    const formattedData: IExtraCommissionForm[] = await Promise.all(
+      response.data.map(async (comm: any) => {
+        let userName = "Unknown User"; // Giá trị mặc định
+        let receiverUserName = "Unknown User"; // Giá trị mặc định
+        try {
+          userName = await GetUserNameById(comm.receiver); // Gọi API lấy username từ firstName + lastName
+          receiverUserName = await GetUserNameById(comm.requestor); // Gọi API lấy username từ firstName + lastName
+        } catch (error) {
+          console.error(`⚠️ Không lấy được userName cho requestorID: ${comm.requestor}`, error);
+          console.error(`⚠️ Không lấy được userName cho requestorID: ${comm.receiver}`, error);
+        }
+
+        return {
+          commissionID: comm.commissionID,
+          receiverID: comm.receiver,
+          requestorID: comm.requestor,
+          description: comm.description,
+          accept: comm.accept !== undefined ? comm.accept : null,
+          progress: comm.progress,
+          requestorEmail: comm.email,
+          requestorPhone: comm.phoneNumber,
+          receiverUserName: userName, // Đã lấy từ API
+          creationDate: comm.creationDate,
+          acceptanceDate: comm.acceptanceDate,
+          completionDate: comm.completionDate,
+          requetorUserName: receiverUserName,
+          artworkURL: comm.artworkURL || null, // Đảm bảo artworkURL có giá trị hợp lệ
+        };
+      })
+    );
+
+    return formattedData;
   } catch (err) {
-    console.log(err)
+    console.error("❌ Lỗi khi gọi API GetCommissionRequestorById:", err);
+    return [];
   }
 }

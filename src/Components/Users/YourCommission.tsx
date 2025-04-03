@@ -29,9 +29,12 @@ import StepLabel from '@mui/material/StepLabel';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import Backdrop from '@mui/material/Backdrop';
+import { Link } from 'react-router-dom';
+import { GetCreatorByID } from '../../API/UserAPI/GET.tsx';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios from 'axios'; // Thêm axios để gọi API
 import { Creator } from '../../Interfaces/UserInterface.ts';
+import { GetCommissionRecieverById } from '../../API/CommissionAPI/GET.tsx';
 import { ICommissionForm, IExtraCommissionForm } from '../../Interfaces/CommissionForm.ts';
 import { PutCommissionFormById } from '../../API/CommissionAPI/PUT.tsx';
 
@@ -42,6 +45,7 @@ function CommissionStepper({ currentCommission }: { currentCommission: IExtraCom
   const [loading, setLoading] = useState(false);
   const [artworkURL, setArtworkURL] = useState(currentCommission.artworkURL || "");
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [commissionList, setCommissionList] = useState<IExtraCommissionForm[]>([]);
 
 
 
@@ -192,6 +196,7 @@ function CommissionStepper({ currentCommission }: { currentCommission: IExtraCom
 export default function YourCommission() {
   const { theme } = useContext(ThemeContext);
   const [commissionList, setCommissionList] = useState<IExtraCommissionForm[]>([]);
+  console.log('Commission List:', commissionList);
   const [refreshForm, setRefreshForm] = useState(false); // Sửa tên setreFreshForm thành setRefreshForm cho nhất quán
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -242,24 +247,65 @@ export default function YourCommission() {
       try {
         const response = await axios.get('http://localhost:7233/api/commissions');
         console.log('Commission response:', response.data);
-        const commissions: IExtraCommissionForm[] = response.data
-          .map((commission: any) => ({
-            commissionID: commission.commissionID,
-            receiverID: commission.receiver,
-            requestorID: commission.requestor,
-            description: commission.description,
-            accept: commission.accept,
-            progress: commission.progress,
-            requestorEmail: commission.email,
-            requestorPhone: commission.phoneNumber,
-            requestorUserName: '', // Cần lấy từ bảng User nếu có, hiện tại để trống
-            creationDate: commission.creationDate,
-            acceptanceDate: commission.acceptanceDate,
-            completionDate: commission.completionDate,
-            message: commission.message || '', // Thêm message từ API nếu có
-            artworkURL: commission.artworkURL || '', // Thêm artworkURL từ API nếu có
-          }))
-          .filter((commission: IExtraCommissionForm) => commission.receiverID === savedUser.userId); // Lọc theo receiverID
+
+        // Log savedUser.userId để kiểm tra
+        console.log('savedUser.userId:', savedUser.userId);
+
+        // Lấy commissionForm từ GetCommissionRequestorById
+        let commissionForm = await GetCommissionRecieverById();
+        console.log('xxxxxxCommission Form:', commissionForm);
+
+        // Kiểm tra nếu commissionForm rỗng
+        if (!commissionForm || commissionForm.length === 0) {
+          console.log('commissionForm rỗng, không thể lấy requestorUserName');
+          setCommissionList([]);
+          return;
+        }
+
+        // Lấy danh sách commissionID từ commissionForm
+        const commissionFormIds = commissionForm.map((form: any) => Number(form.commissionID));
+        console.log('Commission IDs from commissionForm:', commissionFormIds);
+
+        // Lọc response.data để chỉ giữ lại các commission có commissionID trong commissionForm
+        const filteredCommissions = response.data.filter((commission: any) =>
+          commissionFormIds.includes(Number(commission.commissionID))
+        );
+        console.log('Filtered commissions:', filteredCommissions);
+
+        // Ánh xạ response.data thành commissions và gán requestorUserName
+        const commissions: IExtraCommissionForm[] = filteredCommissions
+          .map((commission: any) => {
+            // Tìm commissionForm có commissionID khớp với commission.commissionID
+            const matchingForm = commissionForm.find(
+              (form: any) => Number(form.commissionID) === Number(commission.commissionID)
+            );
+
+            // Log để kiểm tra matchingForm
+            console.log(
+              `Commission ID ${commission.commissionID} - Matching Form:`,
+              matchingForm?.receiverUserName
+            );
+
+            return {
+              commissionID: commission.commissionID,
+              receiverID: commission.receiver,
+              requestorID: commission.requestor,
+              description: commission.description,
+              accept: commission.accept,
+              progress: commission.progress,
+              requestorEmail: commission.email,
+              requestorPhone: commission.phoneNumber,
+              requestorUserName: matchingForm ? matchingForm.receiverUserName : 'unknown',
+              creationDate: commission.creationDate,
+              acceptanceDate: commission.acceptanceDate,
+              completionDate: commission.completionDate,
+              message: commission.message || '',
+              artworkURL: commission.artworkURL || '',
+            };
+          })
+          .filter((commission: IExtraCommissionForm) => commission.receiverID === savedUser.userId);
+
+        console.log('Final commissions:', commissions);
         setCommissionList(commissions);
       } catch (error) {
         console.error('Error fetching commissions:', error);
@@ -268,7 +314,7 @@ export default function YourCommission() {
       }
     };
     getCommissionForm();
-  }, [refreshForm, open, navigate, savedUser.userId]); // Thêm savedUser.id vào dependency array
+  }, [refreshForm, open, navigate, savedUser.userId]);
 
   // Xử lý Accept commission (gửi accept = true khi nhấn Accept)
   const handleAccept = async (commission: IExtraCommissionForm) => {
@@ -405,6 +451,52 @@ export default function YourCommission() {
     }
   };
 
+  const RequestUser = ({ userID, size = 40 }) => {
+    const [userData, setUserData] = useState({
+      name: "Loading...",
+      accountId: null,
+    });
+
+    useEffect(() => {
+      const loadUser = async () => {
+        try {
+          const creator = await GetCreatorByID(userID);
+          if (creator) {
+            setUserData({
+              name: `${creator.firstName} ${creator.lastName}`,
+              avatar: creator.profilePicture,
+              accountId: creator.accountId,
+            });
+          }
+        } catch (error) {
+          console.error("Error loading user:", error);
+          setUserData({
+            name: "Unknown User",
+            accountId: null,
+          });
+        }
+      };
+      loadUser();
+    }, [userID]);
+
+    return (
+      <div className="comment-header" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <Link to={`/characters/profile/${userData.accountId}`} style={{ textDecoration: "none" }}>
+          <img
+            src={userData.avatar}
+            alt="User avatar"
+            style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%", objectFit: "cover" }}
+          />
+        </Link>
+        <div>
+          <Link to={`/characters/profile/${userData.accountId}`} style={{ textDecoration: "none" }}>
+            <Typography sx={{ color: "#FFFFFF", fontWeight: "Bold" }}>{userData.name}</Typography>
+          </Link>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className='yourCommission'>
       <Backdrop
@@ -456,6 +548,7 @@ export default function YourCommission() {
                         <div className='contentcommission'>
                           <div>
                             <div>
+                              <RequestUser userID={commission.requestorID} />
                               <Typography variant='h6'>Phone: {commission.requestorPhone}</Typography>
                               <Typography variant='h6'>Email: {commission.requestorEmail}</Typography>
                               <Typography variant='body1' style={{ fontWeight: 'bold' }}>Description: </Typography>
@@ -474,7 +567,7 @@ export default function YourCommission() {
                               <br />
                               <Typography variant='body1' style={{ fontWeight: 'bold' }}>Completion Date: </Typography>
                               <span>{commission.completionDate ? formatDateTime(commission.completionDate) : 'Not completed'}</span>
-                              <Typography variant="h6">
+                              <Typography variant='body1' style={{ fontWeight: 'bold' }}>
                                 {commission.artworkURL ? `Artwork Drive Link: ${commission.artworkURL}` : ''}
                               </Typography>
                               {commission.message && (

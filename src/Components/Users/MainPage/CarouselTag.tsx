@@ -4,7 +4,6 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { GetTagList } from "../../../API/TagAPI/GET.tsx";
 import { Tag } from "../../../Interfaces/TagInterface";
-import {GetArtworkByTagname } from "../../../API/ArtworkAPI/GET.tsx";
 import { useNavigate } from 'react-router-dom';
 import "../../../css/CarouselTag.css";
 

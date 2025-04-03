@@ -1,10 +1,6 @@
-
 import { ICommissionForm, IExtraCommissionForm } from "../../Interfaces/CommissionForm"
 import axios from 'axios'
-
-
 const getcommssionformurl = "https://localhost:7233/api/CommissionForm/"
-
 
 const headers = {
     'Content-Type': 'application/json',
