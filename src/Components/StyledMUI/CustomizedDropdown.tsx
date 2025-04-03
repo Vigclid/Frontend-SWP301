@@ -88,7 +88,7 @@ export default function CustomizedDropdown({ user, handleClickAsGuest, pack }: C
     </>
   );
 
-  const vipEffect = {
+  const artisanEffect = {
     zIndex: 1000,
     textAlign: "center" as const,
     position: "absolute" as const,
@@ -97,8 +97,8 @@ export default function CustomizedDropdown({ user, handleClickAsGuest, pack }: C
     bgcolor: "gold",
     padding: "2px 6px",
     borderRadius: "4px",
-    transform: "translate(-45%, 25%)",
-    fontSize: "12px",
+    transform: "translate(0%, 25%)",
+    fontSize: "9px",
     fontWeight: "bold",
     color: "black",
     display: "flex",
@@ -119,6 +119,98 @@ export default function CustomizedDropdown({ user, handleClickAsGuest, pack }: C
     },
   };
 
+  const artovatorEffect = {
+    zIndex: 1000,
+    textAlign: "center" as const,
+    position: "absolute" as const,
+    bottom: 0,
+    right: 0,
+    bgcolor: "#00BFFF",
+    padding: "2px 6px",
+    borderRadius: "4px",
+    transform: "translate(8%, 25%)",
+    fontSize: "9px",
+    fontWeight: "bold",
+    color: "black",
+    display: "flex",
+    alignItems: "center",
+    gap: "2px",
+    animation: "blink-animation 1.5s infinite",
+    "@keyframes blink-animation": {
+      "0%, 100%": {
+        backgroundColor: "#00BFFF",
+        color: "black",
+        boxShadow: "0 0 8px rgba(131, 220, 255, 0.6)",
+      },
+      "50%": {
+        backgroundColor: "black",
+        color: "#00BFFF",
+        boxShadow: "0 0 8px rgba(0, 0, 0, 0.6)",
+      },
+    },
+  };
+
+  const artmasterEffect = {
+    zIndex: 1000,
+    textAlign: "center" as const,
+    position: "absolute" as const,
+    bottom: 0,
+    right: 0,
+    bgcolor: "#e4f8ba",
+    padding: "2px 6px",
+    borderRadius: "4px",
+    transform: "translate(9%, 25%)",
+    fontSize: "9px",
+    fontWeight: "bold",
+    color: "black",
+    display: "flex",
+    alignItems: "center",
+    gap: "2px",
+    animation: "blink-animation 1.5s infinite",
+    "@keyframes blink-animation": {
+      "0%, 100%": {
+        backgroundColor: "#e4f8ba",
+        color: "black",
+        boxShadow: "0 0 8px rgba(148, 244, 158, 0.6)",
+      },
+      "50%": {
+        backgroundColor: "black",
+        color: "#e4f8ba",
+        boxShadow: "0 0 8px rgba(0, 0, 0, 0.6)",
+      },
+    },
+  };
+  const artistEffect = {
+    zIndex: 1000,
+    textAlign: "center" as const,
+    position: "absolute" as const,
+    bottom: 0,
+    right: 0,
+    bgcolor: "orange",
+    padding: "2px 6px",
+    borderRadius: "4px",
+    transform: "translate(-7%, 25%)",
+    fontSize: "9px",
+    fontWeight: "bold",
+    color: "black",
+    display: "flex",
+    alignItems: "center",
+    gap: "2px",
+    animation: "blink-animation 1.5s infinite",
+    "@keyframes blink-animation": {
+      "0%, 100%": {
+        backgroundColor: "orange",
+        color: "black",
+        boxShadow: "0 0 8px rgb(247, 87, 0)",
+      },
+      "50%": {
+        backgroundColor: "black",
+        color: "orange",
+        boxShadow: "0 0 8px rgb(247, 87, 0)",
+      },
+    },
+  };
+
   return (
     <Box sx={{ position: "relative", display: "inline-block" }}>
       <IconButton
@@ -132,8 +224,26 @@ export default function CustomizedDropdown({ user, handleClickAsGuest, pack }: C
           {user?.userName || ""}
         </Avatar>
         {pack?.typeID === 2 && (
-          <Typography sx={vipEffect}>
-            VIP
+          <Typography sx={artisanEffect}>
+            Artisan
+            <FontAwesomeIcon icon={faGem} />
+          </Typography>
+        )}
+        {pack?.typeID === 3 && (
+          <Typography sx={artovatorEffect}>
+            Artovator
+            <FontAwesomeIcon icon={faGem} />
+          </Typography>
+        )}
+        {pack?.typeID === 4 && (
+          <Typography sx={artmasterEffect}>
+            Artmaster
+            <FontAwesomeIcon icon={faGem} />
+          </Typography>
+        )}
+        {pack?.typeID === 5 && (
+          <Typography sx={artistEffect}>
+            Artist
             <FontAwesomeIcon icon={faGem} />
           </Typography>
         )}
