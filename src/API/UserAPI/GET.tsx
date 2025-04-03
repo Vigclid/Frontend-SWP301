@@ -3,7 +3,7 @@ import { Account, Creator } from "../../Interfaces/UserInterface.tsx";
 import axios from "axios";
 
 const creatorurl = `${process.env.REACT_APP_API_URL}/Creator/`;
-
+const getallcreator = `${process.env.REACT_APP_API_URL}/Creator`
 const accountemailurl = `${process.env.REACT_APP_API_URL}/Account/email/`;
 const countcreatorurl = `${process.env.REACT_APP_API_URL}/Creator/CountCreators`;
 
@@ -80,7 +80,7 @@ export async function GetCreatorListCount() {
 
 export async function GetCreatorList() {
   try {
-    let creatorList: Creator[] = await axios.get(creatorurl).then((response) => response.data);
+    let creatorList: Creator[] = await axios.get(getallcreator).then((response) => response.data);
     return creatorList;
   } catch (err) {
     console.log(err);

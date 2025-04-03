@@ -13,8 +13,8 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
-import ExploreIcon from "@mui/icons-material/Explore";
-import StarsIcon from "@mui/icons-material/Stars";
+import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import GroupIcon from "@mui/icons-material/Group";
 import MarkunreadMailboxRoundedIcon from "@mui/icons-material/MarkunreadMailboxRounded";
 import DesignServicesRoundedIcon from "@mui/icons-material/DesignServicesRounded";
@@ -31,16 +31,16 @@ export default function CustomizedDrawer() {
     SetDrawer(!drawer);
   };
 
-  const HomePage = ["View All", "Hot Topic", "You Loved These", "Explore", "Shop", "Forum"];
+  const HomePage = ["View All", "Hot Topic", "You Loved These", "Recommended User", "Shop", "Forum"];
   const Personal = ["Transaction History", "Your Commisions", "Your Requests"];
   const linkListPersonal = ["transaction", "yourcommision", "yourrequest", `randomword`];
-  const linkListHomePage = [`/characters`, `artwordrecomment`, `favourite`, `artwordrecomment`, `artshop`, `forum`];
+  const linkListHomePage = [`/characters`, `artwordrecomment`, `favourite`, `userrecomment`, `artshop`, `forum`];
 
   const IconListHomePage = [
     <CollectionsIcon />,
     <WhatshotIcon />,
-    <StarsIcon />,
-    <ExploreIcon />,
+    <FavoriteBorderOutlinedIcon />,
+    <SupervisedUserCircleIcon />,
     <ShopIcon />,
     <GroupIcon />,
   ];
