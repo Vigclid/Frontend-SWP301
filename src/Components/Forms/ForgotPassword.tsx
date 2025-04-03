@@ -26,6 +26,8 @@ import LoadingScreen from '../LoadingScreens/LoadingScreenSpokes.jsx';
 import CustomizedTextField from '../StyledMUI/CustomizedTextField.tsx';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
+import {getCheckExistEmail} from "../../API/AccountAPI/GET.tsx";
+
 
 let response;
 
@@ -150,28 +152,39 @@ export default function ForgotPassword() {
 
   try {
       await emailSchema.validate(formik.values.email);
-      
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      
-      
-      if (otpButton) {
-        setLoad(true);
-        response = await axios.post(`${getOTPURL}`, {'email':formik.values.email}, { headers }); //GET OTP FROM SERVER
+      const email = formik.values.email;
+      console.log(formik.values.email);
+      if(email) {
+          const checkEmail = await getCheckExistEmail(email);
+          if (checkEmail== false) {
+              alert("Email not exists! please Register Account!");
+              setLoad(false);
+              setActiveOTP(false);
+              setOtpButton(true);
+              return
+          }
+          const headers = {
+              'Content-Type': 'application/json',
+          };
 
-        setOtpButton(false);
-        setLoad(false);
-      } else {
 
-        if (String(response.data) === String(otp)) {
-          setActiveOTP(true);
-        } else {
-          formik.setErrors({ email: 'Wrong OTP!' });
-          setTimeout(() => {
-            formik.setErrors({ email: '' });
-          }, 2000);
-        }
+          if (otpButton) {
+              setLoad(true);
+              response = await axios.post(`${getOTPURL}`, {'email': formik.values.email}, {headers}); //GET OTP FROM SERVER
+
+              setOtpButton(false);
+              setLoad(false);
+          } else {
+
+              if (String(response.data) === String(otp)) {
+                  setActiveOTP(true);
+              } else {
+                  formik.setErrors({email: 'Wrong OTP!'});
+                  setTimeout(() => {
+                      formik.setErrors({email: ''});
+                  }, 2000);
+              }
+          }
       }
   } catch (err) {
       formik.setErrors({ email: err.errors });

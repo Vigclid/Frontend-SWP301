@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
@@ -14,8 +14,7 @@ import { useAuth } from "../../Components/AuthenContext.tsx";
 import LoadingScreen from "../LoadingScreens/LoadingScreenSpokes.jsx";
 import { useNavigate } from "react-router-dom";
 
-
-export default function LoginForm({ disableOutsideClick, handleClick, backdrop, alternative }) {  
+export default function LoginForm({ disableOutsideClick, handleClick, backdrop, alternative }) {
   const [isLoading, setIsloading] = useState(false);
   const { storeUserData } = useAuth();
   const navigate = useNavigate();

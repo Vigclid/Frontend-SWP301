@@ -3,6 +3,7 @@ import { Account } from "../../Interfaces/UserInterface.tsx";
 import axios from "axios";
 
 const getaccountbyaccountid = `${process.env.REACT_APP_API_URL}/Account/`;
+const checkEmailExists = `${process.env.REACT_APP_API_URL}/Account/checkExistEmail/`
 
 export async function getAccountByAccountId(AccountId: string | number) {
   try {
@@ -14,3 +15,14 @@ export async function getAccountByAccountId(AccountId: string | number) {
     console.log(err);
   }
 }
+
+export async function getCheckExistEmail(email: string): Promise<boolean> {
+  try {
+    let checkExistEmail = await axios.get(checkEmailExists + email)
+    return checkExistEmail.data;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+

@@ -25,6 +25,7 @@ import LoadingScreen from "../LoadingScreens/LoadingScreenSpokes.jsx";
 import CustomizedTextField from "../StyledMUI/CustomizedTextField.tsx";
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckIcon from "@mui/icons-material/Check";
+import {getCheckExistEmail} from "../../API/AccountAPI/GET.tsx";
 
 let response;
 
@@ -71,14 +72,9 @@ export default function CreateAccount() {
   };
 
   const randomPicture = () => {
-    let p1 =
-      "https://res.cloudinary.com/djprssm3o/image/upload/v1740558383/avatar/ffa0b63b-fbc8-4e46-8757-145c6ee80161.jpg";
-    let p2 =
-      "https://res.cloudinary.com/djprssm3o/image/upload/v1740508426/avatar/09ea05ea-a9c6-42f2-9c54-6c39d71967ba.jpg";
-    let p3 =
-      "https://res.cloudinary.com/djprssm3o/image/upload/v1740508431/background/4b6225fc-1c56-4fec-80ef-54d29e32fd9b.jpg";
-
-    const pictures = [p1, p2, p3];
+    const pictures = [
+      "https://res.cloudinary.com/djprssm3o/image/upload/v1743701818/background/352d1352-e996-419a-999e-cf8978d98837.jpg",
+    ];
     const randomIndex = Math.floor(Math.random() * pictures.length);
     return pictures[randomIndex];
   };
@@ -189,17 +185,25 @@ export default function CreateAccount() {
 
   const handleSendCode = async () => {
     const emailValue = formik.values.email;
+
     if (emailValue) {
-      // Thực hiện xử lý với mã OTP 6 số đã nhập
+      const check = await getCheckExistEmail(emailValue);
+      if (check === true) {
+        alert("Email already exists!");
+        setLoad(false);
+        setActiveOTP(false);
+        setOtpButton(true);
+        return
+      }
 
       const headers = {
         "Content-Type": "application/json",
       };
 
+      // @ts-ignore
       if (otpButton) {
         setLoad(true);
         response = await axios.post(`${getOTPURL}`, { email: emailValue }, { headers }); //GET OTP FROM SERVER
-
         setOtpButton(false);
         setLoad(false);
       } else {
@@ -213,11 +217,8 @@ export default function CreateAccount() {
           }, 2000);
         }
       }
-
-      // Gọi các hàm khác hoặc thực hiện các thao tác cần thiết
     } else {
       formik.setErrors({ email: "Email is required" });
-      // Xóa lỗi sau 5 giây
       setTimeout(() => {
         formik.setErrors({ email: "" });
       }, 2000);

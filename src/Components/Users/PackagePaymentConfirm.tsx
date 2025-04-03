@@ -6,6 +6,9 @@ import { Package, CurrentPackage } from "../../Interfaces/Package";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import {PostRankToUser} from "../../API/PackageAPI/POST.tsx"
+import {GetCreatorByID} from "../../API/UserAPI/GET.tsx";
+import {Creator} from "../../Interfaces/UserInterface";
+import axios from "axios";
 interface PackagePaymentConfirmProps {
   open: boolean;
   item?: Package;
@@ -34,7 +37,7 @@ export default function PackagePaymentConfirm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!item || !auth.accountId) return;
-
+    const creator = await GetCreatorByID(auth.userId);
     try {
       setLoading(true);
       const paymentData = {
@@ -44,7 +47,7 @@ export default function PackagePaymentConfirm({
         accountId: auth.accountId,
       };
 
-      if (auth.coins - paymentData.packagePrice < 0) {
+      if (creator.coins - paymentData.packagePrice < 0) {
         alert("Your money don't enough to upgrade, please deposit more");
         navigate("/characters/depositecoin");
         console.error("Payment failed: Insufficient coins");

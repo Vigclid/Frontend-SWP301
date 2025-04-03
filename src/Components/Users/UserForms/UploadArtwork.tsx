@@ -25,6 +25,9 @@ import { GetTagList } from "../../../API/TagAPI/GET.tsx";
 import { Creator } from "../../../Interfaces/UserInterface.ts";
 import { useNavigate } from "react-router-dom";
 import { Artwork } from "../../../Interfaces/ArtworkInterfaces.ts";
+import Dialog from "@mui/material/Dialog";
+import {GetCreatorByAccountID} from "../../../API/UserAPI/GET.tsx";
+
 
 function UploadArtwork() {
   const { theme } = useContext(ThemeContext);
@@ -36,6 +39,11 @@ function UploadArtwork() {
   const [listOfTags, setListOfTags] = useState<Tag[] | undefined>([]);
   const url = `${process.env.REACT_APP_API_URL}/artworks/`;
   const redirectUrl = useNavigate();
+  const [showInsufficientFunds, setShowInsufficientFunds] = React.useState(false);
+  const [showSuccess, setShowSuccess] = React.useState(false);
+  const navigate = useNavigate();
+
+
 
   // Attempt to retrieve the auth state from sessionStorage
   // Check if there's any auth data saved and parse it
@@ -190,10 +198,17 @@ function UploadArtwork() {
       console.log(values);
       const postArtwork = async () => {
         try {
+          const saler = await GetCreatorByAccountID(user.accountId.toString());
+          if(saler.amountArtworks <= 0) {
+            setShowInsufficientFunds(true);
+            setTimeout(() => navigate("/characters/package"), 2000); // Chuyển hướng sau 2 giây
+            return;
+          }
           const response = await axios.post(url, values);
           console.log("Post Artwork Complete!", response.data);
           const newArtwork: Artwork = response.data;
-          redirectUrl(`../artwork/${newArtwork.artworkID}`);
+          setShowSuccess(true);
+          setTimeout(() => navigate(`/characters/artwork/${newArtwork.artworkID}`), 2000); // Chuyển hướng sau 2 giây
         } catch (error) {
           if (error.response && error.response.data) {
             alert(`Lỗi: ${error.response.data.message || error.response.data}`);
@@ -438,6 +453,20 @@ function UploadArtwork() {
             >
               Welcome To The Wolrd!
             </CustomizedButton>
+            <Dialog open={showInsufficientFunds} aria-labelledby="insufficient-funds-dialog" className="dialog-custom">
+              <div className="insufficient-funds-dialog status-dialog">
+                <h2>Insufficient Funds</h2>
+                <p>You will be redirected to deposit page...</p>
+              </div>
+            </Dialog>
+
+            {/* Success popup */}
+            <Dialog open={showSuccess} aria-labelledby="success-dialog" className="dialog-custom">
+              <div className="success-dialog status-dialog">
+                <h2>Purchase Successful!</h2>
+                <p>You will be redirected to artwork page...</p>
+              </div>
+            </Dialog>
           </form>
         </div>
       </div>
