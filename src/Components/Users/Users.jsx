@@ -45,23 +45,26 @@ export default function Users() {
         <Routes>
           <Route path={`/`} element={<HomePage />} />
           <Route path={`creatorform`} element={<UserInfoForm />} />
-          <Route path={`profile/:id`} element={<ProfileUser />} />
+
           <Route path={`artwork/update/:id`} element={<UpdateArtwork />} />
           <Route path={`/SearchHome/Tags/:tagName`} element={<SearchHome />} />
 
-          <Route element={<ProtectedRoute allowedRoles={["AT", "AD"]} />}></Route>
+          <Route element={<ProtectedRoute allowedRoles={["AT", "AD"]} />}>
+            <Route path={`yourcommision`} element={<YourCommission />} />
+          </Route>
 
+          <Route element={<ProtectedRoute allowedRoles={["Users"]} />}>
+            <Route path={`profile/:id`} element={<ProfileUser />} />
+            <Route path={`yourrequest`} element={<YourRequest />} />
+            <Route path={`transaction`} element={<TransactionHistory />} />
+          </Route>
           <Route path={`artwork/:id`} element={<ArtPost />} />
           <Route path={`profile/:id/artwork/:id`} element={<ArtPost />} />
-
           <Route path={`artwork/:id/payment`} element={<Payment />} />
           <Route path={`Depositecoin`} element={<DepositeCoin />} />
-          <Route path={`yourcommision`} element={<YourCommission />} />
-          <Route path={`yourrequest`} element={<YourRequest />} />
           <Route path={`dashboarduser`} element={<DashboardUser />} />
           <Route path={`artshop`} element={<ArtShop />} />
           <Route path={`package`} element={<PackagePage />} />
-          <Route path={`transaction`} element={<TransactionHistory />} />
           <Route path={`artworkform`} element={<UploadArtwork />} />
           <Route path={`profile/:id/commission`} element={<CommissionForm />} />
           <Route path={`favourite`} element={<FavouritesArtwork />} />

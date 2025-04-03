@@ -134,7 +134,11 @@ export default function WithdrawForm({ onClose }: WithdrawFormProps) {
           You will get: {calculateAmountAfterFee(withdrawAmount)} (-10%)
         </Typography>
 
-        <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
+        <Typography variant="caption" color="text.secondary" display="block" gutterBottom
+        sx = {{
+          color : theme.color
+        }}
+        >
           Your transaction fee helps keep the website running. Thank you!
         </Typography>
 

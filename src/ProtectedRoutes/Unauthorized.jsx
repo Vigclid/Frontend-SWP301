@@ -5,8 +5,7 @@ import Typography from '@mui/material/Typography'
 export default function Unauthorized() {
   return (
     <div style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
-    <Typography variant="h1" color="initial">Unauthorized!</Typography>
-    <img style={{width:'30%'}} src="/images/baka.jpg" alt="baka" />
+    <img style={{width:'100vw' , height:'100vh'}} src="/images/401.png" alt="baka" />
     </div>
   )
 }

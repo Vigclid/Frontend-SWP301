@@ -22,6 +22,7 @@ export async function getCheckExistEmail(email: string): Promise<boolean> {
     return checkExistEmail.data;
   } catch (err) {
     console.log(err);
+    throw err;
   }
 }
 
