@@ -829,6 +829,7 @@ export default function ProfileUser() {
                                   id="passwword"
                                   label="Old Password"
                                   name="OldPassword"
+                                  type="password"
                                   autoComplete="OldPassword"
                                   type="password"
                                   fullWidth

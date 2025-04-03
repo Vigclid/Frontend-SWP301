@@ -58,13 +58,13 @@ export default function YourRequest() {
       // Fetch requestorUserName nếu chưa có hoặc là "Unknown User"
       const updatedCommissions = await Promise.all(
         commissionForm.map(async (commission) => {
-          if (!commission.requestorUserName || commission.requestorUserName === "Unknown User") {
+          if (!commission.receiverUserName || commission.receiverUserName === "Unknown User") {
             try {
               let userData = await GetUserNameById(commission.requestorID);
               if (userData && userData.userName) {
-                commission.requestorUserName = userData.userName;
+                commission.receiverUserName = userData.userName;
               } else {
-                commission.requestorUserName = "Unknown User";
+                commission.receiverUserName = "Unknown User";
               }
             } catch (error) {
               console.error("❌ Lỗi khi lấy User:", error);
@@ -150,7 +150,8 @@ export default function YourRequest() {
 
                           {/* tên người đặt hàng */}
                           <Typography variant='h5' style={{ margin: 'auto 15px ' }}>
-                            You are requesting a commission to: {commision.requestorUserName || "Loading..."}
+                            You are requesting a commission to: {commision.receiverUserName || "Loading..."}
+
                           </Typography>
                         </div>
                         <div className='contentcommission'>

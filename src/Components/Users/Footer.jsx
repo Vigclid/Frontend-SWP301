@@ -24,7 +24,7 @@ export default function Footer() {
               <div className="footer-content">
                 <Typography className="contact-item">
                   <EmailIcon className="contact-icon" />
-                  artixsupport@gmail.com
+                  arthubsupport@gmail.com
                 </Typography>
                 <Typography className="contact-item">
                   <PhoneIcon className="contact-icon" />

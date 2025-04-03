@@ -91,9 +91,9 @@ export default function RecommendedUsers() {
     <>
       <div className="headrecommended">
         <Typography variant="h5">Recommended Users</Typography>
-        <Link to={`/top-users`}>
+        {/* <Link to={`/top-users`}>
           <div className="seemore">See More</div>
-        </Link>
+        </Link> */}
       </div>
       <div className="recommendedimg">{users.length !== 0 ? <RecommendedUserList /> : <PlaceHoldersImageCard />}</div>
     </>

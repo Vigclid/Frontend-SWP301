@@ -17,6 +17,7 @@ export interface IExtraCommissionForm {
   requestorEmail: string,
   requestorPhone: string,
   requestorUserName: string,
+  receiverUserName: string,
   creationDate: string | null, // Thêm từ API
   acceptanceDate: string | null, // Thêm từ API
   completionDate: string | null, // Thêm từ API

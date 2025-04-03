@@ -421,10 +421,10 @@ export default function PostWork() {
             <Dialog
               open={openReport}
               onClose={handleClose}
-              className="dialog-custom" // Áp dụng class từ ArtPost.css
+              className="dialog-custom"
               BackdropProps={{
                 sx: {
-                  backgroundColor: "rgba(0, 0, 0, 0.5)", // Lớp phủ mờ
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
                 },
               }}>
               <ReportForm
